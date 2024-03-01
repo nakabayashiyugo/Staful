@@ -60,7 +60,7 @@ void Player::Initialize()
 {
 	std::string fileName = "Assets\\Player";
 	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
-	hModel_ = Model::Load("Assets\\Player2.fbx");
+	hModel_ = Model::Load("Assets\\Player1.fbx");
 	assert(hModel_ >= 0);
 
 	hFrame_ = Image::Load("Assets\\Timer_Frame.png");
