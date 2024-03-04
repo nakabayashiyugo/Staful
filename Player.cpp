@@ -60,7 +60,7 @@ void Player::Initialize()
 {
 	std::string fileName = "Assets\\Player";
 	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
-	hModel_ = Model::Load("Assets\\Player1.fbx");
+	hModel_ = Model::Load("Assets\\Walking02.fbx");
 	assert(hModel_ >= 0);
 
 	hFrame_ = Image::Load("Assets\\Timer_Frame.png");
@@ -104,11 +104,12 @@ void Player::Update()
 
 void Player::Draw()
 { 
-	//transform_.scale_ = XMFLOAT3(0.05f, 0.05f, 0.05f);
+	transform_.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
 	
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 
+	//ŽžŠÔƒQ[ƒW
 	XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
 	tFrame_.position_ = XMFLOAT3(timerPos.x, timerPos.y, 0);
 	tFrameOutline_.position_ = XMFLOAT3(timerPos.x, timerPos.y, 0);
@@ -150,6 +151,7 @@ void Player::PlayUpdate()
 		stageState = STATE_FAILURE;
 	}
 
+	SetAnimFramerate();
 	PlayerOperation();
 
 	switch (playerState_)
@@ -339,8 +341,6 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 
 void Player::IdleUpdate()
 {
-	SetAnimFramerate();
-
 	tableHitPoint_ = XMFLOAT3(0, 0, 0);
 	isTableHit_ = false;
 	gravity_ = XMFLOAT3(0, 0, 0);
@@ -356,8 +356,6 @@ void Player::IdleUpdate()
 
 void Player::WalkUpdate()
 {
-	SetAnimFramerate();
-
 	tableHitPoint_ = XMFLOAT3(0, 0, 0);
 	isTableHit_ = false;
 	gravity_ = XMFLOAT3(0, 0, 0);
@@ -373,8 +371,6 @@ void Player::WalkUpdate()
 
 void Player::JampUpdate()
 {
-	SetAnimFramerate();
-
 	gravity_.y = 0.2f;
 	air_dec_velocity_ = AIR_DEC_VELOCITY;
 	if (transform_.position_.y >= 1.5f)
@@ -426,15 +422,23 @@ void Player::SetAnimFramerate()
 		switch (playerState_)
 		{
 		case STATE_IDLE:
-			Model::SetAnimFrame(hModel_, 1, 60, 1);
+			startFrame_ = 1;
+			endFrame_ = 60;
 			break;
 		case STATE_WALK:
-			Model::SetAnimFrame(hModel_, 61, 120, 1);
+			startFrame_ = 61;
+			endFrame_ = 120;
 			break;
 		case STATE_JAMP:
-			Model::SetAnimFrame(hModel_, 121, 180, 1);
+			startFrame_ = 121;
+			endFrame_ = 150;
+			break;
+		case STATE_FALL:
+			startFrame_ = 151;
+			endFrame_ = 180;
 			break;
 		}
+		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
 	}
 	prevPlayerState_ = playerState_;
 }

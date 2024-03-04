@@ -51,6 +51,8 @@ class Player
 	PLAYER_STATE playerState_;
 	PLAYER_STATE prevPlayerState_;
 	STAGE_STATE stageState;
+	//アニメーションのフレーム
+	int nowFrame_, startFrame_, endFrame_;
 
 	MATHDEDAIL standMath_;
 
