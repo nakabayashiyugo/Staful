@@ -1,8 +1,10 @@
 #include "SceneTransition.h"
 #include "MapEditScene.h"
-#include "Engine/SceneManager.h"
 #include "PlayScene.h"
+
+#include "Engine/SceneManager.h"
 #include "Engine/Image.h"
+#include "Engine/Input.h"
 
 SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1), turnNum_(0),
@@ -65,6 +67,11 @@ void SceneTransition::Update()
 		else
 		{
 			isFinished_ = true;
+			if (Input::IsKeyDown(DIK_SPACE))
+			{
+				SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
+				pSM->ChangeScene(SCENE_ID_TITLE);
+			}
 		}
 		break;
 	default:

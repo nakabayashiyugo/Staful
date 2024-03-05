@@ -46,7 +46,7 @@ class Player
 	XMFLOAT3 startPos_, goalPos_;
 	XMFLOAT3 centerPos_;
 	XMFLOAT3 camRot_;
-	
+
 
 	PLAYER_STATE playerState_;
 	PLAYER_STATE prevPlayerState_;
@@ -114,4 +114,3 @@ public:
 
 	void OnCollision(GameObject* pTarget) override;
 };
-

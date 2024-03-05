@@ -60,7 +60,7 @@ void Player::Initialize()
 {
 	std::string fileName = "Assets\\Player";
 	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
-	hModel_ = Model::Load("Assets\\Walking02.fbx");
+	hModel_ = Model::Load(fileName);
 	assert(hModel_ >= 0);
 
 	hFrame_ = Image::Load("Assets\\Timer_Frame.png");
@@ -104,7 +104,7 @@ void Player::Update()
 
 void Player::Draw()
 { 
-	transform_.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
+	//transform_.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
 	
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
@@ -299,7 +299,8 @@ void Player::PlayerOperation()
 	}
 
 	//ƒWƒƒƒ“ƒv
-	if (Input::IsKeyDown(DIK_SPACE) && playerState_ == STATE_WALK)
+	if (Input::IsKeyDown(DIK_SPACE) && 
+	(playerState_ == STATE_WALK || playerState_ == STATE_IDLE))
 	{
 		playerState_ = STATE_JAMP;
 		jamp_start_velocity_ = velocity_ / (air_dec_velocity_ + 1);
@@ -417,27 +418,28 @@ void Player::DeadUpdate()
 
 void Player::SetAnimFramerate()
 {
+
+	switch (playerState_)
+	{
+	case STATE_IDLE:
+		startFrame_ = 1;
+		endFrame_ = 60;
+		break;
+	case STATE_WALK:
+		startFrame_ = 61;
+		endFrame_ = 120;
+		break;
+	case STATE_JAMP:
+		startFrame_ = 121;
+		endFrame_ = 150;
+		break;
+	case STATE_FALL:
+		startFrame_ = 150;
+		endFrame_ = 150;
+		break;
+	}
 	if (prevPlayerState_ != playerState_)
 	{
-		switch (playerState_)
-		{
-		case STATE_IDLE:
-			startFrame_ = 1;
-			endFrame_ = 60;
-			break;
-		case STATE_WALK:
-			startFrame_ = 61;
-			endFrame_ = 120;
-			break;
-		case STATE_JAMP:
-			startFrame_ = 121;
-			endFrame_ = 150;
-			break;
-		case STATE_FALL:
-			startFrame_ = 151;
-			endFrame_ = 180;
-			break;
-		}
 		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
 	}
 	prevPlayerState_ = playerState_;
