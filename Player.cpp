@@ -111,15 +111,22 @@ void Player::Draw()
 
 	//時間ゲージ
 	XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
-	tFrame_.position_ = XMFLOAT3(timerPos.x, timerPos.y, 0);
-	tFrameOutline_.position_ = XMFLOAT3(timerPos.x, timerPos.y, 0);
+	XMFLOAT3 timerScale = XMFLOAT3(0.3f, 0.1f, 1);
+
+	tFrame_.position_ = 
+		XMFLOAT3(timerPos.x, timerPos.y, 0);
+	tFrame_.scale_ = timerScale;
+
+	tFrameOutline_.position_ = 
+		XMFLOAT3(timerPos.x, timerPos.y, 0);
+	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.01f, timerScale.y + 0.01f, timerScale.z);
+
 	tGage_.position_ =
-		XMFLOAT3(-((0.3f / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
-			timerPos.y, 0);
-	tFrame_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
-	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) / 100 * (0.3f / (float(pTimer_->GetLimitTime()) / 100))
-		, 0.1f, 1);
-	tFrameOutline_.scale_ = XMFLOAT3(0.31f, 0.11f, 1);
+		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
+				 timerPos.y, 0);
+	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) / 100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
+		, timerScale.y, timerScale.z);
+	
 
 	Image::SetTransform(hGage_, tGage_);
 	Image::SetTransform(hFrame_, tFrame_);
@@ -492,13 +499,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	{
 		check = true;
 		//前
-		if (abs((float)((int)rightFront.x - rightFront.x)) > abs((float)((int)rightFront.z - rightFront.z)) ||
+		if (abs((float)((int)rightFront.x - rightFront.x)) >= abs((float)((int)rightFront.z - rightFront.z)) ||
 			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 		{
-			transform_.position_.z = (float)(int)rightFront.z - (rightFront.z - _pos.z);
+			transform_.position_.z = (float)((int)rightFront.z) - (rightFront.z - _pos.z);
 		}
 		//右
-		if (abs((float)((int)rightFront.x - rightFront.x)) <= abs((float)((int)rightFront.z - rightFront.z)) ||
+		if (abs((float)((int)rightFront.x - rightFront.x)) < abs((float)((int)rightFront.z - rightFront.z)) ||
 			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.x = (float)((int)rightFront.x) - (rightFront.x - _pos.x);
@@ -509,13 +516,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	{
 		check = true;
 		//後ろ
-		if (abs((float)((int)rightBack.x - rightBack.x)) > abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
+		if (abs((float)((int)rightBack.x - rightBack.x)) >= abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
 			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.z = (float)(int)(rightBack.z + 1) - (rightBack.z - _pos.z);
 		}
 		//右
-		if (abs((float)((int)rightBack.x - rightBack.x)) <= abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
+		if (abs((float)((int)rightBack.x - rightBack.x)) < abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
 			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.x = (float)(int)rightBack.x - (rightBack.x - _pos.x);
@@ -526,13 +533,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	{
 		check = true;
 		//前
-		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) > abs((float)((int)leftFront.z - leftFront.z)) ||
+		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) >= abs((float)((int)leftFront.z - leftFront.z)) ||
 			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.z = (float)(int)leftFront.z - (leftFront.z - _pos.z);
 		}
 		//左
-		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) <= abs((float)((int)leftFront.z - leftFront.z)) ||
+		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) < abs((float)((int)leftFront.z - leftFront.z)) ||
 			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.x = (float)(int)(leftFront.x + 1) - (leftFront.x - _pos.x);
@@ -543,13 +550,13 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	{
 		check = true;
 		//後ろ
-		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) > abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
+		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) >= abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
 			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.z = (float)(int)(leftBack.z + 1) - (leftBack.z - _pos.z);
 		}
 		//左
-		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) <= abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
+		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) < abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
 			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.x = (float)(int)(leftBack.x + 1) - (leftBack.x - _pos.x);

@@ -2,12 +2,14 @@
 #include <Windows.h>
 #include <string>
 #include <stdlib.h>
+
 #include "Engine/Direct3D.h"
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
 #include "Engine/SceneManager.h"
+
 #include "DirectXCollision.h"
 #include "resource.h"
 #include "MapEditScene.h"

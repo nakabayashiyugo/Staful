@@ -12,13 +12,6 @@ class Fbx;
 struct RayCastData;
 
 
-#pragma comment(lib, "LibFbxSDK-MD.lib")
-#pragma comment(lib, "LibXml2-MD.lib")
-#pragma comment(lib, "zlib-MD.lib")
-
-struct RayCastData;
-
-
 class FbxParts
 {
 	//ƒ}ƒeƒŠƒAƒ‹
