@@ -32,8 +32,6 @@ HRESULT Texture::Load(std::string fileName)
 		return E_FAIL;
 	}
 
-	size_ = XMFLOAT3(metadata.width, metadata.height, 0);
-
 	// テクスチャを読み込む
 	CoInitialize(NULL);
 	IWICImagingFactory* pFactory = NULL;

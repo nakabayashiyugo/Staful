@@ -8,7 +8,16 @@ namespace Image
 		Transform transform_;
 		std::string fileName_;
 		RECT rect_;
+		float alpha_;
 		XMFLOAT3 size_;
+
+		//コンストラクタ
+		ImageData() : pSprite_(nullptr)
+		{
+			fileName_ = "";
+			alpha_ = 1.0f;
+			pSprite_ = nullptr;
+		}
 	};
 
 	//モデルのポインタを入れておくポインタ
@@ -40,17 +49,19 @@ int Image::Load(std::string filename)
 	}
 	pData->size_ = pData->pSprite_->GetTextureSize();
 	imageList.push_back(pData);
-	return (imageList.size() - 1);
+	int handle = imageList.size() - 1;
+	ResetRect(handle);
+	return handle;
 }
 
 void Image::Draw(int hImage)
 {
-	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_, imageList[hImage]->rect_);
+	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_, imageList[hImage]->rect_, imageList[hImage]->alpha_);
 }
 
-void Image::Release(int handle)
+void Image::Release(int hImage)
 {
-	if (handle < 0 || handle >= imageList.size())
+	if (hImage < 0 || hImage >= imageList.size())
 	{
 		return;
 	}
@@ -60,7 +71,7 @@ void Image::Release(int handle)
 	for (int i = 0; i < imageList.size(); i++)
 	{
 		//すでに開いている場合
-		if (imageList[i] != nullptr && i != handle && imageList[i]->pSprite_ == imageList[handle]->pSprite_)
+		if (imageList[i] != nullptr && i != hImage && imageList[i]->pSprite_ == imageList[hImage]->pSprite_)
 		{
 			isExist = true;
 			break;
@@ -70,10 +81,10 @@ void Image::Release(int handle)
 	//使ってなければモデル解放
 	if (isExist == false)
 	{
-		SAFE_DELETE(imageList[handle]->pSprite_);
+		SAFE_DELETE(imageList[hImage]->pSprite_);
 	}
 
-	SAFE_DELETE(imageList[handle]);
+	SAFE_DELETE(imageList[hImage]);
 
 }
 
@@ -86,32 +97,41 @@ void Image::AllRelease()
 	imageList.clear();
 }
 
-void Image::SetRect(int handle, int x, int y, int width, int height)
+void Image::SetRect(int hImage, int x, int y, int width, int height)
 {
-	if (handle < 0 || handle >= imageList.size())
+	if (hImage < 0 || hImage >= imageList.size())
 	{
 		return;
 	}
 
-	imageList[handle]->rect_.left = x;
-	imageList[handle]->rect_.top = y;
-	imageList[handle]->rect_.right = width;
-	imageList[handle]->rect_.bottom = height;
+	imageList[hImage]->rect_.left = x;
+	imageList[hImage]->rect_.top = y;
+	imageList[hImage]->rect_.right = width;
+	imageList[hImage]->rect_.bottom = height;
 }
 
-void Image::ResetRect(int handle)
+void Image::ResetRect(int hImage)
 {
-	if (handle < 0 || handle >= imageList.size())
+	if (hImage < 0 || hImage >= imageList.size())
 	{
 		return;
 	}
 
-	XMFLOAT3 size = imageList[handle]->pSprite_->GetTextureSize();
+	XMFLOAT3 size = imageList[hImage]->pSprite_->GetTextureSize();
 
-	imageList[handle]->rect_.left = 0;
-	imageList[handle]->rect_.top = 0;
-	imageList[handle]->rect_.right = (long)imageList[handle]->size_.x;
-	imageList[handle]->rect_.bottom = (long)imageList[handle]->size_.y;
+	imageList[hImage]->rect_.left = 0;
+	imageList[hImage]->rect_.top = 0;
+	imageList[hImage]->rect_.right = (long)imageList[hImage]->size_.x;
+	imageList[hImage]->rect_.bottom = (long)imageList[hImage]->size_.y;
+}
+
+void Image::SetAlpha(int hImage, int alpha)
+{
+	if (hImage < 0 || hImage >= imageList.size())
+	{
+		return;
+	}
+	imageList[hImage]->alpha_ = (float)alpha / 255.0f;
 }
 
 XMFLOAT3 Image::GetTextureSize(int hImage)

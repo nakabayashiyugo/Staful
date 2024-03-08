@@ -15,7 +15,7 @@ class Sprite
 	{
 		XMMATRIX	matW;
 		XMMATRIX	uvTrans;
-		XMMATRIX	color;
+		XMFLOAT4	color;
 	};
 
 	struct VERTEX
@@ -44,7 +44,7 @@ public:
 	Sprite();
 	~Sprite();
 	HRESULT Load(std::string filename);
-	void Draw(Transform& transform, RECT rect);
+	void Draw(Transform& transform, RECT rect, float alpha);
 	void Release();
 	XMFLOAT3 GetTextureSize() { return texture_size_; }
 
@@ -58,7 +58,7 @@ private:
 
 	HRESULT CreateConstantBuffer();
 
-	void PassDataToCB(Transform& transform, RECT rect);
+	void PassDataToCB(Transform& transform, RECT rect, float alpha);
 	void SetBufferToPipeline();
 };
 

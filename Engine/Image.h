@@ -15,5 +15,7 @@ namespace Image
 	void SetRect(int handle, int x, int y, int width, int height);
 	void ResetRect(int handle);
 
+	void SetAlpha(int handle, int alpha);
+
 	XMFLOAT3 GetTextureSize(int hImage);
 }

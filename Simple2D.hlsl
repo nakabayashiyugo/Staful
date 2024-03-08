@@ -12,6 +12,8 @@ SamplerState	g_sampler : register(s0);	//サンプラー
 cbuffer global
 {
 	float4x4	matW;	//ワールド行列
+	float4x4	matTexture;
+	float4		vecColor;
 };
 
 //───────────────────────────────────────
@@ -34,7 +36,7 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 	//ローカル座標に、ワールド・ビュー・プロジェクション行列をかけて
 	//スクリーン座標に変換し、ピクセルシェーダーへ
 	outData.pos = mul(pos, matW);
-	outData.uv = uv;
+	outData.uv = mul(uv, matTexture);
 
 	//まとめて出力
 	return outData;
@@ -45,6 +47,5 @@ VS_OUT VS(float4 pos : POSITION, float4 uv : TEXCOORD)
 //───────────────────────────────────────
 float4 PS(VS_OUT inData) : SV_Target
 {
-	return g_texture.Sample(g_sampler, inData.uv);
-	//return float4(1, 1, 1, 0);
+	return vecColor * g_texture.Sample(g_sampler, inData.uv);
 }

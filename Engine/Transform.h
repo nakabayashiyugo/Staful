@@ -30,6 +30,11 @@ public:
 	XMMATRIX GetWorldMatrix();
 
 	XMMATRIX GetNormalMatrix();
+
+	XMMATRIX GetMatTranslate() { return matTranslate_; }
+	XMMATRIX GetMatRotate() { return matRotate_; }
+	XMMATRIX GetMatScale() { return matScale_; }
+		
 };
 
 inline XMFLOAT3 operator += (XMFLOAT3& p, const XMVECTOR& v)

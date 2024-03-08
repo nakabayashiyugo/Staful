@@ -53,9 +53,9 @@ void TitleScene::Update()
 void TitleScene::Draw()
 {
 	tStartButton_.position_.y = -0.1f;
-	tStartButton_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
+	//tStartButton_.scale_ = XMFLOAT3(0.3f, 0.1f, 1);
 	tStaful_.position_.y = 0.5f;
-	tStaful_.scale_ = XMFLOAT3(0.6f, 0.4f, 1);
+	//tStaful_.scale_ = XMFLOAT3(0.6f, 0.4f, 1);
 
 	Image::SetTransform(hStartButton_, tStartButton_);
 	Image::SetTransform(hStaful_, tStaful_);

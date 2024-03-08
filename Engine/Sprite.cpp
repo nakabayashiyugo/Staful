@@ -50,13 +50,14 @@ HRESULT Sprite::Load(std::string filename)
 	return S_OK;
 }
 
-void Sprite::Draw(Transform& transform, RECT rect)
+void Sprite::Draw(Transform& transform, RECT rect, float alpha)
 {
 	Direct3D::SetShader(SHADER_2D);
 	transform.Calclation();//トランスフォームを計算
 
-	PassDataToCB(transform, rect);
+	PassDataToCB(transform, rect, alpha);
 	SetBufferToPipeline();
+	
 }
 
 void Sprite::Release()
@@ -162,15 +163,28 @@ HRESULT Sprite::CreateConstantBuffer()
 	return S_OK;
 }
 
-void Sprite::PassDataToCB(Transform& transform, RECT rect)
+void Sprite::PassDataToCB(Transform& transform, RECT rect, float alpha)
 {
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
-	cb.matW = XMMatrixTranspose(transform.GetWorldMatrix());
-
 	D3D11_MAPPED_SUBRESOURCE pdata;
+
+	XMMATRIX cut = XMMatrixScaling((float)rect.right, (float)rect.bottom, 1);
+	XMMATRIX view = XMMatrixScaling(1.0f / Direct3D::scrWidth, 1.0f / Direct3D::scrHeight, 1.0f);
+
+	XMMATRIX world = cut * transform.GetMatScale() * transform.GetMatRotate() * view * transform.GetMatTranslate();
+	cb.matW = XMMatrixTranspose(world);
+
+	XMMATRIX mTexTrans = XMMatrixTranslation((float)rect.left / (float)pTexture_->GetSize().x,
+		(float)rect.top / (float)pTexture_->GetSize().y, 0.0f);
+	XMMATRIX mTexScale = XMMatrixScaling((float)rect.right / (float)pTexture_->GetSize().x,
+		(float)rect.bottom / (float)pTexture_->GetSize().y, 1.0f);
+	XMMATRIX mTexel = mTexScale * mTexTrans;
+	cb.uvTrans = XMMatrixTranspose(mTexel);
+
+	cb.color = XMFLOAT4(1, 1, 1, alpha);
+
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
-	
 	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る
 
 	ID3D11SamplerState* pSampler = pTexture_->GetSampler();

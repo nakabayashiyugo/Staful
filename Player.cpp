@@ -339,8 +339,6 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 	//HOLLチェック
 	ret = HollCheck(_pos);
 
-	ret = math_[centerPos_.x][centerPos_.z];
-
 	//WALLチェック
 	WallCheck(_pos);
 
@@ -488,7 +486,6 @@ MATHDEDAIL Player::HollCheck(XMFLOAT3 _pos)
 
 void Player::WallCheck(XMFLOAT3 _pos)
 {
-	bool check = false;
 	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
 	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + (1.0f - MODELSIZE));
 	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + (1.0f - MODELSIZE), _pos.y, _pos.z + MODELSIZE);
@@ -497,9 +494,8 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	if (Is_InSide_Table(rightFront) &&
 		math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
 	{
-		check = true;
 		//前
-		if (abs((float)((int)rightFront.x - rightFront.x)) >= abs((float)((int)rightFront.z - rightFront.z)) ||
+		if (abs((float)((int)rightFront.x - rightFront.x)) > abs((float)((int)rightFront.z - rightFront.z)) ||
 			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 		{
 			transform_.position_.z = (float)((int)rightFront.z) - (rightFront.z - _pos.z);
@@ -514,7 +510,6 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	if (Is_InSide_Table(rightBack) &&
 		math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
 	{
-		check = true;
 		//後ろ
 		if (abs((float)((int)rightBack.x - rightBack.x)) >= abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
 			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
@@ -531,7 +526,6 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	if (Is_InSide_Table(leftFront) &&
 		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
 	{
-		check = true;
 		//前
 		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) >= abs((float)((int)leftFront.z - leftFront.z)) ||
 			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
@@ -548,7 +542,6 @@ void Player::WallCheck(XMFLOAT3 _pos)
 	if (Is_InSide_Table(leftBack) &&
 		math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
 	{
-		check = true;
 		//後ろ
 		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) >= abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
 			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
