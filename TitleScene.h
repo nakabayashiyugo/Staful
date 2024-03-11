@@ -5,6 +5,7 @@ class TitleScene
 	:public GameObject
 {
 	int hStartButton_, hStaful_;
+	int hDice_;
 
 	Transform tStartButton_, tStaful_;
 	XMFLOAT3 mousePos_;

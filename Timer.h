@@ -23,4 +23,6 @@ public:
 
 	int GetCurTime() { return current_time_; }
 	int GetLimitTime() { return limit_time_; }
+
+	void TimeReset();
 };

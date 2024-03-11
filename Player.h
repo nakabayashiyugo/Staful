@@ -67,6 +67,8 @@ class Player
 
 	//タイマー
 	Timer* pTimer_;
+
+	float hitStopTime_;
 public:
 	Player(GameObject* parent);
 

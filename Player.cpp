@@ -28,7 +28,8 @@ Player::Player(GameObject* parent)
 	hurdle_Limit_(0),
 	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
 	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
-	isGoal_(false)
+	isGoal_(false),
+	hitStopTime_(1.0f)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -111,7 +112,7 @@ void Player::Draw()
 
 	//ŽžŠÔƒQ[ƒW
 	XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
-	XMFLOAT3 timerScale = XMFLOAT3(0.3f, 0.1f, 1);
+	XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
 
 	tFrame_.position_ = 
 		XMFLOAT3(timerPos.x, timerPos.y, 0);
@@ -119,7 +120,7 @@ void Player::Draw()
 
 	tFrameOutline_.position_ = 
 		XMFLOAT3(timerPos.x, timerPos.y, 0);
-	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.01f, timerScale.y + 0.01f, timerScale.z);
+	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.05f, timerScale.y + 0.05f, timerScale.z);
 
 	tGage_.position_ =
 		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
@@ -137,7 +138,7 @@ void Player::Draw()
 
 
 	tTime_.position_ = XMFLOAT3(-0.1f, 0.8f, 0);
-	tTime_.scale_ = XMFLOAT3(0.2f, 0.1f, 1);
+	tTime_.scale_ = XMFLOAT3(0.5f, 0.5f, 1);
 	Image::SetTransform(hTime_, tTime_);
 	Image::Draw(hTime_);
 }
@@ -411,19 +412,25 @@ void Player::FallUpdate()
 
 void Player::DeadUpdate()
 {
-	if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
-		abs(startPos_.z - transform_.position_.z) <= 0.01f)
+	static Timer hitStopTimer = Timer(hitStopTime_);
+
+	hitStopTimer.Update();
+	if (hitStopTimer.isTimeUpped())
 	{
-		stageState = STATE_START;
+		if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
+			abs(startPos_.z - transform_.position_.z) <= 0.01f)
+		{
+			stageState = STATE_START;
+			hitStopTimer.TimeReset();
+		}
+		transform_.position_.x = transform_.position_.x + (startPos_.x - transform_.position_.x) / 10;
+		transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
+		transform_.position_.y = 10;
 	}
-	transform_.position_.x = transform_.position_.x + (startPos_.x - transform_.position_.x) / 10;
-	transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
-	transform_.position_.y = 10;
 }
 
 void Player::SetAnimFramerate()
 {
-
 	switch (playerState_)
 	{
 	case STATE_IDLE:

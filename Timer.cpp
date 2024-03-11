@@ -30,3 +30,10 @@ void Timer::Update()
 		isTimeUpped_ = true;
 	}
 }
+
+void Timer::TimeReset()
+{
+	count_time_ = 0;
+	current_time_ = 0;
+	isTimeUpped_ = false;
+}

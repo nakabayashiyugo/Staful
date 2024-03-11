@@ -82,8 +82,7 @@ void SceneTransition::Update()
 void SceneTransition::Draw()
 {
 	Transform player;
-	player.position_ = XMFLOAT3(0.8, 0.9, 0);
-	//player.scale_ = XMFLOAT3(0.2, 0.1, 1);
+	player.position_ = XMFLOAT3(0.7, 0.8, 0);
 	switch (sceneState_)
 	{
 	case SCENE_MAPEDIT1_DELAY:

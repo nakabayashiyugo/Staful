@@ -55,9 +55,9 @@ void Sprite::Draw(Transform& transform, RECT rect, float alpha)
 	Direct3D::SetShader(SHADER_2D);
 	transform.Calclation();//トランスフォームを計算
 
-	PassDataToCB(transform, rect, alpha);
 	SetBufferToPipeline();
-	
+
+	PassDataToCB(transform, rect, alpha);
 }
 
 void Sprite::Release()
@@ -119,7 +119,7 @@ HRESULT Sprite::CreateIndexBuffer()
 	// インデックスバッファを生成する
 	D3D11_BUFFER_DESC   bd;
 	bd.Usage = D3D11_USAGE_DEFAULT;
-	bd.ByteWidth = sizeof(index_[0]) * indexNum_;
+	bd.ByteWidth = sizeof(index_);
 	bd.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bd.CPUAccessFlags = 0;
 	bd.MiscFlags = 0;
@@ -193,6 +193,8 @@ void Sprite::PassDataToCB(Transform& transform, RECT rect, float alpha)
 	ID3D11ShaderResourceView* pSRV = pTexture_->GetSRV();
 	Direct3D::pContext_->PSSetShaderResources(0, 1, &pSRV);
 	Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
+
+	Direct3D::pContext_->DrawIndexed(indexNum_, 0, 0);
 }
 
 void Sprite::SetBufferToPipeline()
@@ -211,5 +213,5 @@ void Sprite::SetBufferToPipeline()
 	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 
-	Direct3D::pContext_->DrawIndexed(indexNum_, 0, 0);
+	
 }

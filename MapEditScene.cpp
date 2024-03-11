@@ -14,8 +14,8 @@ MapEditScene::MapEditScene(GameObject* parent)
 		hPict_[i] = -1;
 	}
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize_x();
-	YSIZE = (int)pTrans_->GetMathSize_z();
+	XSIZE =  (int)pTrans_->GetMathSize_x();
+	YSIZE =  (int)pTrans_->GetMathSize_z();
 
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 
@@ -86,8 +86,8 @@ void MapEditScene::Initialize()
 		{
 			math_origin_[x][y] = math_[x][y];
 			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
-			math_[x][y].mathPos_.position_.x = math_[x][y].mathPos_.scale_.x * x - math_[x][y].mathPos_.scale_.x * (XSIZE / 2);
-			math_[x][y].mathPos_.position_.y = math_[x][y].mathPos_.scale_.y * y - math_[x][y].mathPos_.scale_.y * (YSIZE / 2);
+			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
+			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
 		}
 	}
 
@@ -324,12 +324,6 @@ void MapEditScene::Draw()
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
-			/*float mathSin = abs(sin(XMConvertToRadians(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z)));
-			math_[x][YSIZE - 1 - y].mathPos_.scale_ = XMFLOAT3(
-				1.0f / (Direct3D::scrWidth - (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
-				1.0f / (Direct3D::scrHeight + (Direct3D::scrWidth - Direct3D::scrHeight) * mathSin) * MATHSIZE,
-				1);
-
 			if (isConvRot_[x][YSIZE - 1 - y])
 			{
 				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
@@ -338,7 +332,7 @@ void MapEditScene::Draw()
 			{
 				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (int)(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z / 90) * 90;
 				isConvRot_[x][YSIZE - 1 - y] = false;
-			}*/
+			}
 			
 			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
 			Image::Draw(hPict_[math_[x][y].mathType_]);
