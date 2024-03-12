@@ -8,7 +8,8 @@
 const float PIE = 3.141592;
 
 Togetoge::Togetoge(GameObject* parent) :
-	GameObject(parent, "Togetoge"), hModel_(-1), initPos_(0, 0, 0), destPos_(0, 0, 0)
+	GameObject(parent, "Togetoge"), hModel_(-1), initPos_(0, 0, 0), destPos_(0, 0, 0),
+	moveCount_(0.0f)
 {
 	Stage* pStage = (Stage*)FindObject("Stage");
 	initPos_.x = pStage->GetTogetogeInitPos().x;
@@ -33,10 +34,9 @@ void Togetoge::Update()
 	SphereCollider* pSC = new SphereCollider(0.4);
 	this->AddCollider(pSC);
 
-	static float move = 0;
-	move += 0.1f;
-	transform_.position_.x = initPos_.x + (destPos_.x - initPos_.x) * abs(sin(move * PIE / 180));
-	transform_.position_.z = initPos_.z + (destPos_.z - initPos_.z) * abs(sin(move * PIE / 180));
+	moveCount_ += 0.1f;
+	transform_.position_.x = initPos_.x + (destPos_.x - initPos_.x) * abs(sin(moveCount_ * PIE / 180));
+	transform_.position_.z = initPos_.z + (destPos_.z - initPos_.z) * abs(sin(moveCount_ * PIE / 180));
 }
 
 void Togetoge::Draw()

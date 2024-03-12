@@ -44,6 +44,14 @@ Stage::Stage(GameObject* parent)
 	}
 }
 
+Stage::~Stage()
+{
+	for (int i = 0; i < pTgtg_.size(); i++)
+	{
+		pTgtg_[i]->KillMe();
+	}
+}
+
 void Stage::Initialize()
 {
 	std::string modelName[MATH_MAX] =

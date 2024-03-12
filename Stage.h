@@ -19,6 +19,7 @@ class Stage
 	XMFLOAT3 tgtgGivePos_;
 public:
 	Stage(GameObject* parent);
+	~Stage();
 
 	//‰Šú‰»
 	void Initialize() override;

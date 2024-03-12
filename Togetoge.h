@@ -4,6 +4,7 @@ class Togetoge
 	:public GameObject
 {
 	int hModel_;
+	float moveCount_;
 
 	XMFLOAT3 initPos_, destPos_;
 public:
