@@ -169,8 +169,11 @@ void MapEditScene::Update()
 				}
 				break;
 			case MATH_FLOOR:
+				if (Input::IsMouseButton(0))
+				{
 					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+				}
 			case MATH_CONVEYOR:
 				if (!isMathChangeNumLimit())
 				{
@@ -239,7 +242,7 @@ void MapEditScene::Update()
 			tgtgRouteMathUp = XMFLOAT3((int)mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
 
 			auto itr = tTgtgRoute_.begin();
-			
+
 			while (itr != tTgtgRoute_.end())
 			{
 				if (itr->initPos_.x == tgtgRouteMathDown.x &&
@@ -249,47 +252,43 @@ void MapEditScene::Update()
 				}
 				itr++;
 			}
-			//決まってなかったら
-			if (itr < tTgtgRoute_.end())
+			//縦移動
+			if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
 			{
-				//縦移動
-				if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
+				itr->route_.scale_ =
+					XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE / 5,
+						1.0f / Direct3D::scrHeight * MATHSIZE * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y), 0);
+
+				itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
 				{
-					itr->route_.scale_ =
-						XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE / 5,
-							1.0f / Direct3D::scrHeight * MATHSIZE * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y), 0);
-
-					itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
-
-					if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
-					{
-						itr->route_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
-					}
-					itr->destPos_.y = tgtgRouteMathUp.y;
+					itr->route_.position_.y += (1.0f / Direct3D::scrHeight * MATHSIZE) / 2;
 				}
-				//横移動
-				else
-				{
-					itr->route_.scale_ =
-						XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x),
-							1.0f / Direct3D::scrHeight * MATHSIZE / 5, 0);
-
-					itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
-
-					if (((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) % 2 != 0)
-					{
-						itr->route_.position_.x += (1.0f / Direct3D::scrWidth * MATHSIZE) / 2;
-					}
-					itr->destPos_.x = tgtgRouteMathUp.x;
-				}
-
-				if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
-				{
-					tTgtgRoute_.erase(itr);
-				}
+				itr->destPos_.y = tgtgRouteMathUp.y;
 			}
-			tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
+			//横移動
+			else
+			{
+				itr->route_.scale_ =
+					XMFLOAT3(1.0f / Direct3D::scrWidth * MATHSIZE * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x),
+						1.0f / Direct3D::scrHeight * MATHSIZE / 5, 0);
+
+				itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) % 2 != 0)
+				{
+					itr->route_.position_.x += (1.0f / Direct3D::scrWidth * MATHSIZE) / 2;
+				}
+				itr->destPos_.x = tgtgRouteMathUp.x;
+			}
+
+			if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
+			{
+				tTgtgRoute_.erase(itr);
+			}
 		}
+		tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
 
 		//ルートがあるとげとげのマスが他のマスに変更になったとき
 		auto itr = tTgtgRoute_.begin();
