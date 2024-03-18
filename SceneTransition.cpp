@@ -1,6 +1,7 @@
 #include "SceneTransition.h"
 #include "MapEditScene.h"
 #include "PlayScene.h"
+#include "BetweenScene.h"
 
 #include "Engine/SceneManager.h"
 #include "Engine/Image.h"
@@ -31,7 +32,7 @@ void SceneTransition::Initialize()
 	sceneState_ = SCENE_MAPEDIT2;
 	Write();
 
-	sceneState_ = SCENE_MAPEDIT1;
+	sceneState_ = SCENESTATE(0);
 	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");
 	assert(hPlayer1_ >= 0);
 	hPlayer2_ = Image::Load("Assets\\Logo_Player2.png");
@@ -46,7 +47,9 @@ void SceneTransition::Update()
 {
 	switch (sceneState_)
 	{
-	case SCENE_MAPEDIT1: turnNum_++; Instantiate<MapEditScene>(this); break;
+	case SCENE_BETWEEN1:turnNum_++; Instantiate<BetweenScene>(this); break;
+	case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
+	case SCENE_BETWEEN2:Instantiate<BetweenScene>(this); break;
 	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
 	case SCENE_STAGE1:
 		player_Num_ = 0;
