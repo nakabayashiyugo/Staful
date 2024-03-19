@@ -19,7 +19,7 @@ class BetweenScene
 	int hPlayer_;
 	int hPlayer1_, hPlayer2_;
 	int hLogoEmptyCourse_, hLogoCourse1_, hLogoCourse2_;
-	int hLogoMapCreate_;
+	int hLogoMapCreate_, hLogoPlay_;
 
 	Transform tLogoStandard_;
 	Transform tPlayer1_, tPlayer2_;
@@ -29,6 +29,8 @@ class BetweenScene
 	COURSELOGOSTATE logoState_;
 
 	SceneTransition* pST_;
+
+	int curScene_;
 public:
 	BetweenScene(GameObject* parent);
 

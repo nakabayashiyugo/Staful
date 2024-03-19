@@ -34,6 +34,8 @@ Stage::Stage(GameObject* parent)
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
 	SetTableMath(pPlayScene_->GetTableMath());
 	SetTogetogeRoute(pPlayScene_->GetTogetogeRoute());
+
+	saveNum_ = pPlayScene_->GetSaveNum();
 	
 	for (int x = 0; x < makeHoleTimes_.size(); x++)
 	{
@@ -182,7 +184,7 @@ void Stage::Write()
 {
 	std::ofstream write;
 	std::string savefile = "StageSaveFile\\saveMath";
-	savefile += std::to_string(pPlayScene_->GetSaveNum());
+	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -203,7 +205,7 @@ void Stage::Write()
 
 	//とげとげルート
 	savefile = "StageSaveFile\\tgtgRoute";
-	savefile += std::to_string(pPlayScene_->GetSaveNum());
+	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {

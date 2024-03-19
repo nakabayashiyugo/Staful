@@ -15,7 +15,7 @@ class PlayScene
 
 	int player_Num_;
 
-	int save_Num_;
+	int saveNum_;
 public:
 	PlayScene(GameObject* parent);
 
@@ -43,5 +43,5 @@ public:
 
 	int GetPlayerNum() { return player_Num_; }
 
-	int GetSaveNum() { return save_Num_; }
+	int GetSaveNum() { return saveNum_; }
 };

@@ -33,6 +33,7 @@ class SceneTransition
 	bool isFinished_;
 	int turnNum_;
 	int player_Num_;
+	int saveNum_;
 	
 	PlayScene* pPS_[PLAYERNUM];
 
@@ -64,6 +65,8 @@ public:
 	int GetPlayerNum() { return player_Num_; }
 
 	int GetTurnNum() { return turnNum_; };
+
+	int GetSaveNum() { return saveNum_; };
 
 	void SetIsClear(int _player_num, bool _isClear)
 	{

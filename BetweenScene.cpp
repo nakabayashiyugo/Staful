@@ -14,8 +14,9 @@ BetweenScene::BetweenScene(GameObject* parent)
 	: GameObject(parent, "BetweenScene"), 
 	hPlayer1_(-1), hPlayer2_(-1),
 	hLogoEmptyCourse_(-1), hLogoCourse1_(-1), hLogoCourse2_(-1),
-	hLogoMapCreate_(-1),
-	logoPlayerMoveCount_(0), logoCourseMoveCount_(0), logoState_(COURSELOGOSTATE(0))
+	hLogoMapCreate_(-1), hLogoPlay_(-1),
+	logoPlayerMoveCount_(0), logoCourseMoveCount_(0), logoState_(COURSELOGOSTATE(0)),
+	curScene_(SCENESTATE(0))
 {
 	pST_ = (SceneTransition*)FindObject("SceneTransition");
 	pST_->SetNextScene();
@@ -27,13 +28,28 @@ void BetweenScene::Initialize()
 	assert(hPlayer1_ >= 0);
 	hPlayer2_ = Image::Load("Assets\\Logo_Player2.png");
 	assert(hPlayer2_ >= 0);
+
 	hLogoCourse1_ = Image::Load("Assets\\Logo_CourseA.png");
 	assert(hLogoCourse1_ >= 0);
 	hLogoCourse2_ = Image::Load("Assets\\Logo_CourseB.png");
 	assert(hLogoCourse2_ >= 0);
+	if (pST_->GetTurnNum() % 2 == 0)
+	{
+		int tmp = hLogoCourse1_;
+		hLogoCourse1_ = hLogoCourse2_;
+		hLogoCourse2_ = tmp;
+	}
+	if (pST_->GetSceneState() == SCENE_BETWEEN4_DELAY)
+	{
+		int tmp = hLogoCourse1_;
+		hLogoCourse1_ = hLogoCourse2_;
+		hLogoCourse2_ = tmp;
+	}
 	hLogoMapCreate_ = Image::Load("Assets\\Logo_MapCreate.png");
 	assert(hLogoMapCreate_ >= 0);
-	
+	hLogoPlay_ = Image::Load("Assets\\Logo_Let'sPlay.png");
+	assert(hLogoPlay_ >= 0);
+
 	tLogoStandard_.position_ = XMFLOAT3(0.5f, 0.3f, 0);
 	tLogoStandard_.scale_ = XMFLOAT3(0.5f, 0.5f, 1);
 
@@ -51,8 +67,8 @@ void BetweenScene::Initialize()
 
 void BetweenScene::Update()
 {
-	SCENESTATE curScene = (SCENESTATE)pST_->GetSceneState();
-	switch (curScene)
+	curScene_ = (SCENESTATE)pST_->GetSceneState();
+	switch (curScene_)
 	{
 	case SCENE_BETWEEN1_DELAY:
 		Player1MapEditUpdate();
@@ -87,9 +103,16 @@ void BetweenScene::Draw()
 	Image::SetTransform(hPlayer2_, tPlayer2_);
 	Image::Draw(hPlayer2_);
 	
-
-	Image::SetTransform(hLogoMapCreate_, tLogoMapCreate_);
-	Image::Draw(hLogoMapCreate_);
+	if (curScene_ < SCENE_BETWEEN3_DELAY)
+	{
+		Image::SetTransform(hLogoMapCreate_, tLogoMapCreate_);
+		Image::Draw(hLogoMapCreate_);
+	}
+	else if (logoState_ == STATE_MOVE2)
+	{
+		Image::SetTransform(hLogoPlay_, tLogoMapCreate_);
+		Image::Draw(hLogoPlay_);
+	}
 }
 
 void BetweenScene::Release()
@@ -209,7 +232,7 @@ void BetweenScene::Player1PlayUpdate()
 	case STATE_MOVE2:
 		logoPlayerMoveCount_ += moveUpdate;
 		tPlayer1_.position_.y = -tLogoStandard_.position_.y + sin(logoPlayerMoveCount_ * PIE / 180) / 10;
-		if (logoPlayerMoveCount_ / moveUpdate >= FPS)
+		if (logoPlayerMoveCount_ / moveUpdate >= FPS * 2)
 		{
 			pST_->SetNextScene();
 			KillMe();
@@ -220,6 +243,14 @@ void BetweenScene::Player1PlayUpdate()
 
 void BetweenScene::Player2PlayUpdate()
 {
+	logoState_ = STATE_MOVE2;
+	logoPlayerMoveCount_ += moveUpdate;
+	tPlayer2_.position_.y = -tLogoStandard_.position_.y + sin(logoPlayerMoveCount_ * PIE / 180) / 10;
+	if (logoPlayerMoveCount_ / moveUpdate >= FPS * 2)
+	{
+		pST_->SetNextScene();
+		KillMe();
+	}
 }
 
 float BetweenScene::EaseInSine(float pos)

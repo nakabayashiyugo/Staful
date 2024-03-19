@@ -7,7 +7,7 @@
 #include "Engine/Text.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0), save_Num_(2), YSIZE(ZSIZE), hTgtgRoute_(-1)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), saveNum_(2), YSIZE(ZSIZE), hTgtgRoute_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -25,22 +25,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 	Texture* pTexture = (Texture*)FindObject("Texture");
 
-	if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1_DELAY && pTrans_->GetTurnNum() % 2 == 0)
-	{
-		save_Num_ += 1;
-	}
-	else if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT2_DELAY && pTrans_->GetTurnNum() % 2 == 0)
-	{
-		save_Num_ -= 1;
-	}
-	else if (pTrans_->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1_DELAY && pTrans_->GetTurnNum() % 2 == 1)
-	{
-		save_Num_ -= 1;
-	}
-	else
-	{
-		save_Num_ += 1;
-	}
+	saveNum_ = pTrans_->GetSaveNum();
 	int mathChangeNumLimitFirst;
 	int mathChangeNumLimitPlus;
 	if (XSIZE >= YSIZE)
@@ -400,7 +385,7 @@ void MapEditScene::Write()
 {
 	std::ofstream write;
 	std::string savefile = "StageSaveFile\\saveMath";
-	savefile += std::to_string(save_Num_);
+	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 
 	//  ファイルが開けなかったときのエラー表示
@@ -419,7 +404,7 @@ void MapEditScene::Write()
 
 	//とげとげルート
 	savefile = "StageSaveFile\\tgtgRoute";
-	savefile += std::to_string(save_Num_);
+	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
@@ -442,7 +427,7 @@ void MapEditScene::Read()
 	std::ifstream read;
 	std::string savefile = "StageSaveFile\\saveMath";
 	
-	savefile += std::to_string(save_Num_);
+	savefile += std::to_string(saveNum_);
 	read.open(savefile, std::ios::in);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
@@ -467,7 +452,7 @@ void MapEditScene::Read()
 
 	//とげとげルート
 	savefile = "StageSaveFile\\tgtgRoute";
-	savefile += std::to_string(save_Num_);
+	savefile += std::to_string(saveNum_);
 	read.open(savefile, std::ios::in);
 	if (!read) {
 		std::cout << "ファイルが開けません";

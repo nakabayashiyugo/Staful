@@ -10,7 +10,7 @@
 #include "Player.h"
 
 PlayScene::PlayScene(GameObject* parent)
-	: GameObject(parent, "PlayScene"), table_Change_(false), save_Num_(2)
+	: GameObject(parent, "PlayScene"), table_Change_(false), saveNum_(2)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -18,23 +18,8 @@ PlayScene::PlayScene(GameObject* parent)
 	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
 	player_Num_ = pTrans_->GetPlayerNum();
 	Math_Resize(XSIZE, ZSIZE, &math_);
-
-	if (pTrans_->GetTurnNum() % 2 == 0 && (int)pTrans_->GetSceneState() == SCENESTATE::SCENE_STAGE1_DELAY)
-	{
-		save_Num_ -= 1;
-	}
-	else if (pTrans_->GetTurnNum() % 2 == 0 && (int)pTrans_->GetSceneState() == SCENESTATE::SCENE_STAGE2_DELAY)
-	{
-		save_Num_ += 1;
-	}
-	else if (pTrans_->GetTurnNum() % 2 == 1 && (int)pTrans_->GetSceneState() == SCENESTATE::SCENE_STAGE1_DELAY)
-	{
-		save_Num_ += 1;
-	}
-	else
-	{
-		save_Num_ -= 1;
-	}
+	
+	saveNum_ = pTrans_->GetSaveNum();
 
 	Read();
 }
@@ -78,7 +63,7 @@ void PlayScene::Read()
 	std::ifstream read;
 	std::string openfile = "StageSaveFile\\saveMath";
 
-	openfile += std::to_string(save_Num_);
+	openfile += std::to_string(saveNum_);
 	read.open(openfile, std::ios::in);
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
@@ -103,7 +88,7 @@ void PlayScene::Read()
 
 	//とげとげルート
 	openfile = "StageSaveFile\\tgtgRoute";
-	openfile += std::to_string(save_Num_);
+	openfile += std::to_string(saveNum_);
 	read.open(openfile, std::ios::in);
 	if (!read) {
 		std::cout << "ファイルが開けません";
