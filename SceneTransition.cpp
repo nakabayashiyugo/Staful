@@ -47,15 +47,17 @@ void SceneTransition::Update()
 {
 	switch (sceneState_)
 	{
-	case SCENE_BETWEEN1:turnNum_++; Instantiate<BetweenScene>(this); break;
-	case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
+	case SCENE_BETWEEN1:Instantiate<BetweenScene>(this); break;
+	case SCENE_MAPEDIT1:turnNum_++; Instantiate<MapEditScene>(this); break;
 	case SCENE_BETWEEN2:Instantiate<BetweenScene>(this); break;
 	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
+	case SCENE_BETWEEN3:Instantiate<BetweenScene>(this); break;
 	case SCENE_STAGE1:
 		player_Num_ = 0;
 		pPS_[player_Num_]->Instantiate<PlayScene>(this);
 		pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
 		break;
+	case SCENE_BETWEEN4:Instantiate<BetweenScene>(this); break;
 	case SCENE_STAGE2:
 		player_Num_ = 1;
 		pPS_[player_Num_]->Instantiate<PlayScene>(this);
@@ -64,7 +66,7 @@ void SceneTransition::Update()
 	case SCENE_TURNEND:
 		if (isClear_Player_[0] == isClear_Player_[1])
 		{
-			sceneState_ = SCENE_MAPEDIT1;
+			sceneState_ = SCENESTATE(0);
 			isClear_Player_[0] = isClear_Player_[1] = false;
 		}
 		else

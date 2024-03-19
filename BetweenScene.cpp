@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include "BetweenScene.h"
 #include "SceneTransition.h"
 
@@ -12,8 +14,11 @@ BetweenScene::BetweenScene(GameObject* parent)
 	: GameObject(parent, "BetweenScene"), 
 	hPlayer1_(-1), hPlayer2_(-1),
 	hLogoEmptyCourse_(-1), hLogoCourse1_(-1), hLogoCourse2_(-1),
-	logoPlayerMoveCount_(0), logoCourseMoveCount_(0)
+	hLogoMapCreate_(-1),
+	logoPlayerMoveCount_(0), logoCourseMoveCount_(0), logoState_(COURSELOGOSTATE(0))
 {
+	pST_ = (SceneTransition*)FindObject("SceneTransition");
+	pST_->SetNextScene();
 }
 
 void BetweenScene::Initialize()
@@ -22,13 +27,12 @@ void BetweenScene::Initialize()
 	assert(hPlayer1_ >= 0);
 	hPlayer2_ = Image::Load("Assets\\Logo_Player2.png");
 	assert(hPlayer2_ >= 0);
-	hLogoEmptyCourse_ = Image::Load("Assets\\Logo_EmptyCourse.png");
-	assert(hLogoEmptyCourse_ >= 0);
-	hLogoCourse1_ = Image::Load("Assets\\Logo_Course1.png");
+	hLogoCourse1_ = Image::Load("Assets\\Logo_CourseA.png");
 	assert(hLogoCourse1_ >= 0);
-	hLogoCourse2_ = Image::Load("Assets\\Logo_Course2.png");
+	hLogoCourse2_ = Image::Load("Assets\\Logo_CourseB.png");
 	assert(hLogoCourse2_ >= 0);
-
+	hLogoMapCreate_ = Image::Load("Assets\\Logo_MapCreate.png");
+	assert(hLogoMapCreate_ >= 0);
 	
 	tLogoStandard_.position_ = XMFLOAT3(0.5f, 0.3f, 0);
 	tLogoStandard_.scale_ = XMFLOAT3(0.5f, 0.5f, 1);
@@ -41,44 +45,55 @@ void BetweenScene::Initialize()
 	tLogoCourse1_.scale_ = tLogoStandard_.scale_;
 	tLogoCourse2_.position_ = XMFLOAT3(-tLogoStandard_.position_.x, tLogoStandard_.position_.y, tLogoStandard_.position_.z);
 	tLogoCourse2_.scale_ = tLogoStandard_.scale_;
+
+	tLogoMapCreate_.position_.y = -0.55f;
 }
 
 void BetweenScene::Update()
 {
-	SceneTransition* pST = (SceneTransition*)FindObject("SceneTransition");
-	SCENESTATE curScene = (SCENESTATE)pST->GetSceneState();
+	SCENESTATE curScene = (SCENESTATE)pST_->GetSceneState();
 	switch (curScene)
 	{
-	case SCENE_BETWEEN1:
+	case SCENE_BETWEEN1_DELAY:
 		Player1MapEditUpdate();
 		break;
-	case SCENE_BETWEEN2:
+	case SCENE_BETWEEN2_DELAY:
 		Player2MapEditUpdate();
 		break;
-	case SCENE_BETWEEN3:
+	case SCENE_BETWEEN3_DELAY:
 		Player1PlayUpdate();
 		break;
-	case SCENE_BETWEEN4:
-		Player1PlayUpdate();
+	case SCENE_BETWEEN4_DELAY:
+		Player2PlayUpdate();
 		break;
 	}
 }
 
 void BetweenScene::Draw()
 {
+	Image::SetTransform(hLogoCourse1_, tLogoCourse1_);
+	Image::Draw(hLogoCourse1_);
+	Image::SetTransform(hLogoCourse2_, tLogoCourse2_);
+	Image::Draw(hLogoCourse2_);
+
+	const float hpRectx = 112;
+	const float hpRecty = 17;
+	const float hpRectWidth = 280;
+	const float hpRectHeight = 75;
+	Image::SetRect(hPlayer1_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
 	Image::SetTransform(hPlayer1_, tPlayer1_);
 	Image::Draw(hPlayer1_);
+	Image::SetRect(hPlayer2_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
 	Image::SetTransform(hPlayer2_, tPlayer2_);
 	Image::Draw(hPlayer2_);
-	Image::SetTransform(hLogoEmptyCourse_, tLogoCourse1_);
-	Image::Draw(hLogoEmptyCourse_);
-	Image::SetTransform(hLogoEmptyCourse_, tLogoCourse2_);
-	Image::Draw(hLogoEmptyCourse_);
+	
+
+	Image::SetTransform(hLogoMapCreate_, tLogoMapCreate_);
+	Image::Draw(hLogoMapCreate_);
 }
 
 void BetweenScene::Release()
 {
-	KillMe();
 }
 
 void BetweenScene::Player1MapEditUpdate()
@@ -86,23 +101,121 @@ void BetweenScene::Player1MapEditUpdate()
 	logoPlayerMoveCount_ += moveUpdate;
 	tPlayer1_.position_.y = -tLogoStandard_.position_.y + sin(logoPlayerMoveCount_ * PIE / 180) / 10;
 
-	if (logoPlayerMoveCount_ / moveUpdate >= FPS)
+	float ease = 0;
+
+	const float decMove = 5;
+
+	switch (logoState_)
 	{
-		logoCourseMoveCount_ += 0.01f;
-		float ease = EaseInSine(logoCourseMoveCount_);
-		if (ease <= 1)
+	case STATE_WAIT:
+		if (logoPlayerMoveCount_ / moveUpdate >= FPS)
 		{
-			tLogoCourse1_.position_.x = tLogoStandard_.position_.x * (1 - ease);
+			logoState_ = STATE_MOVE1;
 		}
+		break;
+	case STATE_MOVE1:
+		logoCourseMoveCount_ += 0.01f;
+		ease = EaseInSine(logoCourseMoveCount_);
+		tLogoCourse1_.position_.x = tLogoStandard_.position_.x * (1 - ease);
+		if (ease > 1)
+		{
+			logoState_ = STATE_MOVE2;
+			logoCourseMoveCount_ = 0;
+		}
+		break;
+	case STATE_MOVE2:
+		logoCourseMoveCount_ += 0.01f;
+		ease = EaseInOutBack(logoCourseMoveCount_);
+		tLogoCourse1_.position_.y += ease / decMove;
+		if (ease > 1)
+		{
+			pST_->SetNextScene();
+			KillMe();
+		}
+		break;
 	}
 }
 
 void BetweenScene::Player2MapEditUpdate()
 {
+	logoPlayerMoveCount_ += moveUpdate;
+	tPlayer2_.position_.y = -tLogoStandard_.position_.y + sin(logoPlayerMoveCount_ * PIE / 180) / 10;
+
+	float ease = 0;
+
+	const float decMove = 5;
+
+	switch (logoState_)
+	{
+	case STATE_WAIT:
+		if (logoPlayerMoveCount_ / moveUpdate >= FPS)
+		{
+			logoState_ = STATE_MOVE1;
+		}
+		break;
+	case STATE_MOVE1:
+		logoCourseMoveCount_ += 0.01f;
+		ease = EaseInSine(logoCourseMoveCount_);
+		tLogoCourse2_.position_.x = -tLogoStandard_.position_.x * (1 - ease);
+		if (ease > 1)
+		{
+			logoState_ = STATE_MOVE2;
+			logoCourseMoveCount_ = 0;
+		}
+		break;
+	case STATE_MOVE2:
+		logoCourseMoveCount_ += 0.01f;
+		ease = EaseInOutBack(logoCourseMoveCount_);
+		tLogoCourse2_.position_.y += ease / decMove;
+		if (ease > 1)
+		{
+			pST_->SetNextScene();
+			KillMe();
+		}
+		break;
+	}
 }
 
 void BetweenScene::Player1PlayUpdate()
 {
+	float decMove = 5;
+	float ease = 0;
+	switch (logoState_)
+	{
+	case STATE_WAIT:
+		logoCourseMoveCount_ += 0.01f;
+		ease = EaseInOutBack(logoCourseMoveCount_);
+		tLogoCourse1_.position_.y += ease / decMove;
+		tLogoCourse2_.position_.y += ease / decMove;
+		if (logoCourseMoveCount_ > 1)
+		{
+			logoState_ = STATE_MOVE1;
+			logoCourseMoveCount_ = 0;
+			float tmp = tLogoCourse1_.position_.x;
+			tLogoCourse1_.position_.x = tLogoCourse2_.position_.x;
+			tLogoCourse2_.position_.x = tmp;
+		}
+		break;
+	case STATE_MOVE1:
+		logoCourseMoveCount_ += 0.01f;
+		ease = EaseInSine(logoCourseMoveCount_);
+		tLogoCourse1_.position_.y = (1 - ease) + 0.3f;
+		tLogoCourse2_.position_.y = (1 - ease) + 0.3f;
+		if (logoCourseMoveCount_ > 1)
+		{
+			logoState_ = STATE_MOVE2;
+		}
+		break;
+	case STATE_MOVE2:
+		logoPlayerMoveCount_ += moveUpdate;
+		tPlayer1_.position_.y = -tLogoStandard_.position_.y + sin(logoPlayerMoveCount_ * PIE / 180) / 10;
+		if (logoPlayerMoveCount_ / moveUpdate >= FPS)
+		{
+			pST_->SetNextScene();
+			KillMe();
+		}
+		break;
+	}
 }
 
 void BetweenScene::Player2PlayUpdate()
@@ -112,4 +225,19 @@ void BetweenScene::Player2PlayUpdate()
 float BetweenScene::EaseInSine(float pos)
 {
 	return 1 - cos((pos * PIE) / 2);
+}
+
+float BetweenScene::EaseInOutBack(float pos)
+{
+	const float c1 = 1.70158;
+	const float c2 = c1 * 1.525;
+
+	if (pos < 0.5)
+	{
+		return (pow(2 * pos, 2) * ((c2 + 1) * 2 * pos - c2)) / 2;
+	}
+	else
+	{
+		return (pow(2 * pos - 2, 2) * ((c2 + 1) * (pos * 2 - 2) + c2) + 2) / 2;
+	}
 }

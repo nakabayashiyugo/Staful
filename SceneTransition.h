@@ -6,15 +6,19 @@ class PlayScene;
 enum SCENESTATE
 {
 	SCENE_BETWEEN1 = 0,
+	SCENE_BETWEEN1_DELAY,
 	SCENE_MAPEDIT1,
 	SCENE_MAPEDIT1_DELAY,
 	SCENE_BETWEEN2,
+	SCENE_BETWEEN2_DELAY,
 	SCENE_MAPEDIT2,
 	SCENE_MAPEDIT2_DELAY,
 	SCENE_BETWEEN3,
+	SCENE_BETWEEN3_DELAY,
 	SCENE_STAGE1,
 	SCENE_STAGE1_DELAY,
 	SCENE_BETWEEN4,
+	SCENE_BETWEEN4_DELAY,
 	SCENE_STAGE2,
 	SCENE_STAGE2_DELAY,
 	SCENE_TURNEND,
@@ -73,4 +77,6 @@ public:
 	void SetIsFinished(bool _isfinished) { isFinished_ = _isfinished; }
 
 	void Write();
+
+	void SetNextScene() { sceneState_ = (SCENESTATE)((int)sceneState_ + 1); }
 };
