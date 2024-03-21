@@ -132,15 +132,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             static bool isDialog = false;
             if (((SceneManager*)pRootJob->FindChildObject("SceneManager"))->GetCurrentSceneID() == SCENE_ID_TRANSITION)
             {
-                if ((((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1_DELAY ||
-                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT2_DELAY) &&
+                if ((((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1 ||
+                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT2) &&
                     !isDialog)
                 {
                     HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
                     isDialog = true;
                 }
-                else if(((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT1_DELAY &&
-                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT2_DELAY)
+                else if(((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT1 &&
+                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT2)
                 {
                     isDialog = false;
                 }

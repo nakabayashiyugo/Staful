@@ -17,8 +17,6 @@ MapEditScene::MapEditScene(GameObject* parent)
 	XSIZE =  (int)pTrans_->GetMathSize_x();
 	YSIZE =  (int)pTrans_->GetMathSize_z();
 
-	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
-
 	Math_Resize(XSIZE, YSIZE, &math_);
 	Math_Resize(XSIZE, YSIZE, &math_origin_);
 	Math_Resize(XSIZE, YSIZE, &isConvRot_);
@@ -370,8 +368,11 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 					}
 				}
 			}
-			if(startFlg && goalFlg)	Write(); 
-			EndDialog(hDlg, 0);
+			if (startFlg && goalFlg)
+			{
+				Write();
+				EndDialog(hDlg, 0);
+			}
 			break;
 		default: break;
 		}
@@ -418,7 +419,7 @@ void MapEditScene::Write()
 	write.close();  //ƒtƒ@ƒCƒ‹‚ð•Â‚¶‚é
 
 	
-	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+	pTrans_->SetNextScene();
 	KillMe();
 }
 

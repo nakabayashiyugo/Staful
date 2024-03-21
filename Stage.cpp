@@ -15,7 +15,7 @@
 
 #include "resource.h"
 
-const int MAKEHOLETIME = 2;
+const int MAKEHOLETIME = 1;
 const int FPS = 60;
 
 Stage::Stage(GameObject* parent)

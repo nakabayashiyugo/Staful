@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "../ThankyouScene.h"
 #include "../TitleScene.h"
 #include "../PlayScene.h"
 #include "../MapEditScene.h"
@@ -47,6 +48,9 @@ void SceneManager::Update()
 			break;
 		case SCENE_ID_TITLE:
 			Instantiate<TitleScene>(this);
+			break;
+		case SCENE_ID_THANK:
+			Instantiate<ThankyouScene>(this);
 			break;
 		}
 		currentSceneID_ = nextSceneID_;

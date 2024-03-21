@@ -15,7 +15,7 @@ PlayScene::PlayScene(GameObject* parent)
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
 	ZSIZE = (int)pTrans_->GetMathSize_z();
-	pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+
 	player_Num_ = pTrans_->GetPlayerNum();
 	Math_Resize(XSIZE, ZSIZE, &math_);
 	
@@ -39,13 +39,13 @@ void PlayScene::Update()
 	pPlayer_ = (Player*)FindObject("Player");
 	if (pPlayer_->Is_Goal())
 	{
-		pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+		pTrans_->SetNextScene();
 		pTrans_->SetIsClear(player_Num_, true);
 		KillMe();
 	}
 	if (pPlayer_->GetFailed())
 	{
-		pTrans_->SetSceneState(pTrans_->GetSceneState() + 1);
+		pTrans_->SetNextScene();
 		KillMe();
 	}
 }

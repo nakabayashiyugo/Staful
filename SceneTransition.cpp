@@ -7,10 +7,14 @@
 #include "Engine/Image.h"
 #include "Engine/Input.h"
 
+const int FPS = 60;
+
 SceneTransition::SceneTransition(GameObject* parent)
-	: GameObject(parent, "SceneTransition"), sceneState_(SCENE_MAPEDIT1), turnNum_(0),
-	isClear_Player_{ false, false }, isFinished_(false), hPlayer1_(-1), hPlayer2_(-1),
-	hWin_(-1), hLose_(-1), player_Num_(0), saveNum_(1)
+	: GameObject(parent, "SceneTransition"), 
+	sceneState_(SCENE_MAPEDIT1), prevSceneState_(SCENE_TURNEND),
+	turnNum_(0), player_Num_(0), saveNum_(1),
+	isClear_Player_{ false, false }, isFinished_(false), 
+	hPlayer1_(-1), hPlayer2_(-1), hWin_(-1), hLose_(-1)
 {
 	XSIZE = (rand() % 15) + 5;
 	ZSIZE = (rand() % 15) + 5;
@@ -46,56 +50,56 @@ void SceneTransition::Initialize()
 
 void SceneTransition::Update()
 {
-	switch (sceneState_)
+	if (sceneState_ != prevSceneState_)
 	{
-	case SCENE_BETWEEN1:
-		turnNum_++; 
-		if (turnNum_ % 2 == 0)	saveNum_ = 2;
-		else saveNum_ = 1;
-		Instantiate<BetweenScene>(this); 
-		break;
-	case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
-	case SCENE_BETWEEN2:
-		if (turnNum_ % 2 == 0)	saveNum_ = 1;
-		else saveNum_ = 2;
-		Instantiate<BetweenScene>(this); 
-		break;
-	case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
-	case SCENE_BETWEEN3:Instantiate<BetweenScene>(this); break;
-	case SCENE_STAGE1:
-		if (turnNum_ % 2 == 0)	saveNum_ = 1;
-		else saveNum_ = 2;
-		player_Num_ = 0;
-		pPS_[player_Num_]->Instantiate<PlayScene>(this);
-		pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
-		break;
-	case SCENE_BETWEEN4:Instantiate<BetweenScene>(this); break;
-	case SCENE_STAGE2:
-		if (turnNum_ % 2 == 0)	saveNum_ = 2;
-		else saveNum_ = 1;
-		player_Num_ = 1;
-		pPS_[player_Num_]->Instantiate<PlayScene>(this);
-		pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
-		break;
-	case SCENE_TURNEND:
-		if (isClear_Player_[0] == isClear_Player_[1])
+		switch (sceneState_)
 		{
-			sceneState_ = SCENESTATE(0);
-			isClear_Player_[0] = isClear_Player_[1] = false;
-		}
-		else
-		{
-			isFinished_ = true;
-			if (Input::IsKeyDown(DIK_SPACE))
+		case SCENE_BETWEEN1:
+			turnNum_++;
+			if (turnNum_ % 2 == 0)	saveNum_ = 2;
+			else saveNum_ = 1;
+			Instantiate<BetweenScene>(this);
+			break;
+		case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
+		case SCENE_BETWEEN2:
+			if (turnNum_ % 2 == 0)	saveNum_ = 1;
+			else saveNum_ = 2;
+			Instantiate<BetweenScene>(this);
+			break;
+		case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
+		case SCENE_BETWEEN3:Instantiate<BetweenScene>(this); break;
+		case SCENE_STAGE1:
+			if (turnNum_ % 2 == 0)	saveNum_ = 1;
+			else saveNum_ = 2;
+			player_Num_ = 0;
+			pPS_[player_Num_]->Instantiate<PlayScene>(this);
+			pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
+			break;
+		case SCENE_BETWEEN4:Instantiate<BetweenScene>(this); break;
+		case SCENE_STAGE2:
+			if (turnNum_ % 2 == 0)	saveNum_ = 2;
+			else saveNum_ = 1;
+			player_Num_ = 1;
+			pPS_[player_Num_]->Instantiate<PlayScene>(this);
+			pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
+			break;
+		case SCENE_TURNEND:
+			if (isClear_Player_[0] == isClear_Player_[1])
 			{
-				SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
-				pSM->ChangeScene(SCENE_ID_TITLE);
+				sceneState_ = SCENESTATE(0);
+				isClear_Player_[0] = isClear_Player_[1] = false;
+				return;
 			}
+			else
+			{
+				isFinished_ = true;
+			}
+			break;
+		default:
+			break;
 		}
-		break;
-	default:
-		break;
 	}
+	prevSceneState_ = sceneState_;
 }
 
 void SceneTransition::Draw()
@@ -104,19 +108,34 @@ void SceneTransition::Draw()
 	player.position_ = XMFLOAT3(0.7, 0.8, 0);
 	switch (sceneState_)
 	{
-	case SCENE_MAPEDIT1_DELAY:
-	case SCENE_STAGE1_DELAY:
+	case SCENE_MAPEDIT1:
+	case SCENE_STAGE1:
 		Image::SetTransform(hPlayer1_, player);
 		Image::Draw(hPlayer1_);
 		break;
-	case SCENE_MAPEDIT2_DELAY:
-	case SCENE_STAGE2_DELAY:
+	case SCENE_MAPEDIT2:
+	case SCENE_STAGE2:
 		Image::SetTransform(hPlayer2_, player);
 		Image::Draw(hPlayer2_);
 		break;
 	}
 	if (isFinished_)
 	{
+		const int finishTime = 3;
+		static int cnt = 0;
+		cnt++;
+		if (cnt / FPS >= finishTime)
+		{
+			SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
+			pSM->ChangeScene(SCENE_ID_THANK);
+		}
+
+		const float hpRectx = 112;
+		const float hpRecty = 17;
+		const float hpRectWidth = 280;
+		const float hpRectHeight = 75;
+		Image::SetRect(hPlayer1_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
+		Image::SetRect(hPlayer2_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
 		player.position_ = XMFLOAT3(-0.3, 0.1, 0);
 		Image::SetTransform(hPlayer1_, player);
 		player.position_ = XMFLOAT3(0.3, 0.1, 0);

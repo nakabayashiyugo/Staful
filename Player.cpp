@@ -338,7 +338,7 @@ MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
 
 	ret = math_[centerPos_.x][centerPos_.z];
 	//HOLLチェック
-	ret = HollCheck(_pos);
+	ret = HollCheck(centerPos_);
 
 	//WALLチェック
 	WallCheck(_pos);
@@ -412,21 +412,14 @@ void Player::FallUpdate()
 
 void Player::DeadUpdate()
 {
-	static Timer hitStopTimer = Timer(hitStopTime_);
-
-	hitStopTimer.Update();
-	if (hitStopTimer.isTimeUpped())
+	if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
+		abs(startPos_.z - transform_.position_.z) <= 0.01f)
 	{
-		if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
-			abs(startPos_.z - transform_.position_.z) <= 0.01f)
-		{
-			stageState = STATE_START;
-			hitStopTimer.TimeReset();
-		}
-		transform_.position_.x = transform_.position_.x + (startPos_.x - transform_.position_.x) / 10;
-		transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
-		transform_.position_.y = 10;
+		stageState = STATE_START;
 	}
+	transform_.position_.x = transform_.position_.x + (startPos_.x - transform_.position_.x) / 10;
+	transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
+	transform_.position_.y = 10;
 }
 
 void Player::SetAnimFramerate()
@@ -459,10 +452,11 @@ void Player::SetAnimFramerate()
 
 MATHDEDAIL Player::HollCheck(XMFLOAT3 _pos)
 {
-	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z - (1.0f - MODELSIZE));
-	XMFLOAT3 leftFront = XMFLOAT3(_pos.x - (1.0f - MODELSIZE), _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x - (1.0f - MODELSIZE), _pos.y, _pos.z - (1.0f - MODELSIZE));
+	const float colRange = 0.3f;
+	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + colRange, _pos.y, _pos.z + colRange);
+	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + colRange, _pos.y, _pos.z);
+	XMFLOAT3 leftFront = XMFLOAT3(_pos.x, _pos.y, _pos.z + colRange);
+	XMFLOAT3 leftBack = XMFLOAT3(_pos.x, _pos.y, _pos.z);
 
 	if (Is_InSide_Table(rightFront) &&
 		math_[rightFront.x][rightFront.z].mathType_ != MATH_WALL &&
