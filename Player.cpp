@@ -125,7 +125,8 @@ void Player::Draw()
 	tGage_.position_ =
 		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
 				 timerPos.y, 0);
-	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) / 100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
+	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) / 
+						100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
 		, timerScale.y, timerScale.z);
 	
 

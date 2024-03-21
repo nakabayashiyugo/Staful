@@ -237,10 +237,12 @@ void MapEditScene::Update()
 					}
 					itr++;
 				}
+				//‚Æ‚°‚Æ‚°ƒ‹[ƒg‚Ì‘¾‚³
 				const int tgtgRouteThick = 5;
 				//cˆÚ“®
 				if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
 				{
+					
 					itr->route_.scale_ =
 						XMFLOAT3(math_[0][0].mathPos_.scale_.x / tgtgRouteThick,
 							math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y), 0);
