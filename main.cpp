@@ -15,6 +15,7 @@
 #include "MapEditScene.h"
 #include "Stage.h"
 #include "SceneTransition.h"
+#include "Player.h"
 
 //リンカ
 #pragma comment(lib, "d3d11.lib")
@@ -25,6 +26,7 @@ const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
 const char* GAME_TITLE = "サンプルゲーム";
 const int WINDOW_WIDTH = 1200;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 900; //ウィンドウの高さ
+const int FPS = 60;
 
 RootJob* pRootJob = nullptr;
 
@@ -129,23 +131,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
         //メッセージなし
         else
         {
-            static bool isDialog = false;
-            if (((SceneManager*)pRootJob->FindChildObject("SceneManager"))->GetCurrentSceneID() == SCENE_ID_TRANSITION)
-            {
-                if ((((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1 ||
-                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT2) &&
-                    !isDialog)
-                {
-                    HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
-                    isDialog = true;
-                }
-                else if(((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT1 &&
-                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT2)
-                {
-                    isDialog = false;
-                }
-            }
-
             timeBeginPeriod(1);
 
             static DWORD countFps = 0;
@@ -165,13 +150,58 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
                 startTime = nowTime;
             }
 
-            if ((nowTime - lastUpdateTime) * 60 <= 1000)
+            if ((nowTime - lastUpdateTime) * FPS <= 1000)
             {
                 continue;
             }
             lastUpdateTime = nowTime;
 
             countFps++;
+
+            
+            static bool isDialog = false;
+            if (((SceneManager*)pRootJob->FindChildObject("SceneManager"))->GetCurrentSceneID() == SCENE_ID_TRANSITION)
+            {
+                //ダイアログ出す
+                if ((((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT1 ||
+                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_MAPEDIT2) &&
+                    !isDialog)
+                {
+                    HWND hDlg = CreateDialog(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, (DLGPROC)DialogProc);
+                    isDialog = true;
+                }
+                else if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT1 &&
+                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() != SCENESTATE::SCENE_MAPEDIT2)
+                {
+                    isDialog = false;
+                }
+
+                //ヒットストップ
+                if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_STAGE1 ||
+                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_STAGE2)
+                {
+                    static int cnt = 0;
+                    auto pl = ((Player*)pRootJob->FindChildObject("Player"));
+                    if (pl != nullptr)
+                    {
+                        if (pl->GetHitStop())
+                        {
+                            cnt++;
+                            if (((Player*)pRootJob->FindChildObject("Player"))->GetHitStopTime() <= cnt / FPS)
+                            {
+                                pl->SetHitStop(false);
+                                cnt = 0;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                }
+            }
+
+
 
             timeEndPeriod(1);
 

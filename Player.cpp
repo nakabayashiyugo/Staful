@@ -29,7 +29,7 @@ Player::Player(GameObject* parent)
 	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
 	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
 	isGoal_(false),
-	hitStopTime_(1.0f)
+	hitStopTime_(0.2f), isHitStop_(false)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -406,13 +406,20 @@ void Player::FallUpdate()
 	}
 	if (transform_.position_.y < -1.0f)
 	{
-		playerState_ = STATE_DEAD;
+		ReturnToStartMath();
 		return;
 	}
 }
 
 void Player::DeadUpdate()
 {
+
+	ReturnToStartMath();
+}
+
+void Player::ReturnToStartMath()
+{
+	playerState_ = STATE_DEAD;
 	if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
 		abs(startPos_.z - transform_.position_.z) <= 0.01f)
 	{
@@ -564,5 +571,6 @@ void Player::OnCollision(GameObject* pTarget)
 	if (pTarget->GetObjectName() == "Togetoge")
 	{
 		playerState_ = STATE_DEAD;
+		isHitStop_ = true;
 	}
 }

@@ -254,6 +254,7 @@ void MapEditScene::Update()
 						itr->route_.position_.y += (math_[0][0].mathPos_.scale_.y) / 2;
 					}
 					itr->destPos_.y = tgtgRouteMathUp.y;
+					itr->destPos_.x = tgtgRouteMathDown.x;
 				}
 				//‰¡ˆÚ“®
 				else
@@ -269,6 +270,7 @@ void MapEditScene::Update()
 						itr->route_.position_.x += (math_[0][0].mathPos_.scale_.x) / 2;
 					}
 					itr->destPos_.x = tgtgRouteMathUp.x;
+					itr->destPos_.y = tgtgRouteMathDown.y;
 				}
 
 				if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)

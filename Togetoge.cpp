@@ -34,7 +34,7 @@ void Togetoge::Update()
 	SphereCollider* pSC = new SphereCollider(0.4);
 	this->AddCollider(pSC);
 
-	moveCount_ += 0.1f;
+	moveCount_ += 0.5f;
 	transform_.position_.x = initPos_.x + (destPos_.x - initPos_.x) * abs(sin(moveCount_ * PIE / 180));
 	transform_.position_.z = initPos_.z + (destPos_.z - initPos_.z) * abs(sin(moveCount_ * PIE / 180));
 }

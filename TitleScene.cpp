@@ -18,8 +18,7 @@ void TitleScene::Initialize()
 	assert(hStartButton_ >= 0);
 	hStaful_ = Image::Load("Assets\\Logo_Staful.png");
 	assert(hStaful_ >= 0);
-	/*hDice_ = Model::Load("Assets\\Dice.fbx");
-	assert(hDice_ >= 0);*/
+
 }
 
 void TitleScene::Update()

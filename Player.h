@@ -27,13 +27,18 @@ class Player
 	:public GameObject, StageOrigin
 {
 	int hModel_;
+	//時間ゲージの画像
 	int hFrame_, hGage_, hFrameOutline_;
 	int hTime_;
-
+	//時間ゲージの画像のトランスフォーム
 	Transform tFrame_, tGage_, tFrameOutline_;
 	Transform tTime_;
 
+	//クリアしたか
 	bool isGoal_;
+	//ヒットストップの時間
+	float hitStopTime_;
+	bool isHitStop_;
 
 	PlayScene* pPlayScene_;
 
@@ -68,7 +73,6 @@ class Player
 	//タイマー
 	Timer* pTimer_;
 
-	float hitStopTime_;
 public:
 	Player(GameObject* parent);
 
@@ -91,6 +95,11 @@ public:
 	void JampUpdate();
 	void FallUpdate();
 	void DeadUpdate();
+	void ReturnToStartMath();
+
+	float GetHitStopTime() { return hitStopTime_; }
+	bool GetHitStop() { return isHitStop_; }
+	void SetHitStop(bool _ishit) { isHitStop_ = _ishit; }
 
 	void SetAnimFramerate();
 
@@ -113,6 +122,7 @@ public:
 		}
 		return false;
 	}
+	PLAYER_STATE GetPlayerState() { return playerState_; }
 
 	void OnCollision(GameObject* pTarget) override;
 };
