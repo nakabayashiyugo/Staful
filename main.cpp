@@ -180,7 +180,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
                 if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_STAGE1 ||
                     ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_STAGE2)
                 {
-                    static int cnt = 0;
+                    static float cnt = 0;
                     auto pl = ((Player*)pRootJob->FindChildObject("Player"));
                     if (pl != nullptr)
                     {

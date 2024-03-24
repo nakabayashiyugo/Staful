@@ -1,16 +1,16 @@
 #pragma once
 #include "Engine/GameObject.h"
 
+class Button;
+
 class TitleScene
 	:public GameObject
 {
 	int hStartButton_, hStaful_;
-	int hDice_;
 
 	Transform tStartButton_, tStaful_;
-	XMFLOAT3 mousePos_;
 
-	bool isClick_;
+	Button* pStartButton_;
 public:
 	TitleScene(GameObject* parent);
 

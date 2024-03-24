@@ -105,30 +105,10 @@ void Player::Update()
 
 void Player::Draw()
 { 
-	//transform_.scale_ = XMFLOAT3(0.5f, 0.5f, 0.5f);
-	
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 
-	//ŽžŠÔƒQ[ƒW
-	XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
-	XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
-
-	tFrame_.position_ = 
-		XMFLOAT3(timerPos.x, timerPos.y, 0);
-	tFrame_.scale_ = timerScale;
-
-	tFrameOutline_.position_ = 
-		XMFLOAT3(timerPos.x, timerPos.y, 0);
-	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.05f, timerScale.y + 0.05f, timerScale.z);
-
-	tGage_.position_ =
-		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
-				 timerPos.y, 0);
-	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) / 
-						100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
-		, timerScale.y, timerScale.z);
-	
+	TimeGageManagement();
 
 	Image::SetTransform(hGage_, tGage_);
 	Image::SetTransform(hFrame_, tFrame_);
@@ -573,4 +553,26 @@ void Player::OnCollision(GameObject* pTarget)
 		playerState_ = STATE_DEAD;
 		isHitStop_ = true;
 	}
+}
+
+void Player::TimeGageManagement()
+{
+	//ŽžŠÔƒQ[ƒW
+	XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
+	XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
+
+	tFrame_.position_ =
+		XMFLOAT3(timerPos.x, timerPos.y, 0);
+	tFrame_.scale_ = timerScale;
+
+	tFrameOutline_.position_ =
+		XMFLOAT3(timerPos.x, timerPos.y, 0);
+	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.05f, timerScale.y + 0.05f, timerScale.z);
+
+	tGage_.position_ =
+		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
+			timerPos.y, 0);
+	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) /
+		100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
+		, timerScale.y, timerScale.z);
 }

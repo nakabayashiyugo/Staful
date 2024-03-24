@@ -125,4 +125,7 @@ public:
 	PLAYER_STATE GetPlayerState() { return playerState_; }
 
 	void OnCollision(GameObject* pTarget) override;
+
+	//ŠÔƒQ[ƒW
+	void TimeGageManagement();
 };

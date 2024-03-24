@@ -485,7 +485,7 @@ bool MapEditScene::isMathChangeNumLimit()
 		{
 			if (math_[x][y].mathType_ != math_origin_[x][y].mathType_)
 			{
-				if (math_[x][y].mathType_ != MATH_START ||
+				if (math_[x][y].mathType_ != MATH_START &&
 					math_[x][y].mathType_ != MATH_GOAL)
 				{
 					num++;

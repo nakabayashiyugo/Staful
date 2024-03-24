@@ -1,6 +1,8 @@
 #pragma once
 #include "Engine/GameObject.h"
 
+class Button;
+
 class ThankyouScene
 	:public GameObject
 {
@@ -8,6 +10,8 @@ class ThankyouScene
 
 	Transform tReturnTitle_, tThankyou_;
 	XMFLOAT3 mousePos_;
+
+	Button* pReturnButton_;
 public:
 	ThankyouScene(GameObject* parent);
 
