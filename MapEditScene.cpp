@@ -7,7 +7,8 @@
 #include "Engine/Text.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0), saveNum_(2), YSIZE(ZSIZE), hTgtgRoute_(-1)
+	: GameObject(parent, "MapEditScene"), mathtype_(0), saveNum_(2), YSIZE(ZSIZE), hTgtgRoute_(-1),
+	mathChangeNum_(0)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -309,7 +310,8 @@ void MapEditScene::Draw()
 		}
 		itr++;
 	}
-	//pText_->Draw(1, 1, "g");
+	std::string str = std::to_string(mathChangeNum_) + " / " + std::to_string(mathChangeNumLimit_);
+	pText_->Draw(1000, 700, str.c_str());
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
@@ -483,10 +485,15 @@ bool MapEditScene::isMathChangeNumLimit()
 		{
 			if (math_[x][y].mathType_ != math_origin_[x][y].mathType_)
 			{
-				num++;
+				if (math_[x][y].mathType_ != MATH_START ||
+					math_[x][y].mathType_ != MATH_GOAL)
+				{
+					num++;
+				}
 			}
 		}
 	}
+	mathChangeNum_ = num;
 	if (mathChangeNumLimit_ > num)
 	{
 		return false;

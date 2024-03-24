@@ -50,14 +50,14 @@ HRESULT Sprite::Load(std::string filename)
 	return S_OK;
 }
 
-void Sprite::Draw(Transform& transform, RECT rect, float alpha)
+void Sprite::Draw(Transform& transform, RECT rect, float alpha, XMFLOAT3 color)
 {
 	Direct3D::SetShader(SHADER_2D);
 	transform.Calclation();//トランスフォームを計算
 
 	SetBufferToPipeline();
 
-	PassDataToCB(transform, rect, alpha);
+	PassDataToCB(transform, rect, alpha, color);
 }
 
 void Sprite::Release()
@@ -163,7 +163,7 @@ HRESULT Sprite::CreateConstantBuffer()
 	return S_OK;
 }
 
-void Sprite::PassDataToCB(Transform& transform, RECT rect, float alpha)
+void Sprite::PassDataToCB(Transform& transform, RECT rect, float alpha, XMFLOAT3 color)
 {
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
@@ -182,7 +182,7 @@ void Sprite::PassDataToCB(Transform& transform, RECT rect, float alpha)
 	XMMATRIX mTexel = mTexScale * mTexTrans;
 	cb.uvTrans = XMMatrixTranspose(mTexel);
 
-	cb.color = XMFLOAT4(1, 1, 1, alpha);
+	cb.color = XMFLOAT4(color.x, color.y, color.z, alpha);
 
 	Direct3D::pContext_->Map(pConstantBuffer_, 0, D3D11_MAP_WRITE_DISCARD, 0, &pdata);	// GPUからのデータアクセスを止める
 	memcpy_s(pdata.pData, pdata.RowPitch, (void*)(&cb), sizeof(cb));	// データを値を送る

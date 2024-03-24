@@ -9,6 +9,8 @@ class TitleScene
 
 	Transform tStartButton_, tStaful_;
 	XMFLOAT3 mousePos_;
+
+	bool isClick_;
 public:
 	TitleScene(GameObject* parent);
 

@@ -44,7 +44,7 @@ public:
 	Sprite();
 	~Sprite();
 	HRESULT Load(std::string filename);
-	void Draw(Transform& transform, RECT rect, float alpha);
+	void Draw(Transform& transform, RECT rect, float alpha, XMFLOAT3 color);
 	void Release();
 	XMFLOAT3 GetTextureSize() { return texture_size_; }
 
@@ -58,7 +58,7 @@ private:
 
 	HRESULT CreateConstantBuffer();
 
-	void PassDataToCB(Transform& transform, RECT rect, float alpha);
+	void PassDataToCB(Transform& transform, RECT rect, float alpha, XMFLOAT3 color);
 	void SetBufferToPipeline();
 };
 

@@ -14,6 +14,7 @@ class MapEditScene
 	int mathtype_;
 	int saveNum_;
 	int mathChangeNumLimit_;
+	int mathChangeNum_;
 
 	XMFLOAT3 texture_size_;
 

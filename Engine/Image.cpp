@@ -9,6 +9,7 @@ namespace Image
 		std::string fileName_;
 		RECT rect_;
 		float alpha_;
+		XMFLOAT3 color_;
 		XMFLOAT3 size_;
 
 		//コンストラクタ
@@ -17,6 +18,7 @@ namespace Image
 			fileName_ = "";
 			alpha_ = 1.0f;
 			pSprite_ = nullptr;
+			color_ = XMFLOAT3(1, 1, 1);
 		}
 	};
 
@@ -56,7 +58,8 @@ int Image::Load(std::string filename)
 
 void Image::Draw(int hImage)
 {
-	imageList[hImage]->pSprite_->Draw(imageList[hImage]->transform_, imageList[hImage]->rect_, imageList[hImage]->alpha_);
+	imageList[hImage]->pSprite_->
+		Draw(imageList[hImage]->transform_, imageList[hImage]->rect_, imageList[hImage]->alpha_, imageList[hImage]->color_);
 }
 
 void Image::Release(int hImage)
@@ -132,6 +135,15 @@ void Image::SetAlpha(int hImage, int alpha)
 		return;
 	}
 	imageList[hImage]->alpha_ = (float)alpha / 255.0f;
+}
+
+void Image::SetColor(int hImage, XMFLOAT3 color)
+{
+	if (hImage < 0 || hImage >= imageList.size())
+	{
+		return;
+	}
+	imageList[hImage]->color_ = color;
 }
 
 XMFLOAT3 Image::GetTextureSize(int hImage)

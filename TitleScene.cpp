@@ -8,7 +8,7 @@
 
 TitleScene::TitleScene(GameObject* parent)
 	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1),
-	mousePos_(0, 0, 0), hDice_(-1)
+	mousePos_(0, 0, 0), hDice_(-1), isClick_(false)
 {
 }
 
@@ -39,8 +39,13 @@ void TitleScene::Update()
 	if (mousePos_.x >= SBLeft && mousePos_.x <= SBRight &&
 		mousePos_.y >= SBUp && mousePos_.y <= SBDown)
 	{
+		if (Input::IsMouseButtonDown(0))
+		{
+			isClick_ = true;
+		}
 		if (Input::IsMuoseButtonUp(0))
 		{
+			isClick_ = false;
 			SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
 			pSceneManager->ChangeScene(SCENE_ID_TRANSITION);
 		}
@@ -59,6 +64,14 @@ void TitleScene::Draw()
 	tStaful_.position_.y = 0.5f;
 	tStaful_.scale_ = XMFLOAT3(2, 2, 1);
 
+	XMFLOAT3 clickedColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
+	XMFLOAT3 color = XMFLOAT3(1, 1, 1);
+	Image::SetColor(hStartButton_, color);
+	if (isClick_)
+	{
+		Image::SetColor(hStartButton_, clickedColor);
+	}
+	
 	Image::SetTransform(hStartButton_, tStartButton_);
 	Image::SetTransform(hStaful_, tStaful_);
 	Image::Draw(hStartButton_);

@@ -9,13 +9,14 @@ namespace Image
 	void SetTransform(int hImage, Transform transform);
 	int Load(std::string filename);
 	void Draw(int hImage);
-	void Release(int _handle);
+	void Release(int _hImage);
 	void AllRelease();
 
-	void SetRect(int handle, int x, int y, int width, int height);
-	void ResetRect(int handle);
+	void SetRect(int hImage, int x, int y, int width, int height);
+	void ResetRect(int hImage);
 
-	void SetAlpha(int handle, int alpha);
+	void SetAlpha(int hImage, int alpha);
+	void SetColor(int hImage, XMFLOAT3 color);
 
 	XMFLOAT3 GetTextureSize(int hImage);
 }
