@@ -36,17 +36,22 @@ struct TOGETOGEROUTE
 class StageOrigin
 {
 protected:
+	//マスの大きさ
 	const int MATHSIZE = 30;
 
+	//すべてのマスの情報
 	std::vector<std::vector<MATHDEDAIL>> math_;
+	//とげとげが移動する範囲
 	std::vector<TOGETOGEROUTE> tTgtgRoute_;
 
 	SceneTransition* pTrans_;
 
+	//マスの量
 	int XSIZE;
 	int ZSIZE;
 
 public:
+	//マスのサイズ変更
 	void Math_Resize(int _xsize, int _zsize, std::vector<std::vector<MATHDEDAIL>> *_math)
 	{
 		_math->resize(_xsize);
@@ -75,6 +80,7 @@ public:
 			}
 		}
 	}
+	//自分のクラスにあるmath_のvectorへの代入
 	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 	{
 		for (int x = 0; x < XSIZE; x++)

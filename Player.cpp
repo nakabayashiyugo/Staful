@@ -117,9 +117,10 @@ void Player::Draw()
 	Image::Draw(hFrame_);
 	Image::Draw(hFrameOutline_);
 
-
-	tTime_.position_ = XMFLOAT3(-0.1f, 0.8f, 0);
-	tTime_.scale_ = XMFLOAT3(0.5f, 0.5f, 1);
+	const XMFLOAT3 tPos = XMFLOAT3(-0.1f, 0.8f, 0);
+	const XMFLOAT3 tScale = XMFLOAT3(0.5f, 0.5f, 1);
+	tTime_.position_ = tPos;
+	tTime_.scale_ = tScale;
 	Image::SetTransform(hTime_, tTime_);
 	Image::Draw(hTime_);
 }
@@ -558,20 +559,20 @@ void Player::OnCollision(GameObject* pTarget)
 void Player::TimeGageManagement()
 {
 	//ŽžŠÔƒQ[ƒW
-	XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
-	XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
+	const XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
+	const XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
 
 	tFrame_.position_ =
-		XMFLOAT3(timerPos.x, timerPos.y, 0);
+		XMFLOAT3(timerPos.x, timerPos.y, timerPos.z);
 	tFrame_.scale_ = timerScale;
 
 	tFrameOutline_.position_ =
-		XMFLOAT3(timerPos.x, timerPos.y, 0);
+		XMFLOAT3(timerPos.x, timerPos.y, timerPos.z);
 	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.05f, timerScale.y + 0.05f, timerScale.z);
 
 	tGage_.position_ =
 		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
-			timerPos.y, 0);
+			timerPos.y, timerPos.z);
 	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) /
 		100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
 		, timerScale.y, timerScale.z);

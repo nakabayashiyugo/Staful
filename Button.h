@@ -27,7 +27,7 @@ public:
 	//ŠJ•ú
 	void Release() override;
 
-	void SetPictNum(int _pict) { hPict_ = _pict; }
+	void SetPictNum(int _pict);
 	void SetTransform(Transform _transform) { tPict_ = _transform; }
 
 	bool GetIsClicked() { return isClick_; }

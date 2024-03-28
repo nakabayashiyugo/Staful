@@ -11,8 +11,7 @@
 TitleScene::TitleScene(GameObject* parent)
 	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1)
 {
-	pStartButton_ = (Button*)FindObject("Button");
-	pStartButton_->Instantiate<Button>(this);
+	
 	
 }
 
@@ -23,12 +22,14 @@ void TitleScene::Initialize()
 	hStaful_ = Image::Load("Assets\\Logo_Staful.png");
 	assert(hStaful_ >= 0);
 
+	pStartButton_->Instantiate<Button>(this);
 	pStartButton_ = (Button*)FindObject("Button");
 	pStartButton_->SetPictNum(hStartButton_);
 }
 
 void TitleScene::Update()
 {
+	//スタートボタンを押して離したら
 	if (pStartButton_->GetIsReleased())
 	{
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
@@ -39,12 +40,19 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
-	tStartButton_.position_.y = -0.1f;
-	//tStartButton_.scale_ = XMFLOAT3(0.5f, 0.5f, 1);
+	//スタートボタンのトランスフォーム
+	const XMFLOAT3 sbPos = XMFLOAT3(0.0f, -0.1f, 0.0f);
+	const XMFLOAT3 sbScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
+	//Stafulのロゴのトランスフォーム
+	const XMFLOAT3 sPos = XMFLOAT3(0.0f, 0.5f, 0.0f);
+	const XMFLOAT3 sScale = XMFLOAT3(2.0f, 2.0f, 1.0f);
+
+	tStartButton_.position_ = sbPos;
+	tStartButton_.scale_ = sbScale;
 	pStartButton_->SetTransform(tStartButton_);
 
-	tStaful_.position_.y = 0.5f;
-	tStaful_.scale_ = XMFLOAT3(2, 2, 1);
+	tStaful_.position_ = sPos;
+	tStaful_.scale_ = sScale;
 
 	Image::SetTransform(hStaful_, tStaful_);
 	Image::Draw(hStaful_);

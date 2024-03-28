@@ -1,10 +1,13 @@
 #include "MapEditScene.h"
+
 #include "Engine/SceneManager.h"
 #include "Engine/Image.h"
 #include "Engine/Input.h"
+#include "Engine/Text.h"
+
 #include "resource.h"
 #include "SceneTransition.h"
-#include "Engine/Text.h"
+#include "Button.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"), mathtype_(0), saveNum_(2), YSIZE(ZSIZE), hTgtgRoute_(-1),
@@ -12,7 +15,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
-		hPict_[i] = -1;
+		hPict_[i] = -1;	
 	}
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE =  (int)pTrans_->GetMathSize_x();
@@ -25,6 +28,8 @@ MapEditScene::MapEditScene(GameObject* parent)
 	Texture* pTexture = (Texture*)FindObject("Texture");
 
 	saveNum_ = pTrans_->GetSaveNum();
+
+	//障害物のおける制限調整
 	int mathChangeNumLimitFirst;
 	int mathChangeNumLimitPlus;
 	if (XSIZE >= YSIZE)
@@ -37,7 +42,6 @@ MapEditScene::MapEditScene(GameObject* parent)
 		mathChangeNumLimitFirst = YSIZE;
 		mathChangeNumLimitPlus = YSIZE / 2;
 	}
-
 	mathChangeNumLimit_ = mathChangeNumLimitFirst + (pTrans_->GetTurnNum() - 1) * mathChangeNumLimitPlus;
 
 	Read();
@@ -62,7 +66,10 @@ void MapEditScene::Initialize()
 		hPict_[i] = Image::Load(filename[i]);
 		assert(hPict_[i] >= 0);
 	}
+	//テクスチャのサイズ
 	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
+
+	MathButtonInit(imageSize);
 	//マスのサイズ調整
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -84,22 +91,24 @@ void MapEditScene::Initialize()
 
 void MapEditScene::Update()
 {
-	//debug出力例
-	/*std::string resStr = std::to_string(mousePosX) + '\n';
-	OutputDebugString(resStr.c_str());*/
-
+	//カーソルが置かれてるマスの位置
 	static XMFLOAT3 selectMath;
+	//とげとげマスを押した位置
 	static XMFLOAT3 tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
+	//とげとげマスを押してドラッグして話した位置
 	static XMFLOAT3 tgtgRouteMathUp = XMFLOAT3(-1, -1, 0);
 
+	//マウスの位置
 	float mousePosX = Input::GetMousePosition().x;
 	float mousePosY = Input::GetMousePosition().y;
+
 	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2) - MATHSIZE / 2;
 	mousePosY -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
 
 	selectMath.x = mousePosX / MATHSIZE;
 	selectMath.y = mousePosY / MATHSIZE;
 
+	//マウスの位置がマス目から出たら
 	if (selectMath.x < 0 || selectMath.x >= XSIZE ||
 		selectMath.y < 0 || selectMath.y >= YSIZE)
 	{
@@ -117,6 +126,7 @@ void MapEditScene::Update()
 				{
 					if (pTrans_->GetTurnNum() == 1)
 					{
+						//スタートマスがすでにあるかどうか探索
 						for (int x = 0; x < XSIZE; x++)
 						{
 							for (int y = 0; y < YSIZE; y++)
@@ -137,6 +147,7 @@ void MapEditScene::Update()
 				{
 					if (pTrans_->GetTurnNum() == 1)
 					{
+						//ゴールマスがすでにあるかどうか探索
 						for (int x = 0; x < XSIZE; x++)
 						{
 							for (int y = 0; y < YSIZE; y++)
@@ -175,27 +186,27 @@ void MapEditScene::Update()
 				}
 				break;
 			case MATH_TOGETOGE:
-				if (!isMathChangeNumLimit())
+				if (Input::IsMouseButtonDown(0))
 				{
-					if (Input::IsMouseButtonDown(0))
-					{
-						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
-						auto itr = tTgtgRoute_.begin();
+					tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
+					auto itr = tTgtgRoute_.begin();
 
-						while (itr != tTgtgRoute_.end())
+					while (itr != tTgtgRoute_.end())
+					{
+						//押されたマスがとげとげマスだったら
+						if (itr->initPos_.x == tgtgRouteMathDown.x &&
+							itr->initPos_.y == tgtgRouteMathDown.y)
 						{
-							//押されたマスがとげとげマスだったら
-							if (itr->initPos_.x == tgtgRouteMathDown.x &&
-								itr->initPos_.y == tgtgRouteMathDown.y)
-							{
-								std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
-								OutputDebugString(resStr.c_str());
-								break;
-							}
-							itr++;
+							std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
+							OutputDebugString(resStr.c_str());
+							break;
 						}
-						//ちがったら
-						if (itr == tTgtgRoute_.end())
+						itr++;
+					}
+					//ちがったら
+					if (itr == tTgtgRoute_.end())
+					{
+						if (!isMathChangeNumLimit())
 						{
 							math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 
@@ -244,9 +255,8 @@ void MapEditScene::Update()
 				if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
 				{
 					
-					itr->route_.scale_ =
-						XMFLOAT3(math_[0][0].mathPos_.scale_.x / tgtgRouteThick,
-							math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y), 0);
+					itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x / tgtgRouteThick;
+					itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y);
 
 					itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
 
@@ -260,9 +270,8 @@ void MapEditScene::Update()
 				//横移動
 				else
 				{
-					itr->route_.scale_ =
-						XMFLOAT3(math_[0][0].mathPos_.scale_.x * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x),
-							math_[0][0].mathPos_.scale_.y / tgtgRouteThick, 0);
+					itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x);
+					itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y / tgtgRouteThick;
 
 					itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
 
@@ -299,6 +308,7 @@ void MapEditScene::Update()
 
 void MapEditScene::Draw()
 {
+	//とげとげルート表示
 	auto itr = tTgtgRoute_.begin();
 	while (itr != tTgtgRoute_.end())
 	{
@@ -310,12 +320,15 @@ void MapEditScene::Draw()
 		}
 		itr++;
 	}
+	const XMFLOAT3 mathLimitPos(1000, 700, 0);
 	std::string str = std::to_string(mathChangeNum_) + " / " + std::to_string(mathChangeNumLimit_);
-	pText_->Draw(1000, 700, str.c_str());
+	pText_->Draw(mathLimitPos.x, mathLimitPos.y, str.c_str());
+
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
+			//コンベアの回転
 			if (isConvRot_[x][YSIZE - 1 - y])
 			{
 				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
@@ -501,5 +514,38 @@ bool MapEditScene::isMathChangeNumLimit()
 	else
 	{
 		return true;
+	}
+}
+
+void MapEditScene::MathButtonInit(XMFLOAT3 _imageSize)
+{
+	for (int i = 0; i < MATH_MAX; i++)
+	{
+		pMathButton_[i]->Instantiate<Button>(this);
+		pMathButton_[i] = (Button*)FindObject("Button");
+	}
+	for (int i = 0; i < MATH_MAX; i++)
+	{
+		pMathButton_[i]->SetPictNum(hPict_[i]);
+
+		//普通のマスとの倍率
+		const float normalMathtoMult = 2.0f;
+		const float mathButtonSize = MATHSIZE * normalMathtoMult;
+		//マス選択ボタンの大きさ設定
+		const XMFLOAT3 mbScale = XMFLOAT3(1.0f / _imageSize.x * mathButtonSize, 1.0f / _imageSize.y * mathButtonSize, 1);
+
+		//マス選択ボタンの位置
+		XMFLOAT3 mbPos;
+		//マス選択ボタンの基準の位置
+		const XMFLOAT3 mbInitPos = XMFLOAT3(-0.9f, -0.9f, 0);
+		//マス選択ボタンが何個ごとに改行されるか
+		const int mbNewLineNum = 4;
+		mbPos.x = ((float)(i % mbNewLineNum) / Direct3D::scrWidth) * mathButtonSize + mbInitPos.x;
+		mbPos.y = ((float)(i / mbNewLineNum * mbNewLineNum) / Direct3D::scrHeight) * mathButtonSize + mbInitPos.y;
+
+		Transform mbTransform;
+		mbTransform.position_ = mbPos;
+		mbTransform.scale_ = mbScale;
+		pMathButton_[i]->SetTransform(mbTransform);
 	}
 }

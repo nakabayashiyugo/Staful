@@ -66,7 +66,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     wc.hIcon = LoadIcon(NULL, IDI_QUESTION);        //アイコン
     wc.hIconSm = LoadIcon(NULL, IDI_QUESTION);   //小さいアイコン
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);   //マウスカーソル
-    wc.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1); //メニュー（なし）
+    wc.lpszMenuName = nullptr; //メニュー（なし）
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); //背景（白）

@@ -3,7 +3,6 @@
 // MapEditor.rc ‚ÅŽg—p
 //
 #define IDD_DIALOG1                     101
-#define IDR_MENU1                       103
 #define IDC_RADIO_UP                    1018
 #define IDC_RADIO_DOWN                  1019
 #define IDC_RADIO6                      1020
@@ -29,14 +28,7 @@
 #define ID_40001                        40001
 #define ID_40002                        40002
 #define ID_40003                        40003
-#define ID_MENU_NEW                     40004
-#define ID_MENU_OPEN                    40005
-#define ID_MENU_SAVE                    40006
-#define ID_40007                        40007
-#define ID_40008                        40008
-#define ID_40009                        40009
 #define ID_40010                        40010
-#define ID_MENU_SAVEAS                  40011
 
 // Next default values for new objects
 // 

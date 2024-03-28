@@ -55,18 +55,27 @@ void Button::Update()
 
 void Button::Draw()
 {
+	//ボタンをクリックしたときの色
 	const XMFLOAT3 clickedColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
+	//ボタンをクリックしてない時の色
 	const XMFLOAT3 color = XMFLOAT3(1, 1, 1);
-	Image::SetColor(hPict_, color);
+
+	XMFLOAT3 buttonColor;
+	buttonColor = color;
 	if (isClick_)
 	{
-		Image::SetColor(hPict_, clickedColor);
+		buttonColor = clickedColor;
 	}
-
+	Image::SetColor(hPict_, buttonColor);
 	Image::SetTransform(hPict_, tPict_);
 	Image::Draw(hPict_);
 }
 
 void Button::Release()
 {
+}
+
+void Button::SetPictNum(int _pict)
+{
+	this->hPict_ = _pict;
 }

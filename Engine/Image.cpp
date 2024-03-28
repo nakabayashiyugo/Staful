@@ -28,6 +28,10 @@ namespace Image
 
 void Image::SetTransform(int hImage, Transform transform)
 {
+	if (hImage < 0 || hImage >= imageList.size())
+	{
+		return;
+	}
 	imageList[hImage]->transform_ = transform;
 }
 
@@ -58,6 +62,10 @@ int Image::Load(std::string filename)
 
 void Image::Draw(int hImage)
 {
+	if (hImage < 0 || hImage >= imageList.size())
+	{
+		return;
+	}
 	imageList[hImage]->pSprite_->
 		Draw(imageList[hImage]->transform_, imageList[hImage]->rect_, imageList[hImage]->alpha_, imageList[hImage]->color_);
 }
@@ -148,5 +156,9 @@ void Image::SetColor(int hImage, XMFLOAT3 color)
 
 XMFLOAT3 Image::GetTextureSize(int hImage)
 {
+	if (hImage < 0 || hImage >= imageList.size())
+	{
+		return XMFLOAT3(0, 0, 0);
+	}
 	return imageList[hImage]->size_;
 }
