@@ -115,6 +115,9 @@ void MapEditScene::Update()
 		selectMath = XMFLOAT3(-1, -1, 0);
 	}
 
+	//選ばれてるマスの種類検索
+	SelectMathType();
+
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
 		if (math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
@@ -519,33 +522,46 @@ bool MapEditScene::isMathChangeNumLimit()
 
 void MapEditScene::MathButtonInit(XMFLOAT3 _imageSize)
 {
-	for (int i = 0; i < MATH_MAX; i++)
+	const int buttonInitNum = 1;
+	for (buttonNum_ = buttonInitNum; buttonNum_ < MATH_MAX; buttonNum_++)
 	{
-		pMathButton_[i]->Instantiate<Button>(this);
-		pMathButton_[i] = (Button*)FindObject("Button");
-	}
-	for (int i = 0; i < MATH_MAX; i++)
-	{
-		pMathButton_[i]->SetPictNum(hPict_[i]);
+		pMathButton_[buttonNum_]->Instantiate<Button>(this);
+		//探すボタンのオブジェクトネーム
+		std::string buttonStr = "Button";
+		buttonStr += std::to_string(buttonNum_);
+		pMathButton_[buttonNum_] = (Button*)FindObject(buttonStr);
+		pMathButton_[buttonNum_]->SetPictNum(hPict_[buttonNum_]);
 
 		//普通のマスとの倍率
 		const float normalMathtoMult = 2.0f;
+		//マス選択ボタンのサイズ
 		const float mathButtonSize = MATHSIZE * normalMathtoMult;
 		//マス選択ボタンの大きさ設定
 		const XMFLOAT3 mbScale = XMFLOAT3(1.0f / _imageSize.x * mathButtonSize, 1.0f / _imageSize.y * mathButtonSize, 1);
 
-		//マス選択ボタンの位置
-		XMFLOAT3 mbPos;
 		//マス選択ボタンの基準の位置
-		const XMFLOAT3 mbInitPos = XMFLOAT3(-0.9f, -0.9f, 0);
+		const XMFLOAT3 mbInitPos = XMFLOAT3(-0.9f, 0.6f, 0);
 		//マス選択ボタンが何個ごとに改行されるか
 		const int mbNewLineNum = 4;
-		mbPos.x = ((float)(i % mbNewLineNum) / Direct3D::scrWidth) * mathButtonSize + mbInitPos.x;
-		mbPos.y = ((float)(i / mbNewLineNum * mbNewLineNum) / Direct3D::scrHeight) * mathButtonSize + mbInitPos.y;
+		//マス選択ボタンの位置
+		XMFLOAT3 mbPos;
+		mbPos.x = (float)((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbScale.x + mbInitPos.x;
+		mbPos.y = -(((float)((buttonNum_ - buttonInitNum) / mbNewLineNum * mbNewLineNum) / Direct3D::scrHeight) * mathButtonSize) + mbInitPos.y;
 
 		Transform mbTransform;
 		mbTransform.position_ = mbPos;
 		mbTransform.scale_ = mbScale;
-		pMathButton_[i]->SetTransform(mbTransform);
+		pMathButton_[buttonNum_]->SetTransform(mbTransform);
+	}
+}
+
+void MapEditScene::SelectMathType()
+{
+	for (int i = 1; i < MATH_MAX; i++)
+	{
+		if (pMathButton_[i]->GetIsClicked())
+		{
+			mathtype_ = i;
+		}
 	}
 }

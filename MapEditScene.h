@@ -34,6 +34,8 @@ class MapEditScene
 
 	//画面上のマスの種類を選択するボタン
 	Button* pMathButton_[MATH_MAX];
+	//ボタンの番号
+	int buttonNum_;
 public:
 	MapEditScene(GameObject* parent);
 
@@ -58,5 +60,9 @@ public:
 
 	//マス選択ボタンの初期化
 	void MathButtonInit(XMFLOAT3 _imageSize);
+	int GetButtonNum() { return buttonNum_; }
+
+	//マスタイプ選択
+	void SelectMathType();
 };
 
