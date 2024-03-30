@@ -22,15 +22,15 @@ enum MATHTYPE
 
 struct MATHDEDAIL
 {
-	MATHTYPE mathType_;
-	Transform mathPos_;
+	MATHTYPE mathType_; //マスの種類
+	Transform mathPos_; //マスの位置
 };
 
 struct TOGETOGEROUTE
 {
-	Transform route_;
-	XMFLOAT3 initPos_;
-	XMFLOAT3 destPos_;
+	Transform route_;	//移動範囲を示す線のトランスフォーム
+	XMFLOAT3 initPos_;	//とげとげの最初の位置
+	XMFLOAT3 destPos_;	//とげとげの往復する到達地点
 };
 
 class StageOrigin

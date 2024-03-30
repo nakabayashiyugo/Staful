@@ -91,6 +91,8 @@ void MapEditScene::Initialize()
 
 void MapEditScene::Update()
 {
+	//マスの位置の初期値
+	const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
 	//カーソルが置かれてるマスの位置
 	static XMFLOAT3 selectMath;
 	//とげとげマスを押した位置
@@ -105,14 +107,14 @@ void MapEditScene::Update()
 	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2) - MATHSIZE / 2;
 	mousePosY -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
 
-	selectMath.x = mousePosX / MATHSIZE;
-	selectMath.y = mousePosY / MATHSIZE;
+	selectMath.x = (int)(mousePosX / MATHSIZE);
+	selectMath.y = YSIZE - 1 - (int)(mousePosY / MATHSIZE);
 
 	//マウスの位置がマス目から出たら
 	if (selectMath.x < 0 || selectMath.x >= XSIZE ||
 		selectMath.y < 0 || selectMath.y >= YSIZE)
 	{
-		selectMath = XMFLOAT3(-1, -1, 0);
+		selectMath = mathInitPos;
 	}
 
 	//選ばれてるマスの種類検索
@@ -120,8 +122,9 @@ void MapEditScene::Update()
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
-		if (math_origin_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATH_FLOOR)
+		if (math_origin_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATH_FLOOR)
 		{
+
 			switch ((MATHTYPE)mathtype_)
 			{
 			case MATH_START:
@@ -140,8 +143,9 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = MATH_START;
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+						//クリックしたマスを選んでるマスに変える
+						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 					}
 				}
 				break;
@@ -161,64 +165,52 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = MATH_GOAL;
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 					}
 				}
 				break;
 			case MATH_FLOOR:
 				if (Input::IsMouseButton(0))
 				{
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
-					math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+					math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 				}
 			case MATH_CONVEYOR:
 				if (!isMathChangeNumLimit())
 				{
-					if (Input::IsMouseButtonDown(0))
+					if (Input::IsMouseButton(0))
 					{
-						if (math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					}
+					if (Input::IsMouseButtonDown(1))
+					{
+						if (math_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 						{
-							isConvRot_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y] = true;
-						}
-						else
-						{
-							math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+							isConvRot_[(int)selectMath.x][(int)selectMath.y] = true;
 						}
 					}
 				}
 				break;
 			case MATH_TOGETOGE:
-				if (Input::IsMouseButtonDown(0))
+				if (Input::IsMouseButton(0))
 				{
-					tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, YSIZE - 1 - (int)selectMath.y, 0);
-					auto itr = tTgtgRoute_.begin();
-
-					while (itr != tTgtgRoute_.end())
+					if (!isMathChangeNumLimit())
 					{
-						//押されたマスがとげとげマスだったら
-						if (itr->initPos_.x == tgtgRouteMathDown.x &&
-							itr->initPos_.y == tgtgRouteMathDown.y)
-						{
-							std::string resStr = "座標 : " + std::to_string((int)tgtgRouteMathDown.x) + ", " + std::to_string((int)tgtgRouteMathDown.y) + '\n';
-							OutputDebugString(resStr.c_str());
-							break;
-						}
-						itr++;
-					}
-					//ちがったら
-					if (itr == tTgtgRoute_.end())
-					{
-						if (!isMathChangeNumLimit())
-						{
-							math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
+						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 
-							tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
-							itr = tTgtgRoute_.end() - 1;
-							itr->initPos_ = itr->destPos_ = tgtgRouteMathDown;
-							itr->route_.scale_ = XMFLOAT3(0, 0, 0);
-						}
+						//tTgtgRoute_に追加
+						TOGETOGEROUTE* ptg = new TOGETOGEROUTE();
+						ptg->initPos_ = ptg->destPos_ = tgtgRouteMathDown;
+						ptg->route_.scale_ = XMFLOAT3(0, 0, 0);
+						tTgtgRoute_.push_back(*ptg);
+						delete ptg;
 					}
+				}
+				if (Input::IsMouseButtonDown(1))
+				{
+					tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
 				}
 				break;
 			default:
@@ -226,87 +218,89 @@ void MapEditScene::Update()
 				{
 					if (Input::IsMouseButton(0))
 					{
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
-						math_[(int)selectMath.x][YSIZE - 1 - (int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 					}
 				}
 				break;
 			}
-		}
-
-		//とげとげマスでクリックして話したとき
-		if (Input::IsMuoseButtonUp(0))
-		{
-			if (tgtgRouteMathDown.x != -1)
-			{
-				tgtgRouteMathUp = XMFLOAT3((int)mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
-
-				auto itr = tTgtgRoute_.begin();
-
-				while (itr != tTgtgRoute_.end())
-				{
-					if (itr->initPos_.x == tgtgRouteMathDown.x &&
-						itr->initPos_.y == tgtgRouteMathDown.y)
-					{
-						break;
-					}
-					itr++;
-				}
-				//とげとげルートの太さ
-				const int tgtgRouteThick = 5;
-				//縦移動
-				if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
-				{
-					
-					itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x / tgtgRouteThick;
-					itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y);
-
-					itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
-
-					if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
-					{
-						itr->route_.position_.y += (math_[0][0].mathPos_.scale_.y) / 2;
-					}
-					itr->destPos_.y = tgtgRouteMathUp.y;
-					itr->destPos_.x = tgtgRouteMathDown.x;
-				}
-				//横移動
-				else
-				{
-					itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x);
-					itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y / tgtgRouteThick;
-
-					itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
-
-					if (((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) % 2 != 0)
-					{
-						itr->route_.position_.x += (math_[0][0].mathPos_.scale_.x) / 2;
-					}
-					itr->destPos_.x = tgtgRouteMathUp.x;
-					itr->destPos_.y = tgtgRouteMathDown.y;
-				}
-
-				if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
-				{
-					tTgtgRoute_.erase(itr);
-				}
-			}
-			tgtgRouteMathDown = XMFLOAT3(-1, -1, 0);
-		}
-
-		//ルートがあるとげとげのマスが他のマスに変更になったとき
-		auto itr = tTgtgRoute_.begin();
-		while (itr != tTgtgRoute_.end())
-		{
-			if (math_[itr->initPos_.x][itr->initPos_.y].mathType_ != MATH_TOGETOGE)
-			{
-				tTgtgRoute_.erase(itr);
-				break;
-			}
-			itr++;
 		}
 	}
+
+
+	//とげとげマスでクリックして話したとき
+	if (Input::IsMuoseButtonUp(1))
+	{
+		if (tgtgRouteMathDown.x != -1)
+		{
+			tgtgRouteMathUp = XMFLOAT3((int)mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
+
+			auto itr = tTgtgRoute_.begin();
+
+			while (itr != tTgtgRoute_.end())
+			{
+				if (itr->initPos_.x == tgtgRouteMathDown.x &&
+					itr->initPos_.y == tgtgRouteMathDown.y)
+				{
+					break;
+				}
+				itr++;
+			}
+			//とげとげルートの太さ
+			const int tgtgRouteThick = 5;
+			//縦移動
+			if (abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x) < abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y))
+			{
+
+				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x / tgtgRouteThick;
+				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp.y - tgtgRouteMathDown.y);
+
+				itr->route_.position_ = math_[(int)tgtgRouteMathDown.x][((int)tgtgRouteMathUp.y + tgtgRouteMathDown.y) / 2].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp.y + (int)tgtgRouteMathDown.y) % 2 != 0)
+				{
+					itr->route_.position_.y += (math_[0][0].mathPos_.scale_.y) / 2;
+				}
+				itr->destPos_.y = tgtgRouteMathUp.y;
+				itr->destPos_.x = tgtgRouteMathDown.x;
+			}
+			//横移動
+			else
+			{
+				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x * abs(tgtgRouteMathUp.x - tgtgRouteMathDown.x);
+				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y / tgtgRouteThick;
+
+				itr->route_.position_ = math_[((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) / 2][(int)tgtgRouteMathDown.y].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp.x + (int)tgtgRouteMathDown.x) % 2 != 0)
+				{
+					itr->route_.position_.x += (math_[0][0].mathPos_.scale_.x) / 2;
+				}
+				itr->destPos_.x = tgtgRouteMathUp.x;
+				itr->destPos_.y = tgtgRouteMathDown.y;
+			}
+
+			if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
+			{
+				tTgtgRoute_.erase(itr);
+			}
+		}
+		tgtgRouteMathDown = mathInitPos;
+	}
+
+	//ルートがあるとげとげのマスが他のマスに変更になったとき
+	auto itr = tTgtgRoute_.begin();
+	while (itr != tTgtgRoute_.end())
+	{
+		if (math_[itr->initPos_.x][itr->initPos_.y].mathType_ != MATH_TOGETOGE)
+		{
+			tTgtgRoute_.erase(itr);
+			break;
+		}
+		itr++;
+	}
 }
+
 
 
 void MapEditScene::Draw()
