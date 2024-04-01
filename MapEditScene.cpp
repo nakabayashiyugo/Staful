@@ -625,6 +625,8 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	buttonStr += std::to_string(buttonNum_);
 	pCompleteButton_ = (Button*)FindObject(buttonStr);
 	pCompleteButton_->SetPictNum(completeNum);
+	//テストプレイクリアできないと押せないようにする
+	pCompleteButton_->SetIsCanPush(false);
 
 	const XMFLOAT3 cbPos = XMFLOAT3(0.8f, -0.8f, 0);
 	Transform cbTransform;
@@ -641,7 +643,7 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	buttonStr += std::to_string(buttonNum_);
 	pTestplayButton_ = (Button*)FindObject(buttonStr);
 	pTestplayButton_->SetPictNum(testplayNum);
-	const XMFLOAT3 tbPos = XMFLOAT3(0.6f, -0.8f, 0);
+	const XMFLOAT3 tbPos = XMFLOAT3(0.5f, -0.8f, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;

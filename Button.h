@@ -4,14 +4,22 @@
 class Button
 	:public GameObject
 {
+	//クリックしたかどうか
 	bool isClick_;
+	//クリックして離したかどうか
 	bool isRelease_;
+	//このボタンが押せるかどうか
+	//true : 押せる
+	//false : 押せない
+	bool isCanPush_;
 
 	int hPict_;
 
 	Transform tPict_;
 
 	XMFLOAT3 mousePos_;
+
+
 public:
 	Button(GameObject* parent);
 
@@ -35,4 +43,6 @@ public:
 	bool GetIsReleased() { return isRelease_; }
 
 	void SetAlpha(int _alpha);
+
+	void SetIsCanPush(bool _isPush) { isCanPush_ = _isPush; }
 };
