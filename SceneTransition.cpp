@@ -8,11 +8,12 @@
 #include "Engine/Input.h"
 
 const int FPS = 60;
+const int saveFileName1 = 1, saveFileName2 = 2;
 
 SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), 
 	sceneState_(SCENE_MAPEDIT1), prevSceneState_(SCENE_TURNEND),
-	turnNum_(0), player_Num_(0), saveNum_(1),
+	turnNum_(0), player_Num_(0), saveNum_(saveFileName1),
 	isClear_Player_{ false, false }, isFinished_(false), 
 	hPlayer1_(-1), hPlayer2_(-1), hWin_(-1), hLose_(-1)
 {
@@ -34,7 +35,7 @@ void SceneTransition::Initialize()
 {
 	Write();
 	sceneState_ = SCENE_MAPEDIT2;
-	saveNum_ = 2;
+	saveNum_ = saveFileName2;
 	Write();
 
 	sceneState_ = SCENESTATE(0);
@@ -56,29 +57,29 @@ void SceneTransition::Update()
 		{
 		case SCENE_BETWEEN1:
 			turnNum_++;
-			if (turnNum_ % 2 == 0)	saveNum_ = 2;
-			else saveNum_ = 1;
+			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName2;
+			else saveNum_ = saveFileName1;
 			Instantiate<BetweenScene>(this);
 			break;
 		case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
 		case SCENE_BETWEEN2:
-			if (turnNum_ % 2 == 0)	saveNum_ = 1;
-			else saveNum_ = 2;
+			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName1;
+			else saveNum_ = saveFileName2;
 			Instantiate<BetweenScene>(this);
 			break;
 		case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
 		case SCENE_BETWEEN3:Instantiate<BetweenScene>(this); break;
 		case SCENE_STAGE1:
-			if (turnNum_ % 2 == 0)	saveNum_ = 1;
-			else saveNum_ = 2;
+			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName1;
+			else saveNum_ = saveFileName2;
 			player_Num_ = 0;
 			pPS_[player_Num_]->Instantiate<PlayScene>(this);
 			pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
 			break;
 		case SCENE_BETWEEN4:Instantiate<BetweenScene>(this); break;
 		case SCENE_STAGE2:
-			if (turnNum_ % 2 == 0)	saveNum_ = 2;
-			else saveNum_ = 1;
+			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName2;
+			else saveNum_ = saveFileName1;
 			player_Num_ = 1;
 			pPS_[player_Num_]->Instantiate<PlayScene>(this);
 			pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");

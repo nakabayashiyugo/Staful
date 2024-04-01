@@ -34,19 +34,27 @@ void PlayScene::Initialize()
 
 void PlayScene::Update()
 {
-	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	pStage_ = (Stage*)FindObject("Stage");
-	pPlayer_ = (Player*)FindObject("Player");
-	if (pPlayer_->Is_Goal())
+	if (pParent_->GetObjectName() == "SceneTransition")
 	{
-		pTrans_->SetNextScene();
-		pTrans_->SetIsClear(player_Num_, true);
-		KillMe();
+		pTrans_ = (SceneTransition*)FindObject("SceneTransition");
+		pStage_ = (Stage*)FindObject("Stage");
+		pPlayer_ = (Player*)FindObject("Player");
+		if (pPlayer_->Is_Goal())
+		{
+			pTrans_->SetNextScene();
+			pTrans_->SetIsClear(player_Num_, true);
+			KillMe();
+		}
+		if (pPlayer_->GetFailed())
+		{
+			pTrans_->SetNextScene();
+			KillMe();
+		}
 	}
-	if (pPlayer_->GetFailed())
+	//テストプレイかどうか
+	if (pParent_->GetObjectName() == "MapEditScene")
 	{
-		pTrans_->SetNextScene();
-		KillMe();
+
 	}
 }
 

@@ -29,7 +29,10 @@ public:
 
 	void SetPictNum(int _pict);
 	void SetTransform(Transform _transform) { tPict_ = _transform; }
+	Transform GetTransform() { return tPict_; }
 
 	bool GetIsClicked() { return isClick_; }
 	bool GetIsReleased() { return isRelease_; }
+
+	void SetAlpha(int _alpha);
 };

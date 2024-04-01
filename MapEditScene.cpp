@@ -69,7 +69,7 @@ void MapEditScene::Initialize()
 	//テクスチャのサイズ
 	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
 
-	MathButtonInit(imageSize);
+	ButtonInit(imageSize);
 	//マスのサイズ調整
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -165,6 +165,7 @@ void MapEditScene::Update()
 								}
 							}
 						}
+						//クリックしたマスを選んでるマスに変える
 						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 						math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 					}
@@ -173,6 +174,7 @@ void MapEditScene::Update()
 			case MATH_FLOOR:
 				if (Input::IsMouseButton(0))
 				{
+					//クリックしたマスを選んでるマスに変える
 					math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 					math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 				}
@@ -181,14 +183,15 @@ void MapEditScene::Update()
 				{
 					if (Input::IsMouseButton(0))
 					{
+						//クリックしたマスを選んでるマスに変える
 						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 					}
-					if (Input::IsMouseButtonDown(1))
+				}
+				if (Input::IsMouseButtonDown(1))
+				{
+					if (math_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 					{
-						if (math_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
-						{
-							isConvRot_[(int)selectMath.x][(int)selectMath.y] = true;
-						}
+						isConvRot_[(int)selectMath.x][(int)selectMath.y] = true;
 					}
 				}
 				break;
@@ -514,25 +517,69 @@ bool MapEditScene::isMathChangeNumLimit()
 	}
 }
 
-void MapEditScene::MathButtonInit(XMFLOAT3 _imageSize)
+void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 {
+	//マス選択ボタンのファイルネーム指定
+	std::string buttonName[MATH_MAX] =
+	{
+		"Button_Delete.png",
+		"Button_Wall.png",
+		"Button_Hole.png",
+		"Button_Conveyor.png",
+		"Button_Togetoge.png",
+		"Button_PitFall.png",
+		"Button_Start.png",
+		"Button_Goal.png",
+	};
+	//その他のボタン
+	//完了ボタン
+	std::string buttonComplete = "Button_Complete.png";
+	//テストプレイボタン
+	std::string buttonTestplay = "Button_TestPlay.png";
+	//上のファイルが入ってるフォルダー
+	const std::string folderName1 = "Assets\\";
+	const std::string folderName2 = "MathButton\\";
+	//マス選択ボタンの画像番号
+	int mathButtonNum[MATH_MAX];
+	//その他のボタンの画像番号
+	int completeNum = -1;
+	int testplayNum = -1;
+	//マス選択ボタンのロード
+	for (int i = 0; i < MATH_MAX; i++)
+	{
+		buttonName[i] = folderName1 + folderName2 + buttonName[i];
+
+		mathButtonNum[i] = Image::Load(buttonName[i]);
+		assert(mathButtonNum[i] >= 0);
+	}
+	//完了ボタンのロード
+	buttonComplete = folderName1 + folderName2 + buttonComplete;
+	completeNum = Image::Load(buttonComplete);
+	assert(completeNum >= 0);
+	//テストプレイボタンのロード
+	buttonTestplay = folderName1 + folderName2 + buttonTestplay;
+	testplayNum = Image::Load(buttonTestplay);
+	assert(testplayNum >= 0);
+
+	//ボタンの普通のマスとの倍率
+	const float normalMathtoMult = 2.0f;
+	//ボタンのサイズ
+	const float mathButtonSize = MATHSIZE * normalMathtoMult;
+	//ボタンの大きさ設定
+	const XMFLOAT3 mbScale = XMFLOAT3(1.0f / _imageSize.x * mathButtonSize, 1.0f / _imageSize.y * mathButtonSize, 1);
 	const int buttonInitNum = 1;
+	//ボタンのオブジェクトネーム
+	std::string buttonStr;
 	for (buttonNum_ = buttonInitNum; buttonNum_ < MATH_MAX; buttonNum_++)
 	{
 		pMathButton_[buttonNum_]->Instantiate<Button>(this);
 		//探すボタンのオブジェクトネーム
-		std::string buttonStr = "Button";
+		buttonStr = "Button";
 		buttonStr += std::to_string(buttonNum_);
 		pMathButton_[buttonNum_] = (Button*)FindObject(buttonStr);
-		pMathButton_[buttonNum_]->SetPictNum(hPict_[buttonNum_]);
+		pMathButton_[buttonNum_]->SetPictNum(mathButtonNum[buttonNum_]);
 
-		//普通のマスとの倍率
-		const float normalMathtoMult = 2.0f;
-		//マス選択ボタンのサイズ
-		const float mathButtonSize = MATHSIZE * normalMathtoMult;
-		//マス選択ボタンの大きさ設定
-		const XMFLOAT3 mbScale = XMFLOAT3(1.0f / _imageSize.x * mathButtonSize, 1.0f / _imageSize.y * mathButtonSize, 1);
-
+		
 		//マス選択ボタンの基準の位置
 		const XMFLOAT3 mbInitPos = XMFLOAT3(-0.9f, 0.6f, 0);
 		//マス選択ボタンが何個ごとに改行されるか
@@ -547,15 +594,90 @@ void MapEditScene::MathButtonInit(XMFLOAT3 _imageSize)
 		mbTransform.scale_ = mbScale;
 		pMathButton_[buttonNum_]->SetTransform(mbTransform);
 	}
+
+	//Deleteボタン
+	//Deleteボタンの番号
+	buttonNum_ = (int)MATH_FLOOR;
+
+	pMathButton_[buttonNum_]->Instantiate<Button>(this);
+	//Deleteボタンのオブジェクトネーム
+	buttonStr = "Button";
+	buttonStr += std::to_string(buttonNum_);
+	pMathButton_[buttonNum_] = (Button*)FindObject(buttonStr);
+	pMathButton_[buttonNum_]->SetPictNum(mathButtonNum[buttonNum_]);
+
+	//マス選択ボタンの基準の位置
+	const XMFLOAT3 dbPos = XMFLOAT3(-0.9f, -0.3f, 0);
+	
+	Transform dbTransform;
+	dbTransform.position_ = dbPos;
+	dbTransform.scale_ = mbScale;
+	pMathButton_[buttonNum_]->SetTransform(dbTransform);
+
+	//その他のボタンの大きさ
+	const XMFLOAT3 obScale = XMFLOAT3(0.3f, 0.3f, 1);
+	//完了ボタン
+	//完了ボタンの番号
+	buttonNum_ = (int)MATH_MAX;
+	pCompleteButton_->Instantiate<Button>(this);
+	//完了ボタンのオブジェクトネーム
+	buttonStr = "Button";
+	buttonStr += std::to_string(buttonNum_);
+	pCompleteButton_ = (Button*)FindObject(buttonStr);
+	pCompleteButton_->SetPictNum(completeNum);
+
+	const XMFLOAT3 cbPos = XMFLOAT3(0.8f, -0.8f, 0);
+	Transform cbTransform;
+	cbTransform.position_ = cbPos;
+	cbTransform.scale_ = obScale;
+	pCompleteButton_->SetTransform(cbTransform);
+
+	//テストプレイボタン
+	//テストプレイボタンの番号
+	buttonNum_++;
+	pTestplayButton_->Instantiate<Button>(this);
+	//テストプレイボタンのオブジェクトネーム
+	buttonStr = "Button";
+	buttonStr += std::to_string(buttonNum_);
+	pTestplayButton_ = (Button*)FindObject(buttonStr);
+	pTestplayButton_->SetPictNum(testplayNum);
+	const XMFLOAT3 tbPos = XMFLOAT3(0.6f, -0.8f, 0);
+	Transform tbTransform;
+	tbTransform.position_ = tbPos;
+	tbTransform.scale_ = obScale;
+	pTestplayButton_->SetTransform(tbTransform);
 }
 
 void MapEditScene::SelectMathType()
 {
-	for (int i = 1; i < MATH_MAX; i++)
+	for (int i = 0; i < MATH_MAX; i++)
 	{
 		if (pMathButton_[i]->GetIsClicked())
 		{
 			mathtype_ = i;
 		}
 	}
+	if (pTestplayButton_->GetIsClicked())
+	{
+		IsDisplay(false);
+	}
+}
+
+void MapEditScene::IsDisplay(bool _dis)
+{
+	//アルファの最大値
+	const int maxAlpha = 255;
+	//セットするアルファ値
+	int alpha = maxAlpha * _dis;
+
+	for (int i = 0; i < MATH_MAX; i++)
+	{
+		//マスにアルファ値セット
+		Image::SetAlpha(hPict_[i], alpha);
+		//マス選択ボタンにアルファ値セット
+		pMathButton_[i]->SetAlpha(alpha);
+	}
+	//その他のボタンにアルファ値セット
+	pCompleteButton_->SetAlpha(alpha);
+	pTestplayButton_->SetAlpha(alpha);
 }

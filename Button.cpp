@@ -89,3 +89,8 @@ void Button::SetPictNum(int _pict)
 {
 	this->hPict_ = _pict;
 }
+
+void Button::SetAlpha(int _alpha)
+{
+	Image::SetAlpha(hPict_, _alpha);
+}
