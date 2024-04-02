@@ -40,7 +40,9 @@ public:
 	Transform GetTransform() { return tPict_; }
 
 	bool GetIsClicked() { return isClick_; }
+	void SetIsClicked(bool _isClick) { isClick_ = _isClick; }
 	bool GetIsReleased() { return isRelease_; }
+	void SetIsReleased(bool _isRelease) { isRelease_ = _isRelease; }
 
 	void SetAlpha(int _alpha);
 

@@ -5,6 +5,7 @@
 #include "Engine/Image.h"
 
 #include "SceneTransition.h"
+#include "MapEditScene.h"
 #include "Timer.h"
 #include "Stage.h"
 #include "Player.h"
@@ -26,10 +27,10 @@ PlayScene::PlayScene(GameObject* parent)
 
 void PlayScene::Initialize()
 {
-	pStage_ = (Stage*)FindObject("Stage");
-	pPlayer_ = (Player*)FindObject("Player");
 	pPlayer_->Instantiate<Player>(this);
 	pStage_->Instantiate<Stage>(this);
+	pStage_ = (Stage*)FindObject("Stage");
+	pPlayer_ = (Player*)FindObject("Player");
 }
 
 void PlayScene::Update()
@@ -51,10 +52,24 @@ void PlayScene::Update()
 			KillMe();
 		}
 	}
-	//テストプレイかどうか
+	//テストプレイの場合
 	if (pParent_->GetObjectName() == "MapEditScene")
 	{
-
+		if (pPlayer_->Is_Goal())
+		{
+			MapEditScene* pMES = (MapEditScene*)FindObject("MapEditScene");
+			pMES->SetIsClear(true);
+			//マップエディター表示
+			pMES->IsHidden(false);
+			KillMe();
+		}
+		if (pPlayer_->GetFailed())
+		{
+			MapEditScene* pMES = (MapEditScene*)FindObject("MapEditScene");
+			//マップエディター表示
+			pMES->IsHidden(false);
+			KillMe();
+		}
 	}
 }
 

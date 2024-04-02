@@ -7,11 +7,12 @@
 
 #include "resource.h"
 #include "SceneTransition.h"
+#include "PlayScene.h"
 #include "Button.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"), mathtype_(0), saveNum_(2), YSIZE(ZSIZE), hTgtgRoute_(-1),
-	mathChangeNum_(0)
+	mathChangeNum_(0), isClear_(false)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -124,7 +125,6 @@ void MapEditScene::Update()
 	{
 		if (math_origin_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATH_FLOOR)
 		{
-
 			switch ((MATHTYPE)mathtype_)
 			{
 			case MATH_START:
@@ -143,9 +143,7 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						//クリックしたマスを選んでるマスに変える
-						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
-						math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+						ChangeSelectMath(selectMath);
 					}
 				}
 				break;
@@ -165,18 +163,14 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						//クリックしたマスを選んでるマスに変える
-						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
-						math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+						ChangeSelectMath(selectMath);
 					}
 				}
 				break;
 			case MATH_FLOOR:
 				if (Input::IsMouseButton(0))
 				{
-					//クリックしたマスを選んでるマスに変える
-					math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
-					math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+					ChangeSelectMath(selectMath);
 				}
 			case MATH_CONVEYOR:
 				if (!isMathChangeNumLimit())
@@ -201,7 +195,7 @@ void MapEditScene::Update()
 					if (!isMathChangeNumLimit())
 					{
 						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
-						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						ChangeSelectMath(selectMath);
 
 						//tTgtgRoute_に追加
 						TOGETOGEROUTE* ptg = new TOGETOGEROUTE();
@@ -214,6 +208,7 @@ void MapEditScene::Update()
 				if (Input::IsMouseButtonDown(1))
 				{
 					tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
+					isClear_ = false;
 				}
 				break;
 			default:
@@ -221,8 +216,7 @@ void MapEditScene::Update()
 				{
 					if (Input::IsMouseButton(0))
 					{
-						math_[(int)selectMath.x][(int)selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
-						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						ChangeSelectMath(selectMath);
 					}
 				}
 				break;
@@ -436,10 +430,6 @@ void MapEditScene::Write()
 		write.write((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
 	}
 	write.close();  //ファイルを閉じる
-
-	
-	pTrans_->SetNextScene();
-	KillMe();
 }
 
 void MapEditScene::Read()
@@ -515,6 +505,14 @@ bool MapEditScene::isMathChangeNumLimit()
 	{
 		return true;
 	}
+}
+
+void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
+{
+	//クリックしたマスを選んでるマスに変える
+	math_[(int)_selectMath.x][(int)_selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+	math_[(int)_selectMath.x][(int)_selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+	isClear_ = false;
 }
 
 void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
@@ -625,10 +623,8 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	buttonStr += std::to_string(buttonNum_);
 	pCompleteButton_ = (Button*)FindObject(buttonStr);
 	pCompleteButton_->SetPictNum(completeNum);
-	//テストプレイクリアできないと押せないようにする
-	pCompleteButton_->SetIsCanPush(false);
 
-	const XMFLOAT3 cbPos = XMFLOAT3(0.8f, -0.8f, 0);
+	const XMFLOAT3 cbPos = XMFLOAT3(0.8f, -0.6f, 0);
 	Transform cbTransform;
 	cbTransform.position_ = cbPos;
 	cbTransform.scale_ = obScale;
@@ -643,7 +639,7 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	buttonStr += std::to_string(buttonNum_);
 	pTestplayButton_ = (Button*)FindObject(buttonStr);
 	pTestplayButton_->SetPictNum(testplayNum);
-	const XMFLOAT3 tbPos = XMFLOAT3(0.5f, -0.8f, 0);
+	const XMFLOAT3 tbPos = XMFLOAT3(0.5f, -0.6f, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;
@@ -659,27 +655,58 @@ void MapEditScene::SelectMathType()
 			mathtype_ = i;
 		}
 	}
+	//テストプレイボタンが押されたら
 	if (pTestplayButton_->GetIsClicked())
 	{
-		IsDisplay(false);
+		pTestplayButton_->SetIsClicked(false);
+		IsHidden(true);
+		Write();
+		Instantiate<PlayScene>(this);
+	}
+	//テストプレイクリアできないと押せないようにする
+	pCompleteButton_->SetIsCanPush(isClear_);
+	//完了ボタンが押されたら
+	if (pCompleteButton_->GetIsClicked())
+	{
+		Write();
+		pTrans_->SetNextScene();
+		KillMe();
+	}
+	//テストプレイクリアしたら完了ボタンを押せるようにする
+	if (isClear_)
+	{
+		pCompleteButton_->SetIsCanPush(true);
 	}
 }
 
-void MapEditScene::IsDisplay(bool _dis)
+void MapEditScene::IsHidden(bool _isHidden)
 {
-	//アルファの最大値
-	const int maxAlpha = 255;
-	//セットするアルファ値
-	int alpha = maxAlpha * _dis;
-
+	//マス表示非表示切り替え
+	for (int i = 0; i < math_.size(); i++)
+	{
+		for (int j = 0; j < math_[i].size(); j++)
+		{
+			math_[i][j].mathPos_.position_.z = _isHidden;
+		}
+	}
+	//とげとげルート表示非表示切り替え
+	for (int i = 0; i < tTgtgRoute_.size(); i++)
+	{
+		tTgtgRoute_[i].route_.position_.z = _isHidden;
+	}
+	//ボタン表示非表示切り替え
 	for (int i = 0; i < MATH_MAX; i++)
 	{
-		//マスにアルファ値セット
-		Image::SetAlpha(hPict_[i], alpha);
-		//マス選択ボタンにアルファ値セット
-		pMathButton_[i]->SetAlpha(alpha);
+		Transform mbTransform = pMathButton_[i]->GetTransform();
+		mbTransform.position_.z = _isHidden;
+		pMathButton_[i]->SetTransform(mbTransform);
 	}
-	//その他のボタンにアルファ値セット
-	pCompleteButton_->SetAlpha(alpha);
-	pTestplayButton_->SetAlpha(alpha);
+	//完了ボタン表示非表示切り替え
+	Transform cpTransform = pCompleteButton_->GetTransform();
+	cpTransform.position_.z = _isHidden;
+	pCompleteButton_->SetTransform(cpTransform);
+	//テストプレイボタン表示非表示切り替え
+	Transform tpTransform = pTestplayButton_->GetTransform();
+	tpTransform.position_.z = _isHidden;
+	pTestplayButton_->SetTransform(tpTransform);
 }

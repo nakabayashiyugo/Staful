@@ -38,6 +38,11 @@ class MapEditScene
 	Button* pTestplayButton_;
 	//ボタンの番号
 	int buttonNum_;
+
+	//テストプレイクリアしたかどうか
+	//true : クリア
+	//false : 未クリア
+	bool isClear_;
 public:
 	MapEditScene(GameObject* parent);
 
@@ -60,17 +65,21 @@ public:
 
 	bool isMathChangeNumLimit();
 
+	//クリックしたマスを選択してるマスに変える
+	void ChangeSelectMath(XMFLOAT3 _selectMath);
+
 	//マス選択ボタンの初期化
 	void ButtonInit(XMFLOAT3 _imageSize);
 	int GetButtonNum() { return buttonNum_; }
-
 
 	//マスタイプ選択
 	void SelectMathType();
 
 	//マップエディターを表示するかしないか
-	//引数 true : 表示
-	//　　 false : 非表示
-	void IsDisplay(bool _dis);
+	//引数 false : 表示
+	//　　 true : 非表示
+	void IsHidden(bool _isHidden);
+
+	void SetIsClear(bool _isClear) { isClear_ = _isClear; }
 };
 
