@@ -9,7 +9,7 @@
 
 Button::Button(GameObject* parent)
 	: GameObject(parent, "Button"), isClick_(false),isRelease_(false),
-	hPict_(-1), isCanPush_(true)
+	hPict_(-1), isCanPush_(true), isCursorMatched_(false)
 {
 	//親クラスがMapEditSceneなら
 	if (pParent_->GetObjectName() == "MapEditScene")
@@ -47,6 +47,7 @@ void Button::Update()
 		if (mousePos_.x >= SBLeft && mousePos_.x <= SBRight &&
 			mousePos_.y >= SBUp && mousePos_.y <= SBDown)
 		{
+			isCursorMatched_ = true;
 			if (Input::IsMouseButtonDown(0))
 			{
 				isClick_ = true;
@@ -59,8 +60,7 @@ void Button::Update()
 		}
 		else
 		{
-			std::string resStr = std::to_string((float)mousePos_.x) + ", " + std::to_string(mousePos_.y) + "\n";
-			OutputDebugString(resStr.c_str());
+			isCursorMatched_ = false;
 		}
 	}
 }
@@ -73,9 +73,15 @@ void Button::Draw()
 	const XMFLOAT3 color = XMFLOAT3(1, 1, 1);
 	//このボタンが押せない時の色
 	const XMFLOAT3 notPush = XMFLOAT3(0.2f, 0.2f, 0.2f);
+	//ボタンにカーソルがあった時の色
+	const XMFLOAT3 cursorMatchColor = XMFLOAT3(0.7f, 0.7f, 0.7f);
 
 	XMFLOAT3 buttonColor;
 	buttonColor = color;
+	if (isCursorMatched_)
+	{
+		buttonColor = cursorMatchColor;
+	}
 	if (isClick_)
 	{
 		buttonColor = clickedColor;

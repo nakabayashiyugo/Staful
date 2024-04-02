@@ -6,11 +6,12 @@ class Button;
 class TitleScene
 	:public GameObject
 {
-	int hStartButton_, hStaful_;
+	int hStartButton_, hExitButton_;
+	int hStaful_;
+	Transform tStartButton_, tExitButton_;
+	Transform tStaful_;
 
-	Transform tStartButton_, tStaful_;
-
-	Button* pStartButton_;
+	Button* pStartButton_, * pExitButton_;
 public:
 	TitleScene(GameObject* parent);
 

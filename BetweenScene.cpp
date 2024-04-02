@@ -5,6 +5,7 @@
 
 #include "Engine/Image.h"
 #include "Engine/SceneManager.h"
+#include "Engine/Easing.h"
 
 const float PIE = 3.141592;
 const int FPS = 60;
@@ -19,6 +20,7 @@ BetweenScene::BetweenScene(GameObject* parent)
 	curScene_(SCENESTATE(0))
 {
 	pST_ = (SceneTransition*)FindObject("SceneTransition");
+	pEasing_ = new Easing();
 }
 
 void BetweenScene::Initialize()
@@ -137,7 +139,7 @@ void BetweenScene::Player1MapEditUpdate()
 		break;
 	case STATE_MOVE1:
 		logoCourseMoveCount_ += 0.01f;
-		ease = EaseInSine(logoCourseMoveCount_);
+		ease = pEasing_->EaseInSine(logoCourseMoveCount_);
 		tLogoCourse1_.position_.x = tLogoStandard_.position_.x * (1 - ease);
 		if (ease > 1)
 		{
@@ -147,7 +149,7 @@ void BetweenScene::Player1MapEditUpdate()
 		break;
 	case STATE_MOVE2:
 		logoCourseMoveCount_ += 0.01f;
-		ease = EaseInOutBack(logoCourseMoveCount_);
+		ease = pEasing_->EaseInOutBack(logoCourseMoveCount_);
 		tLogoCourse1_.position_.y += ease / decMove;
 		if (ease > 1)
 		{
@@ -177,7 +179,7 @@ void BetweenScene::Player2MapEditUpdate()
 		break;
 	case STATE_MOVE1:
 		logoCourseMoveCount_ += 0.01f;
-		ease = EaseInSine(logoCourseMoveCount_);
+		ease = pEasing_->EaseInSine(logoCourseMoveCount_);
 		tLogoCourse2_.position_.x = -tLogoStandard_.position_.x * (1 - ease);
 		if (ease > 1)
 		{
@@ -187,7 +189,7 @@ void BetweenScene::Player2MapEditUpdate()
 		break;
 	case STATE_MOVE2:
 		logoCourseMoveCount_ += 0.01f;
-		ease = EaseInOutBack(logoCourseMoveCount_);
+		ease = pEasing_->EaseInOutBack(logoCourseMoveCount_);
 		tLogoCourse2_.position_.y += ease / decMove;
 		if (ease > 1)
 		{
@@ -206,7 +208,7 @@ void BetweenScene::Player1PlayUpdate()
 	{
 	case STATE_WAIT:
 		logoCourseMoveCount_ += 0.01f;
-		ease = EaseInOutBack(logoCourseMoveCount_);
+		ease = pEasing_->EaseInOutBack(logoCourseMoveCount_);
 		tLogoCourse1_.position_.y += ease / decMove;
 		tLogoCourse2_.position_.y += ease / decMove;
 		if (logoCourseMoveCount_ > 1)
@@ -220,7 +222,7 @@ void BetweenScene::Player1PlayUpdate()
 		break;
 	case STATE_MOVE1:
 		logoCourseMoveCount_ += 0.01f;
-		ease = EaseInOutBack(logoCourseMoveCount_);
+		ease = pEasing_->EaseInOutBack(logoCourseMoveCount_);
 		tLogoCourse1_.position_.y = (1 - ease) + 0.3f;
 		tLogoCourse2_.position_.y = (1 - ease) + 0.3f;
 		if (logoCourseMoveCount_ > 1)
@@ -249,25 +251,5 @@ void BetweenScene::Player2PlayUpdate()
 	{
 		pST_->SetNextScene();
 		KillMe();
-	}
-}
-
-float BetweenScene::EaseInSine(float pos)
-{
-	return 1 - cos((pos * PIE) / 2);
-}
-
-float BetweenScene::EaseInOutBack(float pos)
-{
-	const float c1 = 1.70158;
-	const float c2 = c1 * 1.525;
-
-	if (pos < 0.5)
-	{
-		return (pow(2 * pos, 2) * ((c2 + 1) * 2 * pos - c2)) / 2;
-	}
-	else
-	{
-		return (pow(2 * pos - 2, 2) * ((c2 + 1) * (pos * 2 - 2) + c2) + 2) / 2;
 	}
 }

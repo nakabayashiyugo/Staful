@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="BetweenScene.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Engine\Easing.cpp" />
     <ClCompile Include="Engine\FbxParts.cpp" />
     <ClCompile Include="Engine\Text.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -214,6 +215,7 @@
   <ItemGroup>
     <ClInclude Include="BetweenScene.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Engine\Easing.h" />
     <ClInclude Include="Engine\FbxParts.h" />
     <ClInclude Include="Engine\Text.h" />
     <ClInclude Include="Player.h" />

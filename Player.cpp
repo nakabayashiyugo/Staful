@@ -6,6 +6,7 @@
 #include "Engine/Image.h"
 #include "Engine/Fbx.h"
 #include "Engine/SphereCollider.h"
+#include "Engine/Easing.h"
 
 #include "PlayScene.h"
 #include "SceneTransition.h"
@@ -13,18 +14,24 @@
 #include "Timer.h"
 #include "StageOrigin.h"
 
-const float MODELSIZE = 0.8f;
-const float AIR_DEC_VELOCITY_INIT = 1.0f;
-const float AIR_DEC_VELOCITY = 2.0f;
+const int MODELSIZE = 0.8f;
+//前の移動距離
+const XMFLOAT3 moveFront(0, 0, 1);
+//後ろの移動距離
+const XMFLOAT3 moveBack(0, 0, -1);
+//右の移動距離
+const XMFLOAT3 moveRight(1, 0, 0);
+//左の移動距離
+const XMFLOAT3 moveLeft(-1, 0, 0);
 
 Player::Player(GameObject* parent)
-	: GameObject(parent, "Player"), 
+	: GameObject(parent, "Player"),
 	hModel_(-1),
-	velocity_(XMVectorSet(0, 0, 0, 0)), sub_velocity_(XMVectorSet(0, 0, 0, 0)), 
-	jamp_start_velocity_(XMVectorSet(0, 0, 0, 0)), eyeDirection_(XMVectorSet(0, 0, 1, 0)),
+	moveVec_(0, 0, 0), destPos_(0, 0, 0), prevPos_(0, 0, 0),
+	velocity_(XMVectorSet(0, 0, 0, 0)),
+	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
 	camRot_(0, 0, 0), gravity_(0, 0, 0), 
 	playerState_(STATE_IDLE), prevPlayerState_(STATE_DEAD), stageState(STATE_START),
-	air_dec_velocity_(1),
 	hurdle_Limit_(0),
 	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
 	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
@@ -84,7 +91,8 @@ void Player::Update()
 	{
 	case STATE_START:
 		transform_.position_ = startPos_;
-		velocity_ = sub_velocity_ = XMVectorSet(0, 0, 0, 0);
+		prevPos_ = transform_.position_;
+		destPos_ = transform_.position_;
 		stageState = STATE_PLAY;
 		playerState_ = STATE_IDLE;
 		break;
@@ -131,6 +139,16 @@ void Player::Release()
 
 void Player::PlayUpdate()
 {
+	//カメラ
+	//プレイヤーとカメラとの距離
+	const XMFLOAT3 dirCamToPlayer = XMFLOAT3(0, 5, -5);
+	//カメラの位置
+	const XMFLOAT3 camPos = XMFLOAT3(transform_.position_.x + dirCamToPlayer.x,
+									 transform_.position_.y + dirCamToPlayer.y,
+									 transform_.position_.z + dirCamToPlayer.z);
+	Camera::SetPosition(camPos);
+	Camera::SetTarget(transform_.position_);
+	//コライダー
 	SphereCollider* pSC = new SphereCollider(MODELSIZE / 2);
 	this->AddCollider(pSC);
 
@@ -142,7 +160,6 @@ void Player::PlayUpdate()
 	}
 
 	SetAnimFramerate();
-	PlayerOperation();
 
 	switch (playerState_)
 	{
@@ -167,7 +184,7 @@ void Player::PlayUpdate()
 	{
 		//コンベアによって移動する方向
 		XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
-		standMath_ = SetStandMath(transform_.position_);
+		standMath_ = GetMathType(transform_.position_);
 		switch (standMath_.mathType_)
 		{
 		case MATH_CONVEYOR:
@@ -184,93 +201,105 @@ void Player::PlayUpdate()
 			break;
 		default:break;
 		}
-
-		velocity_ += XMLoadFloat3(&gravity_);
-		velocity_ += jamp_start_velocity_;
-		transform_.position_ += velocity_;
 	}
+
+	transform_.position_ = prevPos_ + velocity_;
 }
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 {
-	return (_pos.x + MODELSIZE) >= 0 && (_pos.x) < XSIZE - (1.0f - MODELSIZE) &&
-		(_pos.z + MODELSIZE) >= 0 && (_pos.z) < ZSIZE - (1.0f - MODELSIZE);
+	return _pos.x >= 0 && _pos.x < XSIZE &&
+		_pos.z  >= 0 && _pos.z < ZSIZE;
 }
 
 void Player::PlayerOperation()
 {
-	const int DEC_VELOCITY_INIT = 20;
-	const int DEC_VELOCITY_UPDATE = 5;
-	const int DEC_VELOCITY_LIMIT = 100;
-	static int dec_velocity_ = DEC_VELOCITY_INIT;
-
 	if (playerState_ != STATE_DEAD)
 	{
 		//前後左右移動
 		if (Input::IsKey(DIK_W))
 		{
-			sub_velocity_ += XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
-			sub_velocity_ = XMVector4Normalize(sub_velocity_); //正規化して全部1になる
-			dec_velocity_ = DEC_VELOCITY_INIT;
+			PlayerMoveFront();
 		}
 		if (Input::IsKey(DIK_S))
 		{
-			sub_velocity_ += XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-			sub_velocity_ = XMVector4Normalize(sub_velocity_);
-			dec_velocity_ = DEC_VELOCITY_INIT;
+			PlayerMoveBack();
 		}
 		if (Input::IsKey(DIK_A))
 		{
-			sub_velocity_ += XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f);
-			sub_velocity_ = XMVector4Normalize(sub_velocity_);
-			dec_velocity_ = DEC_VELOCITY_INIT;
+			PlayerMoveLeft();
 		}
 		if (Input::IsKey(DIK_D))
 		{
-			sub_velocity_ += XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
-			sub_velocity_ = XMVector4Normalize(sub_velocity_);
-			dec_velocity_ = DEC_VELOCITY_INIT;
-		}
-
-
-		velocity_ = sub_velocity_ / dec_velocity_ / air_dec_velocity_;
-
-		dec_velocity_ += DEC_VELOCITY_UPDATE;
-
-		if (dec_velocity_ >= DEC_VELOCITY_LIMIT)
-		{
-			velocity_ = sub_velocity_ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-			dec_velocity_ = DEC_VELOCITY_INIT;
-		}
-
-		//カメラ回転
-		//回転
-		if (Input::IsKey(DIK_RIGHT))
-		{
-			camRot_.y++;
-		}
-		if (Input::IsKey(DIK_LEFT))
-		{
-			camRot_.y--;
+			PlayerMoveRight();
 		}
 	}
+}
 
-	//カメラ回転
-	XMVECTOR cameraBase = XMVectorSet(0, 7, -5, 0);
+void Player::PlayerMoveFront()
+{
+	//移動距離
+	moveVec_ = moveFront;
+	//進んだ先の位置
+	destPos_ = XMFLOAT3(transform_.position_.x + moveVec_.x,
+						transform_.position_.y + moveVec_.y,
+						transform_.position_.z + moveVec_.z);
+	standMath_ = GetMathType(destPos_);
+	prevPos_ = transform_.position_;
+	if (standMath_.mathType_ == MATH_WALL)
+	{
+		return;
+	}
+	playerState_ = STATE_WALK;
+}
 
-	XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(camRot_.y));
+void Player::PlayerMoveBack()
+{
+}
 
-	XMVECTOR cameraRotVec = XMVector3Transform(cameraBase, yrot);
+void Player::PlayerMoveRight()
+{
+}
 
-	XMVECTOR vPos = XMVectorSet(transform_.position_.x, 1, transform_.position_.z, 0);
+void Player::PlayerMoveLeft()
+{
+}
 
-	Camera::SetPosition(vPos + cameraRotVec);
-	Camera::SetTarget(XMFLOAT3(transform_.position_.x, 1, transform_.position_.z));
+MATHDEDAIL Player::GetMathType(XMFLOAT3 _pos)
+{
+	if (!Is_InSide_Table(_pos))
+	{
+		return MATHDEDAIL{ MATH_HOLE, transform_};
+	}
+	return math_[_pos.x][_pos.z];
+}
 
+void Player::IdleUpdate()
+{
+	transform_.position_ = destPos_;
+	prevPos_ = transform_.position_;
+	velocity_ = XMVectorSet(0, 0, 0, 0);
+	PlayerOperation();
+}
 
-	//移動方向回転
-	velocity_ = XMVector3Transform(velocity_, yrot);
+void Player::WalkUpdate()
+{
+	//moveCountの初期値
+	const float cntInit = 0;
+	//moveCountの毎秒増えていく値
+	const float cntUpdate = 0.03f;
+	static float moveCount = cntInit;
+	moveCount += cntUpdate;
+	
+	Easing* pEasing = new Easing();
+	//velocity_に入れるためのXMFLOAT3型の変数
+	XMFLOAT3 vec;
+	vec.x = moveVec_.x * pEasing->EaseInSine(moveCount);
+	vec.y = moveVec_.y * pEasing->EaseInSine(moveCount);
+	vec.z = moveVec_.z * pEasing->EaseInSine(moveCount);
 
+	velocity_ = XMLoadFloat3(&vec);
+	//進む方向に視線方向を合わせる
 	if (XMVectorGetX(XMVector3Length(velocity_)) != 0)
 	{
 		XMVECTOR v = XMVector3Dot(eyeDirection_, XMVector3Normalize(velocity_));
@@ -287,81 +316,19 @@ void Player::PlayerOperation()
 		}
 		transform_.rotate_.y = angle;
 	}
-
-	//ジャンプ
-	if (Input::IsKeyDown(DIK_SPACE) && 
-	(playerState_ == STATE_WALK || playerState_ == STATE_IDLE))
+	float a = pEasing->EaseInSine(moveCount);
+	if ((int)a)
 	{
-		playerState_ = STATE_JAMP;
-		jamp_start_velocity_ = velocity_ / (air_dec_velocity_ + 1);
-	}
-	
-}
-
-MATHDEDAIL Player::SetStandMath(XMFLOAT3 _pos)
-{
-	if (!Is_InSide_Table(_pos))
-	{
-		return MATHDEDAIL{ MATH_HOLE, transform_};
-	}
-	MATHDEDAIL ret;
-
-	float plusX = MODELSIZE / 2, plusZ = MODELSIZE / 2;
-	if (XSIZE - transform_.position_.x < plusX)
-	{
-		plusX = (float)(XSIZE - transform_.position_.x) - 0.00001f;
-	}
-	if (ZSIZE - transform_.position_.z < plusZ)
-	{
-		plusZ = (float)(ZSIZE - transform_.position_.z) - 0.00001f;
-	}
-	centerPos_ =
-		XMFLOAT3(transform_.position_.x + plusX, transform_.position_.y, transform_.position_.z + plusZ);
-
-	ret = math_[centerPos_.x][centerPos_.z];
-	//HOLLチェック
-	ret = HollCheck(centerPos_);
-
-	//WALLチェック
-	WallCheck(_pos);
-
-	return ret;
-}
-
-void Player::IdleUpdate()
-{
-	tableHitPoint_ = XMFLOAT3(0, 0, 0);
-	isTableHit_ = false;
-	gravity_ = XMFLOAT3(0, 0, 0);
-	transform_.position_.y = startPos_.y;
-	air_dec_velocity_ = AIR_DEC_VELOCITY_INIT;
-	jamp_start_velocity_ = XMVectorSet(0, 0, 0, 0);
-
-	if (XMVectorGetX(XMVector3Length(velocity_)))
-	{
-		playerState_ = STATE_WALK;
-	}
-}
-
-void Player::WalkUpdate()
-{
-	tableHitPoint_ = XMFLOAT3(0, 0, 0);
-	isTableHit_ = false;
-	gravity_ = XMFLOAT3(0, 0, 0);
-	transform_.position_.y = startPos_.y;
-	air_dec_velocity_ = AIR_DEC_VELOCITY_INIT;
-	jamp_start_velocity_ = XMVectorSet(0, 0, 0, 0);
-
-	if (!XMVectorGetX(XMVector3Length(velocity_)))
-	{
+		moveCount = 0;
+		transform_.position_ = destPos_;
 		playerState_ = STATE_IDLE;
 	}
+
 }
 
 void Player::JampUpdate()
 {
 	gravity_.y = 0.2f;
-	air_dec_velocity_ = AIR_DEC_VELOCITY;
 	if (transform_.position_.y >= 1.5f)
 	{
 		playerState_ = STATE_FALL;
@@ -371,7 +338,6 @@ void Player::JampUpdate()
 void Player::FallUpdate()
 {
 	gravity_.y += -0.01f;
-	air_dec_velocity_ = AIR_DEC_VELOCITY;
 	if (transform_.position_.y < 1.0f && !isTableHit_)
 	{
 		isTableHit_ = true;
@@ -379,7 +345,7 @@ void Player::FallUpdate()
 	}
 	if (isTableHit_)
 	{
-		if (SetStandMath(tableHitPoint_).mathType_ != (int)MATH_HOLE)
+		if (GetMathType(tableHitPoint_).mathType_ != (int)MATH_HOLE)
 		{
 			playerState_ = STATE_WALK;
 			return;
@@ -437,114 +403,6 @@ void Player::SetAnimFramerate()
 		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
 	}
 	prevPlayerState_ = playerState_;
-}
-
-MATHDEDAIL Player::HollCheck(XMFLOAT3 _pos)
-{
-	const float colRange = 0.3f;
-	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + colRange, _pos.y, _pos.z + colRange);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + colRange, _pos.y, _pos.z);
-	XMFLOAT3 leftFront = XMFLOAT3(_pos.x, _pos.y, _pos.z + colRange);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x, _pos.y, _pos.z);
-
-	if (Is_InSide_Table(rightFront) &&
-		math_[rightFront.x][rightFront.z].mathType_ != MATH_WALL &&
-		math_[rightFront.x][rightFront.z].mathType_ != MATH_HOLE)
-	{
-		return math_[rightFront.x][rightFront.z];
-	}
-	else if (Is_InSide_Table(rightBack) &&
-		math_[rightBack.x][rightBack.z].mathType_ != MATH_WALL &&
-		math_[rightBack.x][rightBack.z].mathType_ != MATH_HOLE)
-	{
-		return math_[rightBack.x][rightBack.z];
-	}
-	else if (Is_InSide_Table(leftFront) &&
-		math_[leftFront.x][leftFront.z].mathType_ != MATH_WALL &&
-		math_[leftFront.x][leftFront.z].mathType_ != MATH_HOLE)
-	{
-		return math_[leftFront.x][leftFront.z];
-	}
-	else if (Is_InSide_Table(leftBack) &&
-		math_[leftBack.x][leftBack.z].mathType_ != MATH_WALL &&
-		math_[leftBack.x][leftBack.z].mathType_ != MATH_HOLE)
-	{
-		return math_[leftBack.x][leftBack.z];
-	}
-	return math_[_pos.x][_pos.z];
-}
-
-void Player::WallCheck(XMFLOAT3 _pos)
-{
-	XMFLOAT3 rightFront = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 rightBack = XMFLOAT3(_pos.x + MODELSIZE, _pos.y, _pos.z + (1.0f - MODELSIZE));
-	XMFLOAT3 leftFront = XMFLOAT3(_pos.x + (1.0f - MODELSIZE), _pos.y, _pos.z + MODELSIZE);
-	XMFLOAT3 leftBack = XMFLOAT3(_pos.x + (1.0f - MODELSIZE), _pos.y, _pos.z + (1.0f - MODELSIZE));
-
-	if (Is_InSide_Table(rightFront) &&
-		math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
-	{
-		//前
-		if (abs((float)((int)rightFront.x - rightFront.x)) > abs((float)((int)rightFront.z - rightFront.z)) ||
-			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.z = (float)((int)rightFront.z) - (rightFront.z - _pos.z);
-		}
-		//右
-		if (abs((float)((int)rightFront.x - rightFront.x)) < abs((float)((int)rightFront.z - rightFront.z)) ||
-			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.x = (float)((int)rightFront.x) - (rightFront.x - _pos.x);
-		}
-	}
-	if (Is_InSide_Table(rightBack) &&
-		math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
-	{
-		//後ろ
-		if (abs((float)((int)rightBack.x - rightBack.x)) >= abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
-			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.z = (float)(int)(rightBack.z + 1) - (rightBack.z - _pos.z);
-		}
-		//右
-		if (abs((float)((int)rightBack.x - rightBack.x)) < abs((float)((int)(rightBack.z + 1) - rightBack.z)) ||
-			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.x = (float)(int)rightBack.x - (rightBack.x - _pos.x);
-		}
-	}
-	if (Is_InSide_Table(leftFront) &&
-		math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
-	{
-		//前
-		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) >= abs((float)((int)leftFront.z - leftFront.z)) ||
-			math_[rightFront.x][rightFront.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.z = (float)(int)leftFront.z - (leftFront.z - _pos.z);
-		}
-		//左
-		if (abs((float)((int)(leftFront.x + 1) - leftFront.x)) < abs((float)((int)leftFront.z - leftFront.z)) ||
-			math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.x = (float)(int)(leftFront.x + 1) - (leftFront.x - _pos.x);
-		}
-	}
-	if (Is_InSide_Table(leftBack) &&
-		math_[leftBack.x][leftBack.z].mathType_ == MATH_WALL)
-	{
-		//後ろ
-		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) >= abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
-			math_[rightBack.x][rightBack.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.z = (float)(int)(leftBack.z + 1) - (leftBack.z - _pos.z);
-		}
-		//左
-		if (abs((float)((int)(leftBack.x + 1) - leftBack.x)) < abs((float)((int)(leftBack.z + 1) - leftBack.z)) ||
-			math_[leftFront.x][leftFront.z].mathType_ == MATH_WALL)
-		{
-			transform_.position_.x = (float)(int)(leftBack.x + 1) - (leftBack.x - _pos.x);
-		}
-	}
 }
 
 void Player::OnCollision(GameObject* pTarget)

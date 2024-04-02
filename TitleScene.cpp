@@ -17,8 +17,21 @@ TitleScene::TitleScene(GameObject* parent)
 
 void TitleScene::Initialize()
 {
-	hStartButton_ = Image::Load("Assets\\Logo_StartButton.png");
+	//ボタンのファイルネーム
+	std::string sbStr = "Button_GameStart.png";
+	std::string exStr = "Button_Exit.png";
+	//ボタンのファイルが入ってるフォルダ
+	std::string folderName1 = "Assets\\";
+	std::string folderName2 = "MathButton\\";
+	sbStr = folderName1 + folderName2 + sbStr;
+	exStr = folderName1 + folderName2 + exStr;
+	//スタートボタンロード
+	hStartButton_ = Image::Load(sbStr);
 	assert(hStartButton_ >= 0);
+	//ゲーム終了ボタンロード
+	hExitButton_ = Image::Load(exStr);
+	assert(hExitButton_ >= 0);
+
 	hStaful_ = Image::Load("Assets\\Logo_Staful.png");
 	assert(hStaful_ >= 0);
 

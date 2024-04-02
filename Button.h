@@ -12,6 +12,8 @@ class Button
 	//true : ‰Ÿ‚¹‚é
 	//false : ‰Ÿ‚¹‚È‚¢
 	bool isCanPush_;
+	//ƒJ[ƒ\ƒ‹‚ª‡‚¤‚©
+	bool isCursorMatched_;
 
 	int hPict_;
 

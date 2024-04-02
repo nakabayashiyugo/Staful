@@ -2,6 +2,7 @@
 #include "Engine/GameObject.h"
 
 class SceneTransition;
+class Easing;
 
 enum COURSELOGOSTATE
 {
@@ -13,14 +14,17 @@ enum COURSELOGOSTATE
 class BetweenScene
 	:public GameObject
 {
+	//各ロゴの動きを制御するカウント
 	float logoPlayerMoveCount_;
 	float logoCourseMoveCount_;
 
+	//各ロゴの画像番号
 	int hPlayer_;
 	int hPlayer1_, hPlayer2_;
 	int hLogoEmptyCourse_, hLogoCourse1_, hLogoCourse2_;
 	int hLogoMapCreate_, hLogoPlay_;
 
+	//各ロゴのトランスフォーム
 	Transform tLogoStandard_;
 	Transform tPlayer1_, tPlayer2_;
 	Transform tLogoCourse1_, tLogoCourse2_;
@@ -31,6 +35,9 @@ class BetweenScene
 	SceneTransition* pST_;
 
 	int curScene_;
+
+	//イージングを使えるようにするクラス
+	Easing* pEasing_;
 public:
 	BetweenScene(GameObject* parent);
 
@@ -50,7 +57,4 @@ public:
 	void Player2MapEditUpdate();
 	void Player1PlayUpdate();
 	void Player2PlayUpdate();
-
-	float EaseInSine(float pos);
-	float EaseInOutBack(float pos);
 };

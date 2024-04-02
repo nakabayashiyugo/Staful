@@ -42,8 +42,17 @@ class Player
 
 	PlayScene* pPlayScene_;
 
-	XMVECTOR sub_velocity_, velocity_, jamp_start_velocity_;
+	//移動距離
+	XMFLOAT3 moveVec_;
+	//移動先の位置
+	XMFLOAT3 destPos_;
+	//移動前の位置
+	XMFLOAT3 prevPos_;
+	//移動ベクトル
+	XMVECTOR velocity_;
+	//視線ベクトル
 	XMVECTOR eyeDirection_;
+
 
 	XMFLOAT3 tableHitPoint_;
 	bool isTableHit_;
@@ -52,20 +61,20 @@ class Player
 	XMFLOAT3 centerPos_;
 	XMFLOAT3 camRot_;
 
-
+	//プレイヤーの状態
 	PLAYER_STATE playerState_;
+	//プレイヤーの直前の状態
 	PLAYER_STATE prevPlayerState_;
+	//ゲームの進行度の状態
 	STAGE_STATE stageState;
 	//アニメーションのフレーム
 	int nowFrame_, startFrame_, endFrame_;
 
+	//立っているマスの情報
 	MATHDEDAIL standMath_;
 
 	//重力
 	XMFLOAT3 gravity_;
-
-	//空中でのスピード減衰
-	int air_dec_velocity_;
 
 	//障害物の置ける数
 	int hurdle_Limit_;
@@ -89,6 +98,16 @@ public:
 	void Release() override;
 
 	void PlayUpdate();
+	//プレイヤーの操作に関する関数
+	void PlayerOperation();
+	//前移動
+	void PlayerMoveFront();
+	//後ろ移動
+	void PlayerMoveBack();
+	//右移動
+	void PlayerMoveRight();
+	//左移動
+	void PlayerMoveLeft();
 
 	void IdleUpdate();
 	void WalkUpdate();
@@ -105,15 +124,13 @@ public:
 
 	bool Is_InSide_Table(XMFLOAT3 _pos);
 
-	void PlayerOperation();
+	
 
 	bool Is_Goal() { return isGoal_; }
 
 	XMFLOAT3 GetPosition() { return centerPos_; }
 
-	MATHDEDAIL SetStandMath(XMFLOAT3 _pos);
-	MATHDEDAIL HollCheck(XMFLOAT3 _pos);
-	void WallCheck(XMFLOAT3 _pos);
+	MATHDEDAIL GetMathType(XMFLOAT3 _pos);
 
 	bool GetFailed() {
 		if (stageState == STATE_FAILURE)

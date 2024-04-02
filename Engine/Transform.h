@@ -44,4 +44,11 @@ inline XMFLOAT3 operator += (XMFLOAT3& p, const XMVECTOR& v)
 	XMStoreFloat3(&p, pv);
 	return p;
 }
+inline XMFLOAT3 operator + (XMFLOAT3 p, const XMVECTOR v)
+{
+	XMVECTOR pv = XMLoadFloat3(&p);
+	pv += v;
+	XMStoreFloat3(&p, pv);
+	return p;
+}
 
