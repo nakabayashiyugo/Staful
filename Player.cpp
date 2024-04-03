@@ -27,11 +27,11 @@ const XMFLOAT3 moveLeft(-1, 0, 0);
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
 	hModel_(-1),
-	moveVec_(0, 0, 0), destPos_(0, 0, 0), prevPos_(0, 0, 0),
+	moveDir_(0, 0, 0), destPos_(0, 0, 0), prevPos_(0, 0, 0),
 	velocity_(XMVectorSet(0, 0, 0, 0)),
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
 	camRot_(0, 0, 0), gravity_(0, 0, 0), 
-	playerState_(STATE_IDLE), prevPlayerState_(STATE_DEAD), stageState(STATE_START),
+	playerState_(STATE_IDLE), prevPlayerState_(STATE_DEAD), stageState_(STATE_START),
 	hurdle_Limit_(0),
 	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
 	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
@@ -87,13 +87,13 @@ void Player::Update()
 {
 	Stage* pStage = (Stage*)FindObject("Stage");
 	
-	switch (stageState)
+	switch (stageState_)
 	{
 	case STATE_START:
 		transform_.position_ = startPos_;
 		prevPos_ = transform_.position_;
 		destPos_ = transform_.position_;
-		stageState = STATE_PLAY;
+		stageState_ = STATE_PLAY;
 		playerState_ = STATE_IDLE;
 		break;
 	case STATE_PLAY:
@@ -156,7 +156,7 @@ void Player::PlayUpdate()
 	pTimer_->Update();
 	if (pTimer_->isTimeUpped())
 	{
-		stageState = STATE_FAILURE;
+		stageState_ = STATE_FAILURE;
 	}
 
 	SetAnimFramerate();
@@ -179,31 +179,6 @@ void Player::PlayUpdate()
 		DeadUpdate();
 		break;
 	}
-
-	if (playerState_ != STATE_DEAD)
-	{
-		//コンベアによって移動する方向
-		XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
-		standMath_ = GetMathType(transform_.position_);
-		switch (standMath_.mathType_)
-		{
-		case MATH_CONVEYOR:
-			XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(-standMath_.mathPos_.rotate_.z));
-			converyor_velocity = XMVector3Transform(converyor_velocity, yrot);	//その回転でベクトルの向きを変える
-			converyor_velocity = converyor_velocity * 0.04f;
-			if (playerState_ == STATE_WALK || playerState_ == STATE_IDLE)		velocity_ += converyor_velocity;
-			break;
-		case MATH_GOAL:
-			stageState = STATE_GOAL;
-			break;
-		case MATH_HOLE:
-			playerState_ = STATE_FALL;
-			break;
-		default:break;
-		}
-	}
-
-	transform_.position_ = prevPos_ + velocity_;
 }
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
@@ -219,50 +194,45 @@ void Player::PlayerOperation()
 		//前後左右移動
 		if (Input::IsKey(DIK_W))
 		{
-			PlayerMoveFront();
+			//移動距離
+			moveDir_ = moveFront;
+			PlayerMove();
 		}
 		if (Input::IsKey(DIK_S))
 		{
-			PlayerMoveBack();
+			//移動距離
+			moveDir_ = moveBack;
+			PlayerMove();
 		}
 		if (Input::IsKey(DIK_A))
 		{
-			PlayerMoveLeft();
+			//移動距離
+			moveDir_ = moveLeft;
+			PlayerMove();
 		}
 		if (Input::IsKey(DIK_D))
 		{
-			PlayerMoveRight();
+			//移動距離
+			moveDir_ = moveRight;
+			PlayerMove();
 		}
 	}
 }
 
-void Player::PlayerMoveFront()
+void Player::PlayerMove()
 {
-	//移動距離
-	moveVec_ = moveFront;
 	//進んだ先の位置
-	destPos_ = XMFLOAT3(transform_.position_.x + moveVec_.x,
-						transform_.position_.y + moveVec_.y,
-						transform_.position_.z + moveVec_.z);
+	destPos_ = XMFLOAT3(transform_.position_.x + moveDir_.x,
+						transform_.position_.y + moveDir_.y,
+						transform_.position_.z + moveDir_.z);
 	standMath_ = GetMathType(destPos_);
 	prevPos_ = transform_.position_;
+	//進む先が壁だったら移動しない
 	if (standMath_.mathType_ == MATH_WALL)
 	{
 		return;
 	}
 	playerState_ = STATE_WALK;
-}
-
-void Player::PlayerMoveBack()
-{
-}
-
-void Player::PlayerMoveRight()
-{
-}
-
-void Player::PlayerMoveLeft()
-{
 }
 
 MATHDEDAIL Player::GetMathType(XMFLOAT3 _pos)
@@ -279,24 +249,27 @@ void Player::IdleUpdate()
 	transform_.position_ = destPos_;
 	prevPos_ = transform_.position_;
 	velocity_ = XMVectorSet(0, 0, 0, 0);
+	//playerの操作
 	PlayerOperation();
+	//立っているマスの効果
+	MathTypeEffect();
 }
 
 void Player::WalkUpdate()
 {
 	//moveCountの初期値
-	const float cntInit = 0;
+	const float cntInit = 1;
 	//moveCountの毎秒増えていく値
-	const float cntUpdate = 0.03f;
+	const float cntUpdate = -0.03f;
 	static float moveCount = cntInit;
 	moveCount += cntUpdate;
 	
 	Easing* pEasing = new Easing();
 	//velocity_に入れるためのXMFLOAT3型の変数
 	XMFLOAT3 vec;
-	vec.x = moveVec_.x * pEasing->EaseInSine(moveCount);
-	vec.y = moveVec_.y * pEasing->EaseInSine(moveCount);
-	vec.z = moveVec_.z * pEasing->EaseInSine(moveCount);
+	vec.x = moveDir_.x * (cntInit - pEasing->EaseInSine(moveCount));
+	vec.y = moveDir_.y * (cntInit - pEasing->EaseInSine(moveCount));
+	vec.z = moveDir_.z * (cntInit - pEasing->EaseInSine(moveCount));
 
 	velocity_ = XMLoadFloat3(&vec);
 	//進む方向に視線方向を合わせる
@@ -316,14 +289,14 @@ void Player::WalkUpdate()
 		}
 		transform_.rotate_.y = angle;
 	}
-	float a = pEasing->EaseInSine(moveCount);
-	if ((int)a)
+	if (moveCount <= 0)
 	{
-		moveCount = 0;
+		moveCount = cntInit;
 		transform_.position_ = destPos_;
 		playerState_ = STATE_IDLE;
 	}
 
+	transform_.position_ = prevPos_ + velocity_;
 }
 
 void Player::JampUpdate()
@@ -370,11 +343,38 @@ void Player::ReturnToStartMath()
 	if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
 		abs(startPos_.z - transform_.position_.z) <= 0.01f)
 	{
-		stageState = STATE_START;
+		stageState_ = STATE_START;
 	}
 	transform_.position_.x = transform_.position_.x + (startPos_.x - transform_.position_.x) / 10;
 	transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
 	transform_.position_.y = 10;
+}
+
+void Player::MathTypeEffect()
+{
+	//コンベアによって移動する方向
+	const XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
+	//自分の立っているマスの情報
+	standMath_ = GetMathType(transform_.position_);
+	switch (standMath_.mathType_)
+	{
+	case MATH_CONVEYOR:
+		//立っているコンベアの向いている方向を入れる回転行列
+		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(-standMath_.mathPos_.rotate_.z));
+		//上の回転行列でconveryor_velocityの変える
+		XMVECTOR rotConvVec = XMVector3Transform(converyor_velocity, yrot);
+		//移動方向を上のベクトルにする
+		XMStoreFloat3(&moveDir_, rotConvVec);
+		PlayerMove();
+		break;
+	case MATH_GOAL:
+		stageState_ = STATE_GOAL;
+		break;
+	case MATH_HOLE:
+		playerState_ = STATE_FALL;
+		break;
+	default:break;
+	}
 }
 
 void Player::SetAnimFramerate()

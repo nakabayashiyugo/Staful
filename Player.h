@@ -42,8 +42,8 @@ class Player
 
 	PlayScene* pPlayScene_;
 
-	//移動距離
-	XMFLOAT3 moveVec_;
+	//移動方向
+	XMFLOAT3 moveDir_;
 	//移動先の位置
 	XMFLOAT3 destPos_;
 	//移動前の位置
@@ -66,7 +66,7 @@ class Player
 	//プレイヤーの直前の状態
 	PLAYER_STATE prevPlayerState_;
 	//ゲームの進行度の状態
-	STAGE_STATE stageState;
+	STAGE_STATE stageState_;
 	//アニメーションのフレーム
 	int nowFrame_, startFrame_, endFrame_;
 
@@ -100,47 +100,42 @@ public:
 	void PlayUpdate();
 	//プレイヤーの操作に関する関数
 	void PlayerOperation();
-	//前移動
-	void PlayerMoveFront();
-	//後ろ移動
-	void PlayerMoveBack();
-	//右移動
-	void PlayerMoveRight();
-	//左移動
-	void PlayerMoveLeft();
+	//移動
+	void PlayerMove();
 
+	//それぞれの状態のUpdate
 	void IdleUpdate();
 	void WalkUpdate();
 	void JampUpdate();
 	void FallUpdate();
 	void DeadUpdate();
+
+	//スタートマスに戻す
 	void ReturnToStartMath();
 
+	//自分の立っているマスの効果
+	void MathTypeEffect();
+
+	//ヒットストップ
 	float GetHitStopTime() { return hitStopTime_; }
 	bool GetHitStop() { return isHitStop_; }
 	void SetHitStop(bool _ishit) { isHitStop_ = _ishit; }
 
+	//アニメーションのフレームレート
 	void SetAnimFramerate();
 
+	//playerがステージ内に入っているか
 	bool Is_InSide_Table(XMFLOAT3 _pos);
-
-	
-
-	bool Is_Goal() { return isGoal_; }
 
 	XMFLOAT3 GetPosition() { return centerPos_; }
 
+	//戻り値 : 引数の位置のマスの種類
 	MATHDEDAIL GetMathType(XMFLOAT3 _pos);
 
-	bool GetFailed() {
-		if (stageState == STATE_FAILURE)
-		{
-			return true;
-		}
-		return false;
-	}
 	PLAYER_STATE GetPlayerState() { return playerState_; }
+	STAGE_STATE GetStageState() { return stageState_; }
 
+	//当たり判定
 	void OnCollision(GameObject* pTarget) override;
 
 	//時間ゲージ

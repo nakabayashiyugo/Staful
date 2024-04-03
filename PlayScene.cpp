@@ -37,16 +37,13 @@ void PlayScene::Update()
 {
 	if (pParent_->GetObjectName() == "SceneTransition")
 	{
-		pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-		pStage_ = (Stage*)FindObject("Stage");
-		pPlayer_ = (Player*)FindObject("Player");
-		if (pPlayer_->Is_Goal())
+		if (pPlayer_->GetStageState() == STATE_GOAL)
 		{
 			pTrans_->SetNextScene();
 			pTrans_->SetIsClear(player_Num_, true);
 			KillMe();
 		}
-		if (pPlayer_->GetFailed())
+		if (pPlayer_->GetStageState() == STATE_FAILURE)
 		{
 			pTrans_->SetNextScene();
 			KillMe();
@@ -55,17 +52,16 @@ void PlayScene::Update()
 	//テストプレイの場合
 	if (pParent_->GetObjectName() == "MapEditScene")
 	{
-		if (pPlayer_->Is_Goal())
+		MapEditScene* pMES = (MapEditScene*)FindObject("MapEditScene");
+		if (pPlayer_->GetStageState() == STATE_GOAL)
 		{
-			MapEditScene* pMES = (MapEditScene*)FindObject("MapEditScene");
 			pMES->SetIsClear(true);
 			//マップエディター表示
 			pMES->IsHidden(false);
 			KillMe();
 		}
-		if (pPlayer_->GetFailed())
+		if (pPlayer_->GetStageState() == STATE_FAILURE)
 		{
-			MapEditScene* pMES = (MapEditScene*)FindObject("MapEditScene");
 			//マップエディター表示
 			pMES->IsHidden(false);
 			KillMe();
