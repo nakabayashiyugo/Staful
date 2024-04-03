@@ -21,14 +21,18 @@ const int PLAYERNUM = 2;
 class SceneTransition
 	:public GameObject, StageOrigin
 {
+	//playerがクリアしたかどうか
 	bool isClear_Player_[PLAYERNUM];
-	bool isFinished_;
+	//現在のターン数
 	int turnNum_;
+	//playerの番号
 	int player_Num_;
+	//コースを保存するファイル番号
 	int saveNum_;
 	
 	PlayScene* pPS_[PLAYERNUM];
 
+	//ロゴの画像番号
 	int hPlayer1_, hPlayer2_;
 	int hWin_, hLose_;
 
@@ -69,9 +73,11 @@ public:
 		isClear_Player_[_player_num] = _isClear;
 	}
 
-	void SetIsFinished(bool _isfinished) { isFinished_ = _isfinished; }
-
+	//コースのファイルへの書き込み
 	void Write();
+	//playerがクリアしたかどうかのファイルへの書き込み
+	void ResultWrite();
+
 
 	void SetNextScene() { sceneState_ = (SCENESTATE)((int)sceneState_ + 1); }
 };

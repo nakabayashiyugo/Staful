@@ -1,4 +1,5 @@
 #include "SceneManager.h"
+#include "../ResultScene.h"
 #include "../ThankyouScene.h"
 #include "../TitleScene.h"
 #include "../PlayScene.h"
@@ -39,7 +40,7 @@ void SceneManager::Update()
 		{
 		case SCENE_ID_PLAY:
 			Instantiate<PlayScene>(this);
-				break;
+			break;
 		case SCENE_ID_EDIT:
 			Instantiate<MapEditScene>(this);
 			break;
@@ -48,6 +49,9 @@ void SceneManager::Update()
 			break;
 		case SCENE_ID_TITLE:
 			Instantiate<TitleScene>(this);
+			break;
+		case SCENE_ID_RESULT:
+			Instantiate<ResultScene>(this);
 			break;
 		case SCENE_ID_THANK:
 			Instantiate<ThankyouScene>(this);

@@ -398,7 +398,7 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 void MapEditScene::Write()
 {
 	std::ofstream write;
-	std::string savefile = "StageSaveFile\\saveMath";
+	std::string savefile = saveFolderName + "saveMath";
 	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 
@@ -417,7 +417,7 @@ void MapEditScene::Write()
 	write.close();  //ファイルを閉じる
 
 	//とげとげルート
-	savefile = "StageSaveFile\\tgtgRoute";
+	savefile = saveFolderName + "tgtgRoute";
 	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 	//  ファイルが開けなかったときのエラー表示
@@ -435,7 +435,7 @@ void MapEditScene::Write()
 void MapEditScene::Read()
 {
 	std::ifstream read;
-	std::string savefile = "StageSaveFile\\saveMath";
+	std::string savefile = saveFolderName + "saveMath";
 	
 	savefile += std::to_string(saveNum_);
 	read.open(savefile, std::ios::in);
@@ -461,7 +461,7 @@ void MapEditScene::Read()
 	read.close();  //ファイルを閉じる
 
 	//とげとげルート
-	savefile = "StageSaveFile\\tgtgRoute";
+	savefile = saveFolderName + "tgtgRoute";
 	savefile += std::to_string(saveNum_);
 	read.open(savefile, std::ios::in);
 	if (!read) {

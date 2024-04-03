@@ -183,7 +183,7 @@ void Stage::SetBlock(int x, int z, MATHTYPE _type)
 void Stage::Write()
 {
 	std::ofstream write;
-	std::string savefile = "StageSaveFile\\saveMath";
+	std::string savefile = saveFolderName + "saveMath";
 	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 
@@ -204,7 +204,7 @@ void Stage::Write()
 	write.close();  //ファイルを閉じる
 
 	//とげとげルート
-	savefile = "StageSaveFile\\tgtgRoute";
+	savefile = saveFolderName + "tgtgRoute";
 	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 	//  ファイルが開けなかったときのエラー表示

@@ -14,14 +14,19 @@ SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), 
 	sceneState_(SCENE_MAPEDIT1), prevSceneState_(SCENE_TURNEND),
 	turnNum_(0), player_Num_(0), saveNum_(saveFileName1),
-	isClear_Player_{ false, false }, isFinished_(false), 
+	isClear_Player_{ false, false },
 	hPlayer1_(-1), hPlayer2_(-1), hWin_(-1), hLose_(-1)
 {
-	XSIZE = (rand() % 15) + 5;
-	ZSIZE = (rand() % 15) + 5;
+	//ステージの最小サイズ
+	const int stageSizeMin = 5;
+	//ステージの最大サイズ
+	const int stageSizeMax = 20;
+	XSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
+	ZSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
 
 	Math_Resize(XSIZE, ZSIZE, &math_);
 
+	//すべてFloorで初期化
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < ZSIZE; y++)
@@ -51,6 +56,7 @@ void SceneTransition::Initialize()
 
 void SceneTransition::Update()
 {
+	SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
 	if (sceneState_ != prevSceneState_)
 	{
 		switch (sceneState_)
@@ -85,16 +91,8 @@ void SceneTransition::Update()
 			pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
 			break;
 		case SCENE_TURNEND:
-			if (isClear_Player_[0] == isClear_Player_[1])
-			{
-				sceneState_ = SCENESTATE(0);
-				isClear_Player_[0] = isClear_Player_[1] = false;
-				return;
-			}
-			else
-			{
-				isFinished_ = true;
-			}
+			ResultWrite();
+			pSM->ChangeScene(SCENE_ID_RESULT);
 			break;
 		default:
 			break;
@@ -107,6 +105,12 @@ void SceneTransition::Draw()
 {
 	Transform player;
 	player.position_ = XMFLOAT3(0.7, 0.8, 0);
+	const float hpRectx = 112;
+	const float hpRecty = 17;
+	const float hpRectWidth = 280;
+	const float hpRectHeight = 75;
+	Image::SetRect(hPlayer1_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
+	Image::SetRect(hPlayer2_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
 	switch (sceneState_)
 	{
 	case SCENE_MAPEDIT1:
@@ -120,7 +124,7 @@ void SceneTransition::Draw()
 		Image::Draw(hPlayer2_);
 		break;
 	}
-	if (isFinished_)
+	/*if (isFinished_)
 	{
 		const int finishTime = 3;
 		static int cnt = 0;
@@ -131,12 +135,7 @@ void SceneTransition::Draw()
 			pSM->ChangeScene(SCENE_ID_THANK);
 		}
 
-		const float hpRectx = 112;
-		const float hpRecty = 17;
-		const float hpRectWidth = 280;
-		const float hpRectHeight = 75;
-		Image::SetRect(hPlayer1_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
-		Image::SetRect(hPlayer2_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
+		
 		player.position_ = XMFLOAT3(-0.3, 0.1, 0);
 		Image::SetTransform(hPlayer1_, player);
 		player.position_ = XMFLOAT3(0.3, 0.1, 0);
@@ -159,7 +158,7 @@ void SceneTransition::Draw()
 		Image::Draw(hPlayer2_);
 		Image::Draw(hWin_);
 		Image::Draw(hLose_);
-	}
+	}*/
 }
 
 void SceneTransition::Release()
@@ -170,7 +169,7 @@ void SceneTransition::Release()
 void SceneTransition::Write()
 {
 	std::ofstream write;
-	std::string savefile = "StageSaveFile\\saveMath";
+	std::string savefile = saveFolderName + "saveMath";
 	savefile += std::to_string(saveNum_);
 
 	write.open(savefile, std::ios::out);
@@ -192,7 +191,7 @@ void SceneTransition::Write()
 	write.close();  //ファイルを閉じる
 
 	//とげとげルート
-	savefile = "StageSaveFile\\tgtgRoute";
+	savefile = saveFolderName + "tgtgRoute";
 	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
 	//  ファイルが開けなかったときのエラー表示
@@ -204,5 +203,36 @@ void SceneTransition::Write()
 	{
 		write.write((char*)&itr, sizeof(itr));
 	}
+	write.close();  //ファイルを閉じる
+}
+
+void SceneTransition::ResultWrite()
+{
+	//player１のリザルトを保存
+	std::ofstream write;
+	std::string savefile = saveFolderName + "saveResult";
+	savefile += std::to_string(saveFileName1);
+
+	write.open(savefile, std::ios::out);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+
+	write.write((char*)&isClear_Player_[saveFileName1 - 1], sizeof(&isClear_Player_[saveFileName1 - 1]));
+	write.close();  //ファイルを閉じる
+
+	//player２のリザルトを保存
+	savefile = saveFolderName + "saveResult";
+	savefile += std::to_string(saveFileName2);
+	write.open(savefile, std::ios::out);
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+	write.write((char*)&isClear_Player_[saveFileName2 - 1], sizeof(&isClear_Player_[saveFileName2 - 1]));
 	write.close();  //ファイルを閉じる
 }

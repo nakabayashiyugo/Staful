@@ -80,7 +80,7 @@ void PlayScene::Release()
 void PlayScene::Read()
 {
 	std::ifstream read;
-	std::string openfile = "StageSaveFile\\saveMath";
+	std::string openfile = saveFolderName + "saveMath";
 
 	openfile += std::to_string(saveNum_);
 	read.open(openfile, std::ios::in);
@@ -106,7 +106,7 @@ void PlayScene::Read()
 	read.close();  //ファイルを閉じる
 
 	//とげとげルート
-	openfile = "StageSaveFile\\tgtgRoute";
+	openfile = saveFolderName + "tgtgRoute";
 	openfile += std::to_string(saveNum_);
 	read.open(openfile, std::ios::in);
 	if (!read) {

@@ -50,6 +50,9 @@ protected:
 	int XSIZE;
 	int ZSIZE;
 
+	//ゲームをプレイ中に保存するファイルの入ってるフォルダ名
+	std::string saveFolderName = "SaveFile\\";
+
 public:
 	//マスのサイズ変更
 	void Math_Resize(int _xsize, int _zsize, std::vector<std::vector<MATHDEDAIL>> *_math)
