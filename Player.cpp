@@ -197,24 +197,40 @@ void Player::PlayerOperation()
 			//移動距離
 			moveDir_ = moveFront;
 			PlayerMove();
+			if (Input::IsKey(DIK_SPACE))
+			{
+				playerState_ = STATE_JAMP;
+			}
 		}
 		if (Input::IsKey(DIK_S))
 		{
 			//移動距離
 			moveDir_ = moveBack;
 			PlayerMove();
+			if (Input::IsKey(DIK_SPACE))
+			{
+				playerState_ = STATE_JAMP;
+			}
 		}
 		if (Input::IsKey(DIK_A))
 		{
 			//移動距離
 			moveDir_ = moveLeft;
 			PlayerMove();
+			if (Input::IsKey(DIK_SPACE))
+			{
+				playerState_ = STATE_JAMP;
+			}
 		}
 		if (Input::IsKey(DIK_D))
 		{
 			//移動距離
 			moveDir_ = moveRight;
 			PlayerMove();
+			if (Input::IsKey(DIK_SPACE))
+			{
+				playerState_ = STATE_JAMP;
+			}
 		}
 	}
 }
@@ -248,7 +264,6 @@ void Player::IdleUpdate()
 {
 	transform_.position_ = destPos_;
 	prevPos_ = transform_.position_;
-	velocity_ = XMVectorSet(0, 0, 0, 0);
 	//playerの操作
 	PlayerOperation();
 	//立っているマスの効果
@@ -266,12 +281,11 @@ void Player::WalkUpdate()
 	
 	Easing* pEasing = new Easing();
 	//velocity_に入れるためのXMFLOAT3型の変数
-	XMFLOAT3 vec;
+	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
 	vec.x = moveDir_.x * (cntInit - pEasing->EaseInSine(moveCount));
-	vec.y = moveDir_.y * (cntInit - pEasing->EaseInSine(moveCount));
 	vec.z = moveDir_.z * (cntInit - pEasing->EaseInSine(moveCount));
 
-	velocity_ = XMLoadFloat3(&vec);
+	velocity_ += XMLoadFloat3(&vec);
 	//進む方向に視線方向を合わせる
 	if (XMVectorGetX(XMVector3Length(velocity_)) != 0)
 	{
@@ -292,20 +306,45 @@ void Player::WalkUpdate()
 	if (moveCount <= 0)
 	{
 		moveCount = cntInit;
-		transform_.position_ = destPos_;
 		playerState_ = STATE_IDLE;
 	}
-
 	transform_.position_ = prevPos_ + velocity_;
+	//足が地面に触れているか判定
+	{
+		RayCastData ray;
+		//レイを打つ方向
+		ray.dir = XMFLOAT4(0, -1, 0, 0);
+		//レイの発射点
+		ray.start = XMFLOAT4(transform_.position_.x, transform_.position_.y, transform_.position_.z, 0);
+
+ 		Model::RayCast(hModel_, ray);
+		//レイが当たってたら
+		if (ray.hit)
+		{
+			//レイの長さが0より大きかったら
+			if (ray.dist >= 0)
+			{
+				playerState_ = prevPlayerState_;
+			}
+		}
+	}
+	//velocity_初期化
+	velocity_ = XMVectorSet(0, 0, 0, 0);
 }
 
 void Player::JampUpdate()
 {
-	gravity_.y = 0.2f;
-	if (transform_.position_.y >= 1.5f)
-	{
-		playerState_ = STATE_FALL;
-	}
+	//毎フレーム足される上方向の値
+	const float upVecPlus = 0.2f;
+	//velocity_に入れるためのXMFLOAT3型の変数
+	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
+	vec.y = upVecPlus;
+	velocity_ += XMLoadFloat3(&vec);
+	//ジャンプ移動の通常の移動との距離の倍率
+	const int normalMoveVectoMult = 2;
+	moveDir_.x *= normalMoveVectoMult;
+	moveDir_.z *= normalMoveVectoMult;
+	PlayerMove();
 }
 
 void Player::FallUpdate()
