@@ -42,6 +42,8 @@ class Player
 
 	PlayScene* pPlayScene_;
 
+	//移動が終了したか
+	bool moveFinished_;
 	//移動方向
 	XMFLOAT3 moveDir_;
 	//移動先の位置
@@ -102,6 +104,8 @@ public:
 	void PlayerOperation();
 	//移動
 	void PlayerMove();
+	//移動先のマスの種類
+	MATHTYPE DestPosMathType();
 
 	//それぞれの状態のUpdate
 	void IdleUpdate();

@@ -36,7 +36,7 @@ Player::Player(GameObject* parent)
 	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
 	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
 	isGoal_(false),
-	hitStopTime_(0.2f), isHitStop_(false)
+	hitStopTime_(0.2f), isHitStop_(false), moveFinished_(false)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -196,7 +196,7 @@ void Player::PlayerOperation()
 		{
 			//移動距離
 			moveDir_ = moveFront;
-			PlayerMove();
+			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE))
 			{
 				playerState_ = STATE_JAMP;
@@ -206,7 +206,7 @@ void Player::PlayerOperation()
 		{
 			//移動距離
 			moveDir_ = moveBack;
-			PlayerMove();
+			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE))
 			{
 				playerState_ = STATE_JAMP;
@@ -216,7 +216,7 @@ void Player::PlayerOperation()
 		{
 			//移動距離
 			moveDir_ = moveLeft;
-			PlayerMove();
+			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE))
 			{
 				playerState_ = STATE_JAMP;
@@ -226,7 +226,7 @@ void Player::PlayerOperation()
 		{
 			//移動距離
 			moveDir_ = moveRight;
-			PlayerMove();
+			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE))
 			{
 				playerState_ = STATE_JAMP;
@@ -237,48 +237,21 @@ void Player::PlayerOperation()
 
 void Player::PlayerMove()
 {
-	//進んだ先の位置
-	destPos_ = XMFLOAT3(transform_.position_.x + moveDir_.x,
-						transform_.position_.y + moveDir_.y,
-						transform_.position_.z + moveDir_.z);
-	standMath_ = GetMathType(destPos_);
-	prevPos_ = transform_.position_;
-	//進む先が壁だったら移動しない
-	if (standMath_.mathType_ == MATH_WALL)
+	//移動先が壁だったら
+	if (DestPosMathType() == MATH_WALL)
 	{
+		destPos_ = prevPos_;
+		//移動終了
+		moveFinished_ = true;
 		return;
 	}
-	playerState_ = STATE_WALK;
-}
-
-MATHDEDAIL Player::GetMathType(XMFLOAT3 _pos)
-{
-	if (!Is_InSide_Table(_pos))
-	{
-		return MATHDEDAIL{ MATH_HOLE, transform_};
-	}
-	return math_[_pos.x][_pos.z];
-}
-
-void Player::IdleUpdate()
-{
-	transform_.position_ = destPos_;
-	prevPos_ = transform_.position_;
-	//playerの操作
-	PlayerOperation();
-	//立っているマスの効果
-	MathTypeEffect();
-}
-
-void Player::WalkUpdate()
-{
 	//moveCountの初期値
 	const float cntInit = 1;
 	//moveCountの毎秒増えていく値
 	const float cntUpdate = -0.03f;
 	static float moveCount = cntInit;
 	moveCount += cntUpdate;
-	
+
 	Easing* pEasing = new Easing();
 	//velocity_に入れるためのXMFLOAT3型の変数
 	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
@@ -306,45 +279,115 @@ void Player::WalkUpdate()
 	if (moveCount <= 0)
 	{
 		moveCount = cntInit;
-		playerState_ = STATE_IDLE;
+		//移動終了
+		moveFinished_ = true;
 	}
 	transform_.position_ = prevPos_ + velocity_;
-	//足が地面に触れているか判定
-	{
-		RayCastData ray;
-		//レイを打つ方向
-		ray.dir = XMFLOAT4(0, -1, 0, 0);
-		//レイの発射点
-		ray.start = XMFLOAT4(transform_.position_.x, transform_.position_.y, transform_.position_.z, 0);
-
- 		Model::RayCast(hModel_, ray);
-		//レイが当たってたら
-		if (ray.hit)
-		{
-			//レイの長さが0より大きかったら
-			if (ray.dist >= 0)
-			{
-				playerState_ = prevPlayerState_;
-			}
-		}
-	}
-	//velocity_初期化
 	velocity_ = XMVectorSet(0, 0, 0, 0);
+}
+
+MATHTYPE Player::DestPosMathType()
+{
+	MATHTYPE retType;
+	//進んだ先の位置
+	destPos_ = XMFLOAT3(prevPos_.x + moveDir_.x,
+						prevPos_.y + moveDir_.y,
+						prevPos_.z + moveDir_.z);
+	retType = GetMathType(destPos_).mathType_;
+
+	return retType;
+}
+
+MATHDEDAIL Player::GetMathType(XMFLOAT3 _pos)
+{
+	if (!Is_InSide_Table(_pos))
+	{
+		return MATHDEDAIL{ MATH_HOLE, transform_};
+	}
+	return math_[_pos.x][_pos.z];
+}
+
+void Player::IdleUpdate()
+{
+	transform_.position_ = destPos_;
+	prevPos_ = transform_.position_;
+	//playerの操作
+	PlayerOperation();
+	//立っているマスの効果
+	MathTypeEffect();
+}
+
+void Player::WalkUpdate()
+{
+	PlayerMove();
+	if (moveFinished_)
+	{
+		playerState_ = STATE_IDLE;
+		moveFinished_ = false;
+	}
 }
 
 void Player::JampUpdate()
 {
+	//上方向のベクトルの初期値
+	const float upVecInit = 0;
 	//毎フレーム足される上方向の値
 	const float upVecPlus = 0.2f;
+	//上方向のベクトルの大きさ
+	static float upVec = upVecInit;
+	upVec += upVecPlus;
 	//velocity_に入れるためのXMFLOAT3型の変数
 	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
-	vec.y = upVecPlus;
+	vec.y = upVec;
 	velocity_ += XMLoadFloat3(&vec);
+
 	//ジャンプ移動の通常の移動との距離の倍率
 	const int normalMoveVectoMult = 2;
+	//moveDir_を正規化するための変数
+	XMVECTOR dir;
+	//moveDir_をXMVECTOR型に変換
+	dir = XMLoadFloat3(&moveDir_);
+	//正規化
+	dir = XMVector3Normalize(dir);
+	//dirをXMFLOAT3型に変換
+	XMStoreFloat3(&moveDir_, dir);
 	moveDir_.x *= normalMoveVectoMult;
 	moveDir_.z *= normalMoveVectoMult;
+
 	PlayerMove();
+
+	//playerの状態をJAMPからFALLに切り替え
+	//移動前の位置を0,
+	//移動後の位置を1とした時の、
+	//JAMPからFALLに切り替える値
+	const float switchValue = 0.5f;
+	//現在の位置から移動前の位置を引いたベクトル
+	XMFLOAT3 distVec;
+	distVec.x = transform_.position_.x - prevPos_.x;
+	distVec.y = transform_.position_.y - prevPos_.y;
+	distVec.z = transform_.position_.z - prevPos_.z;
+	//現在の位置と移動前の位置の直線距離
+	float dist = 0;
+	dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&distVec)));
+	//移動距離の長さ
+	float moveDist = 0;
+	moveDist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&moveDir_)));
+
+	//現在の位置と移動前の位置の直線距離が、
+	//JAMPとFALLを切り替える値までに達していたら
+	if (dist >= moveDist * switchValue)
+	{
+		upVec = upVecInit;
+		playerState_ = STATE_FALL;
+	}
+
+	//移動が終了したら
+	if (moveFinished_)
+	{
+		upVec = upVecInit;
+		playerState_ = STATE_IDLE;
+		moveFinished_ = false;
+	}
 }
 
 void Player::FallUpdate()
