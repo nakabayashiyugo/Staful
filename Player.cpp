@@ -256,6 +256,7 @@ void Player::PlayerMove()
 	//velocity_に入れるためのXMFLOAT3型の変数
 	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
 	vec.x = moveDir_.x * (cntInit - pEasing->EaseInSine(moveCount));
+	vec.y = moveDir_.y;
 	vec.z = moveDir_.z * (cntInit - pEasing->EaseInSine(moveCount));
 
 	velocity_ += XMLoadFloat3(&vec);
@@ -290,9 +291,8 @@ MATHTYPE Player::DestPosMathType()
 {
 	MATHTYPE retType;
 	//進んだ先の位置
-	destPos_ = XMFLOAT3(prevPos_.x + moveDir_.x,
-						prevPos_.y + moveDir_.y,
-						prevPos_.z + moveDir_.z);
+	destPos_.x = prevPos_.x + moveDir_.x;
+	destPos_.z = prevPos_.z + moveDir_.z;
 	retType = GetMathType(destPos_).mathType_;
 
 	return retType;
@@ -329,30 +329,20 @@ void Player::WalkUpdate()
 
 void Player::JampUpdate()
 {
-	//上方向のベクトルの初期値
-	const float upVecInit = 0;
-	//毎フレーム足される上方向の値
-	const float upVecPlus = 0.2f;
-	//上方向のベクトルの大きさ
-	static float upVec = upVecInit;
-	upVec += upVecPlus;
-	//velocity_に入れるためのXMFLOAT3型の変数
-	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
-	vec.y = upVec;
-	velocity_ += XMLoadFloat3(&vec);
-
 	//ジャンプ移動の通常の移動との距離の倍率
 	const int normalMoveVectoMult = 2;
 	//moveDir_を正規化するための変数
+	XMFLOAT3 normalMoveDir = XMFLOAT3(moveDir_.x, 0, moveDir_.z);
 	XMVECTOR dir;
 	//moveDir_をXMVECTOR型に変換
-	dir = XMLoadFloat3(&moveDir_);
+	dir = XMLoadFloat3(&normalMoveDir);
 	//正規化
 	dir = XMVector3Normalize(dir);
 	//dirをXMFLOAT3型に変換
-	XMStoreFloat3(&moveDir_, dir);
-	moveDir_.x *= normalMoveVectoMult;
-	moveDir_.z *= normalMoveVectoMult;
+	XMStoreFloat3(&normalMoveDir, dir);
+	moveDir_.x = normalMoveDir.x * normalMoveVectoMult;
+	moveDir_.z = normalMoveDir.z * normalMoveVectoMult;
+
 
 	PlayerMove();
 
@@ -362,54 +352,34 @@ void Player::JampUpdate()
 	//JAMPからFALLに切り替える値
 	const float switchValue = 0.5f;
 	//現在の位置から移動前の位置を引いたベクトル
-	XMFLOAT3 distVec;
+	XMFLOAT3 distVec = XMFLOAT3(0, 0, 0);
 	distVec.x = transform_.position_.x - prevPos_.x;
-	distVec.y = transform_.position_.y - prevPos_.y;
 	distVec.z = transform_.position_.z - prevPos_.z;
 	//現在の位置と移動前の位置の直線距離
-	float dist = 0;
-	dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&distVec)));
+	float dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&distVec)));
+	//上方向がない移動方向
+	XMFLOAT2 vec2MoveDir = XMFLOAT2(moveDir_.x, moveDir_.z);
 	//移動距離の長さ
-	float moveDist = 0;
-	moveDist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&moveDir_)));
+	float moveDist = XMVectorGetX(XMVector2Length(XMLoadFloat2(&vec2MoveDir)));
 
 	//現在の位置と移動前の位置の直線距離が、
 	//JAMPとFALLを切り替える値までに達していたら
 	if (dist >= moveDist * switchValue)
 	{
-		upVec = upVecInit;
+		highCnt = 0;
 		playerState_ = STATE_FALL;
-	}
-
-	//移動が終了したら
-	if (moveFinished_)
-	{
-		upVec = upVecInit;
-		playerState_ = STATE_IDLE;
-		moveFinished_ = false;
 	}
 }
 
 void Player::FallUpdate()
 {
-	gravity_.y += -0.01f;
-	if (transform_.position_.y < 1.0f && !isTableHit_)
+	PlayerMove();
+
+	if (moveFinished_)
 	{
-		isTableHit_ = true;
-		tableHitPoint_ = transform_.position_;
-	}
-	if (isTableHit_)
-	{
-		if (GetMathType(tableHitPoint_).mathType_ != (int)MATH_HOLE)
-		{
-			playerState_ = STATE_WALK;
-			return;
-		}
-	}
-	if (transform_.position_.y < -1.0f)
-	{
-		ReturnToStartMath();
-		return;
+		highCnt = 1;
+		playerState_ = STATE_IDLE;
+		moveFinished_ = false;
 	}
 }
 

@@ -4,22 +4,27 @@ Easing::Easing()
 {
 }
 
-float Easing::EaseInSine(float pos)
+float Easing::EaseInSine(float _value)
 {
-	return 1 - cos((pos * PIE) / 2);
+	return 1 - cos((_value * PIE) / 2);
 }
 
-float Easing::EaseInOutBack(float pos)
+float Easing::EaseOutCirc(float _value)
+{
+	return  sqrt(1 - pow(_value - 1, 2));
+}
+
+float Easing::EaseInOutBack(float _value)
 {
 	const float c1 = 1.70158;
 	const float c2 = c1 * 1.525;
 
-	if (pos < 0.5)
+	if (_value < 0.5)
 	{
-		return (pow(2 * pos, 2) * ((c2 + 1) * 2 * pos - c2)) / 2;
+		return (pow(2 * _value, 2) * ((c2 + 1) * 2 * _value - c2)) / 2;
 	}
 	else
 	{
-		return (pow(2 * pos - 2, 2) * ((c2 + 1) * (pos * 2 - 2) + c2) + 2) / 2;
+		return (pow(2 * _value - 2, 2) * ((c2 + 1) * (_value * 2 - 2) + c2) + 2) / 2;
 	}
 }

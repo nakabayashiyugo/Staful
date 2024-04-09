@@ -586,6 +586,7 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 		XMFLOAT3 mbPos;
 		mbPos.x = (float)((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbScale.x + mbInitPos.x;
 		mbPos.y = -(((float)((buttonNum_ - buttonInitNum) / mbNewLineNum * mbNewLineNum) / Direct3D::scrHeight) * mathButtonSize) + mbInitPos.y;
+		mbPos.z = mbInitPos.z;
 
 		Transform mbTransform;
 		mbTransform.position_ = mbPos;
