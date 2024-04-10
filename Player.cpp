@@ -289,12 +289,15 @@ void Player::PlayerMove()
 	//進む方向に視線方向を合わせる
 	if (XMVectorGetX(XMVector3Length(velocity_)) != 0)
 	{
-		XMVECTOR v = XMVector3Dot(eyeDirection_, XMVector3Normalize(velocity_));
+		//上方向が0の移動ベクトル
+		XMVECTOR normalVelo = XMVectorSet(XMVectorGetX(velocity_), 0,
+										  XMVectorGetZ(velocity_), 0);
+		XMVECTOR v = XMVector3Dot(eyeDirection_, XMVector3Normalize(normalVelo));
 
 		float angle = XMConvertToDegrees(acos(XMVectorGetX(v)));
 
 		// XMVector3Cross : vFront と vMove の外積求める
-		XMVECTOR vCross = XMVector3Cross(eyeDirection_, XMVector3Normalize(velocity_));
+		XMVECTOR vCross = XMVector3Cross(eyeDirection_, XMVector3Normalize(normalVelo));
 
 		// vFront と vMove の外積が下向きだったら angle に-1をかけて、向きを反対にする
 		if (XMVectorGetY(vCross) < 0)
@@ -454,7 +457,7 @@ void Player::MathTypeEffect()
 		XMVECTOR rotConvVec = XMVector3Transform(converyor_velocity, yrot);
 		//移動方向を上のベクトルにする
 		XMStoreFloat3(&moveDir_, rotConvVec);
-		PlayerMove();
+		playerState_ = STATE_WALK;
 		break;
 	case MATH_GOAL:
 		stageState_ = STATE_GOAL;
