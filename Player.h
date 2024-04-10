@@ -44,6 +44,9 @@ class Player
 
 	//移動が終了したか
 	bool moveFinished_;
+	float moveCount_;
+	//上方向の毎フレーム足される値
+	float upVecPlus_;
 	//移動方向
 	XMFLOAT3 moveDir_;
 	//移動先の位置
@@ -52,6 +55,10 @@ class Player
 	XMFLOAT3 prevPos_;
 	//移動ベクトル
 	XMVECTOR velocity_;
+	//重力
+	XMFLOAT3 gravity_;
+	//重力加速度
+	float gravityAcce_;
 	//視線ベクトル
 	XMVECTOR eyeDirection_;
 
@@ -75,8 +82,7 @@ class Player
 	//立っているマスの情報
 	MATHDEDAIL standMath_;
 
-	//重力
-	XMFLOAT3 gravity_;
+	
 
 	//障害物の置ける数
 	int hurdle_Limit_;
@@ -100,6 +106,7 @@ public:
 	void Release() override;
 
 	void PlayUpdate();
+	void CameraPosSet();
 	//プレイヤーの操作に関する関数
 	void PlayerOperation();
 	//移動

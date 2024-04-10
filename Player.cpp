@@ -15,6 +15,8 @@
 #include "StageOrigin.h"
 
 const int MODELSIZE = 0.8f;
+//移動しないとき
+const XMFLOAT3 moveInit(0, 0, 0);
 //前の移動距離
 const XMFLOAT3 moveFront(0, 0, 1);
 //後ろの移動距離
@@ -23,20 +25,37 @@ const XMFLOAT3 moveBack(0, 0, -1);
 const XMFLOAT3 moveRight(1, 0, 0);
 //左の移動距離
 const XMFLOAT3 moveLeft(-1, 0, 0);
+//moveCount_の初期値
+const float moveCountInit = 1.0f;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
 	hModel_(-1),
-	moveDir_(0, 0, 0), destPos_(0, 0, 0), prevPos_(0, 0, 0),
-	velocity_(XMVectorSet(0, 0, 0, 0)),
+	//移動に関する初期化
+	moveCount_(moveCountInit),
+	moveDir_(0, 0, 0), 
+	destPos_(0, 0, 0), 
+	prevPos_(0, 0, 0),
+	velocity_(XMVectorSet(0, 0, 0, 0)), 
+	gravity_(0, -0.0007f, 0), 
+	gravityAcce_(gravity_.y),
+	//視線方向の初期化
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
-	camRot_(0, 0, 0), gravity_(0, 0, 0), 
-	playerState_(STATE_IDLE), prevPlayerState_(STATE_DEAD), stageState_(STATE_START),
+	camRot_(0, 0, 0),  
+	//状態を管理する変数の初期化
+	playerState_(STATE_IDLE), 
+	prevPlayerState_(STATE_DEAD), 
+	stageState_(STATE_START),
+
 	hurdle_Limit_(0),
 	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
+	//画像に関する変数の初期化
 	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
 	isGoal_(false),
-	hitStopTime_(0.2f), isHitStop_(false), moveFinished_(false)
+	//ヒットストップに関する変数の初期化
+	hitStopTime_(0.2f), isHitStop_(false), 
+
+	moveFinished_(false), upVecPlus_(0)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -140,14 +159,7 @@ void Player::Release()
 void Player::PlayUpdate()
 {
 	//カメラ
-	//プレイヤーとカメラとの距離
-	const XMFLOAT3 dirCamToPlayer = XMFLOAT3(0, 5, -5);
-	//カメラの位置
-	const XMFLOAT3 camPos = XMFLOAT3(transform_.position_.x + dirCamToPlayer.x,
-									 transform_.position_.y + dirCamToPlayer.y,
-									 transform_.position_.z + dirCamToPlayer.z);
-	Camera::SetPosition(camPos);
-	Camera::SetTarget(transform_.position_);
+	CameraPosSet();
 	//コライダー
 	SphereCollider* pSC = new SphereCollider(MODELSIZE / 2);
 	this->AddCollider(pSC);
@@ -158,8 +170,6 @@ void Player::PlayUpdate()
 	{
 		stageState_ = STATE_FAILURE;
 	}
-
-	SetAnimFramerate();
 
 	switch (playerState_)
 	{
@@ -179,6 +189,25 @@ void Player::PlayUpdate()
 		DeadUpdate();
 		break;
 	}
+	if (playerState_ != prevPlayerState_)
+	{
+		SetAnimFramerate();
+		prevPlayerState_ = playerState_;
+	}
+}
+
+void Player::CameraPosSet()
+{
+	//カメラ
+	//プレイヤーとカメラとの距離
+	const XMFLOAT3 dirCamToPlayer = XMFLOAT3(0, 7, -5);
+	//カメラの位置
+	const XMFLOAT3 camPos = XMFLOAT3(transform_.position_.x + dirCamToPlayer.x,
+		dirCamToPlayer.y,
+		transform_.position_.z + dirCamToPlayer.z);
+	const XMFLOAT3 camTarget = XMFLOAT3(transform_.position_.x, 0, transform_.position_.z);
+	Camera::SetPosition(camPos);
+	Camera::SetTarget(camTarget);
 }
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
@@ -245,21 +274,18 @@ void Player::PlayerMove()
 		moveFinished_ = true;
 		return;
 	}
-	//moveCountの初期値
-	const float cntInit = 1;
 	//moveCountの毎秒増えていく値
 	const float cntUpdate = -0.03f;
-	static float moveCount = cntInit;
-	moveCount += cntUpdate;
+	moveCount_ += cntUpdate;
 
 	Easing* pEasing = new Easing();
 	//velocity_に入れるためのXMFLOAT3型の変数
 	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
-	vec.x = moveDir_.x * (cntInit - pEasing->EaseInSine(moveCount));
+	vec.x = moveDir_.x * (moveCountInit - pEasing->EaseInSine(moveCount_));
 	vec.y = moveDir_.y;
-	vec.z = moveDir_.z * (cntInit - pEasing->EaseInSine(moveCount));
+	vec.z = moveDir_.z * (moveCountInit - pEasing->EaseInSine(moveCount_));
 
-	velocity_ += XMLoadFloat3(&vec);
+	velocity_ = XMLoadFloat3(&vec);
 	//進む方向に視線方向を合わせる
 	if (XMVectorGetX(XMVector3Length(velocity_)) != 0)
 	{
@@ -277,14 +303,13 @@ void Player::PlayerMove()
 		}
 		transform_.rotate_.y = angle;
 	}
-	if (moveCount <= 0)
+	if (moveCount_ <= 0)
 	{
-		moveCount = cntInit;
+		moveCount_ = moveCountInit;
 		//移動終了
 		moveFinished_ = true;
 	}
 	transform_.position_ = prevPos_ + velocity_;
-	velocity_ = XMVectorSet(0, 0, 0, 0);
 }
 
 MATHTYPE Player::DestPosMathType()
@@ -311,6 +336,10 @@ void Player::IdleUpdate()
 {
 	transform_.position_ = destPos_;
 	prevPos_ = transform_.position_;
+	moveFinished_ = false;
+	moveDir_ = moveInit;
+	//重力初期化
+	gravity_.y = gravityAcce_;
 	//playerの操作
 	PlayerOperation();
 	//立っているマスの効果
@@ -323,7 +352,6 @@ void Player::WalkUpdate()
 	if (moveFinished_)
 	{
 		playerState_ = STATE_IDLE;
-		moveFinished_ = false;
 	}
 }
 
@@ -343,7 +371,12 @@ void Player::JampUpdate()
 	moveDir_.x = normalMoveDir.x * normalMoveVectoMult;
 	moveDir_.z = normalMoveDir.z * normalMoveVectoMult;
 
-
+	//上方向のベクトルの初期化
+	const float upVecPlusInit = 0.1f;
+	upVecPlus_ = upVecPlusInit;
+	upVecPlus_ += gravity_.y;
+	gravity_.y += gravityAcce_;
+	moveDir_.y += upVecPlus_;
 	PlayerMove();
 
 	//playerの状態をJAMPからFALLに切り替え
@@ -366,40 +399,44 @@ void Player::JampUpdate()
 	//JAMPとFALLを切り替える値までに達していたら
 	if (dist >= moveDist * switchValue)
 	{
-		highCnt = 0;
 		playerState_ = STATE_FALL;
 	}
 }
 
 void Player::FallUpdate()
 {
+	upVecPlus_ += gravity_.y;
+	gravity_.y += gravityAcce_;
+	moveDir_.y += upVecPlus_;
 	PlayerMove();
 
 	if (moveFinished_)
 	{
-		highCnt = 1;
 		playerState_ = STATE_IDLE;
+		if (DestPosMathType() == MATH_HOLE)
+		{
+			playerState_ = STATE_DEAD;
+		}
 		moveFinished_ = false;
 	}
 }
 
 void Player::DeadUpdate()
 {
-
 	ReturnToStartMath();
 }
 
 void Player::ReturnToStartMath()
 {
-	playerState_ = STATE_DEAD;
-	if (abs(startPos_.x - transform_.position_.x) <= 0.01f &&
-		abs(startPos_.z - transform_.position_.z) <= 0.01f)
+	moveDir_.x = startPos_.x - prevPos_.x;
+	moveDir_.y = 0;
+	moveDir_.z = startPos_.z - prevPos_.z;
+	PlayerMove();
+	transform_.position_.y = 10;
+	if (moveFinished_)
 	{
 		stageState_ = STATE_START;
 	}
-	transform_.position_.x = transform_.position_.x + (startPos_.x - transform_.position_.x) / 10;
-	transform_.position_.z = transform_.position_.z + (startPos_.z - transform_.position_.z) / 10;
-	transform_.position_.y = 10;
 }
 
 void Player::MathTypeEffect()
@@ -450,17 +487,15 @@ void Player::SetAnimFramerate()
 		endFrame_ = 150;
 		break;
 	}
-	if (prevPlayerState_ != playerState_)
-	{
-		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
-	}
-	prevPlayerState_ = playerState_;
+	Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
 }
 
 void Player::OnCollision(GameObject* pTarget)
 {
 	if (pTarget->GetObjectName() == "Togetoge")
 	{
+		moveCount_ = moveCountInit;
+		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
 		isHitStop_ = true;
 	}
