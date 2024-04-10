@@ -404,6 +404,10 @@ void Player::JampUpdate()
 	{
 		playerState_ = STATE_FALL;
 	}
+	if (moveFinished_)
+	{
+		playerState_ = STATE_IDLE;
+	}
 }
 
 void Player::FallUpdate()
