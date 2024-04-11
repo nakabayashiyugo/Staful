@@ -11,12 +11,18 @@
 #include "Button.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), mathtype_(0), saveNum_(2), YSIZE(ZSIZE), hTgtgRoute_(-1),
-	mathChangeNum_(0), isClear_(false)
+	: GameObject(parent, "MapEditScene"), 
+	mathtype_(0), 
+	saveNum_(2), 
+	YSIZE(ZSIZE), 
+	hTgtgRoute_(-1),
+	mathChangeNum_(0), 
+	isClear_(false)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
 		hPict_[i] = -1;	
+		hExpantion_[i] = -1;
 	}
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE =  (int)pTrans_->GetMathSize_x();
@@ -70,7 +76,10 @@ void MapEditScene::Initialize()
 	//テクスチャのサイズ
 	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
 
+	//ボタンの初期化
 	ButtonInit(imageSize);
+	//マスの説明の初期化
+	ExpantionInit();
 	//マスのサイズ調整
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -207,8 +216,11 @@ void MapEditScene::Update()
 				}
 				if (Input::IsMouseButtonDown(1))
 				{
-					tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
-					isClear_ = false;
+					if (math_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATH_TOGETOGE)
+					{
+						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
+						isClear_ = false;
+					}
 				}
 				break;
 			default:
@@ -314,9 +326,13 @@ void MapEditScene::Draw()
 		}
 		itr++;
 	}
+	//コスト表示
 	const XMFLOAT3 mathLimitPos(1000, 700, 0);
 	std::string str = std::to_string(mathChangeNum_) + " / " + std::to_string(mathChangeNumLimit_);
 	pText_->Draw(mathLimitPos.x, mathLimitPos.y, str.c_str());
+
+	//マスの説明表示
+	ExpantionDraw();
 
 	for (int x = 0; x < XSIZE; x++)
 	{
@@ -647,6 +663,44 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	pTestplayButton_->SetTransform(tbTransform);
 }
 
+void MapEditScene::ExpantionInit()
+{
+	//マスの説明のファイルネーム
+	std::string expantionName[MATH_MAX] =
+	{
+		"",
+		"Expantion_Wall.png",
+		"Expantion_Hole.png",
+		"Expantion_Conveyor.png",
+		"Expantion_Togetoge.png",
+		"Expantion_PitFall.png",
+		"Expantion_Start.png",
+		"Expantion_Goal.png",
+	};
+	//マスの説明の画像が入ってるフォルダ名
+	std::string folderName1 = "Assets\\";
+	std::string folderName2 = "MathExpantion\\";
+	//マスの説明画像ロード
+	for (int i = 1; i < MATH_MAX; i++)
+	{
+		expantionName[i] = folderName1 + folderName2 + expantionName[i];
+
+		hExpantion_[i] = Image::Load(expantionName[i]);
+		assert(hExpantion_[i] >= 0);
+	}
+}
+
+void MapEditScene::ExpantionDraw()
+{
+	const XMFLOAT3 exPos = XMFLOAT3(0.7f, 0.1f, 0);
+	const XMFLOAT3 exScale = XMFLOAT3(0.7f, 0.7f, 1);
+	tExpantion_.position_ = exPos;
+	tExpantion_.scale_ = exScale;
+
+	Image::SetTransform(hExpantion_[mathtype_], tExpantion_);
+	Image::Draw(hExpantion_[mathtype_]);
+}
+
 void MapEditScene::SelectMathType()
 {
 	for (int i = 0; i < MATH_MAX; i++)
@@ -695,6 +749,8 @@ void MapEditScene::IsHidden(bool _isHidden)
 	{
 		tTgtgRoute_[i].route_.position_.z = _isHidden;
 	}
+	//マスの説明表示非表示切替
+	tExpantion_.position_.z = _isHidden;
 	//ボタン表示非表示切り替え
 	for (int i = 0; i < MATH_MAX; i++)
 	{

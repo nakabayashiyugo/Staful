@@ -31,31 +31,35 @@ const float moveCountInit = 1.0f;
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
 	hModel_(-1),
-	//移動に関する初期化
+	//プレイヤーの操作について
+	moveFinished_(false),
 	moveCount_(moveCountInit),
+	upVecPlus_(0),
 	moveDir_(0, 0, 0), 
 	destPos_(0, 0, 0), 
 	prevPos_(0, 0, 0),
-	velocity_(XMVectorSet(0, 0, 0, 0)), 
 	gravity_(0, -0.0007f, 0), 
 	gravityAcce_(gravity_.y),
-	//視線方向の初期化
+	velocity_(XMVectorSet(0, 0, 0, 0)),
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
-	camRot_(0, 0, 0),  
-	//状態を管理する変数の初期化
+
 	playerState_(STATE_IDLE), 
 	prevPlayerState_(STATE_DEAD), 
 	stageState_(STATE_START),
 
-	hurdle_Limit_(0),
-	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false),
 	//画像に関する変数の初期化
-	hFrame_(-1), hFrameOutline_(-1), hGage_(-1), hTime_(-1),
-	isGoal_(false),
-	//ヒットストップに関する変数の初期化
-	hitStopTime_(0.2f), isHitStop_(false), 
+	hFrame_(-1), 
+	hFrameOutline_(-1), 
+	hGage_(-1), 
+	hTime_(-1),
 
-	moveFinished_(false), upVecPlus_(0)
+	//ヒットストップに関する変数の初期化
+	hitStopTime_(0.2f), 
+	isHitStop_(false), 
+
+	
+	hurdle_Limit_(0),
+	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false)
 {
 	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pTrans_->GetMathSize_x();
@@ -119,7 +123,6 @@ void Player::Update()
 		PlayUpdate();
 		break;
 	case STATE_GOAL:
-		isGoal_ = true;
 		break;
 	}
 
