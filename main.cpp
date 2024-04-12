@@ -24,8 +24,8 @@
 //定数宣言
 const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
 const char* GAME_TITLE = "サンプルゲーム";
-const int WINDOW_WIDTH = 1200;  //ウィンドウの幅
-const int WINDOW_HEIGHT = 900; //ウィンドウの高さ
+const int WINDOW_WIDTH = 1500;  //ウィンドウの幅
+const int WINDOW_HEIGHT = 800; //ウィンドウの高さ
 const int FPS = 60;
 
 RootJob* pRootJob = nullptr;

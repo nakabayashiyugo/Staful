@@ -11,13 +11,20 @@
 #include "Button.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
-	: GameObject(parent, "MapEditScene"), 
-	mathtype_(0), 
-	saveNum_(2), 
+	: GameObject(parent, "MapEditScene"),
+	//コスト管理について
+	costTextPos_(XMFLOAT3(0, 0, 0)),
+	mathChangeNum_(0),
+	//マスの選択について
+	mathtype_(0),
+	//ファイルの書き込み・読み出しについて
+	saveNum_(2),
+	//テストプレイについて
+	isClear_(false),
+	canTest_(false),
+
 	YSIZE(ZSIZE), 
-	hTgtgRoute_(-1),
-	mathChangeNum_(0), 
-	isClear_(false)
+	hTgtgRoute_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -114,11 +121,15 @@ void MapEditScene::Update()
 	float mousePosX = Input::GetMousePosition().x;
 	float mousePosY = Input::GetMousePosition().y;
 
+	//x方向のマスの数
+	const int xsizeMax = XSIZE - 1;
+	//y方向のマスの数
+	const int ysizeMax = YSIZE - 1;
 	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2) - MATHSIZE / 2;
-	mousePosY -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
+	mousePosY -= ((-(math_[xsizeMax][ysizeMax].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
 
 	selectMath.x = (int)(mousePosX / MATHSIZE);
-	selectMath.y = YSIZE - 1 - (int)(mousePosY / MATHSIZE);
+	selectMath.y = ysizeMax - (int)(mousePosY / MATHSIZE);
 
 	//マウスの位置がマス目から出たら
 	if (selectMath.x < 0 || selectMath.x >= XSIZE ||
@@ -186,8 +197,7 @@ void MapEditScene::Update()
 				{
 					if (Input::IsMouseButton(0))
 					{
-						//クリックしたマスを選んでるマスに変える
-						math_[(int)selectMath.x][(int)selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+						ChangeSelectMath(selectMath);
 					}
 				}
 				if (Input::IsMouseButtonDown(1))
@@ -195,6 +205,7 @@ void MapEditScene::Update()
 					if (math_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 					{
 						isConvRot_[(int)selectMath.x][(int)selectMath.y] = true;
+						isClear_ = false;
 					}
 				}
 				break;
@@ -327,9 +338,10 @@ void MapEditScene::Draw()
 		itr++;
 	}
 	//コスト表示
-	const XMFLOAT3 mathLimitPos(1000, 700, 0);
+	const XMFLOAT3 costPos(1000, 700, 0);
+	costTextPos_ = costPos;
 	std::string str = std::to_string(mathChangeNum_) + " / " + std::to_string(mathChangeNumLimit_);
-	pText_->Draw(mathLimitPos.x, mathLimitPos.y, str.c_str());
+	pText_->Draw(costTextPos_.x, costTextPos_.y, str.c_str());
 
 	//マスの説明表示
 	ExpantionDraw();
@@ -526,9 +538,15 @@ bool MapEditScene::isMathChangeNumLimit()
 void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
 {
 	//クリックしたマスを選んでるマスに変える
-	math_[(int)_selectMath.x][(int)_selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+	if (math_[(int)_selectMath.x][(int)_selectMath.y].mathType_ != MATH_CONVEYOR)
+	{
+		math_[(int)_selectMath.x][(int)_selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+	}
 	math_[(int)_selectMath.x][(int)_selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 	isClear_ = false;
+
+	//テストプレイできるかどうかチェック
+	CheckCanTest();
 }
 
 void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
@@ -656,6 +674,7 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	buttonStr += std::to_string(buttonNum_);
 	pTestplayButton_ = (Button*)FindObject(buttonStr);
 	pTestplayButton_->SetPictNum(testplayNum);
+
 	const XMFLOAT3 tbPos = XMFLOAT3(0.5f, -0.6f, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
@@ -710,6 +729,7 @@ void MapEditScene::SelectMathType()
 			mathtype_ = i;
 		}
 	}
+	pTestplayButton_->SetIsCanPush(canTest_);
 	//テストプレイボタンが押されたら
 	if (pTestplayButton_->GetIsClicked())
 	{
@@ -726,11 +746,6 @@ void MapEditScene::SelectMathType()
 		Write();
 		pTrans_->SetNextScene();
 		KillMe();
-	}
-	//テストプレイクリアしたら完了ボタンを押せるようにする
-	if (isClear_)
-	{
-		pCompleteButton_->SetIsCanPush(true);
 	}
 }
 
@@ -749,6 +764,8 @@ void MapEditScene::IsHidden(bool _isHidden)
 	{
 		tTgtgRoute_[i].route_.position_.z = _isHidden;
 	}
+	//コスト表示非表示切り替え
+	costTextPos_.z = _isHidden;
 	//マスの説明表示非表示切替
 	tExpantion_.position_.z = _isHidden;
 	//ボタン表示非表示切り替え
@@ -766,4 +783,32 @@ void MapEditScene::IsHidden(bool _isHidden)
 	Transform tpTransform = pTestplayButton_->GetTransform();
 	tpTransform.position_.z = _isHidden;
 	pTestplayButton_->SetTransform(tpTransform);
+}
+
+void MapEditScene::CheckCanTest()
+{
+	//スタートマスとゴールマスをおいてないとテストプレイをできないようにする
+	bool isStart = false, isGoal = false;
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int y = 0; y < YSIZE; y++)
+		{
+			if (math_[x][y].mathType_ == MATH_START)
+			{
+				isStart = true;
+			}
+			if (math_[x][y].mathType_ == MATH_GOAL)
+			{
+				isGoal = true;
+			}
+		}
+	}
+	if (isStart && isGoal)
+	{
+		canTest_ = true;
+	}
+	else
+	{
+		canTest_ = false;
+	}
 }

@@ -502,6 +502,7 @@ void Player::SetAnimFramerate()
 
 void Player::OnCollision(GameObject* pTarget)
 {
+	//‚Æ‚°‚Æ‚°‚Æ“–‚½‚Á‚½‚ç
 	if (pTarget->GetObjectName() == "Togetoge")
 	{
 		moveCount_ = moveCountInit;

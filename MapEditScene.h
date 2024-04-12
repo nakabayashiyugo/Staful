@@ -21,10 +21,6 @@ class MapEditScene
 	//false : コンベアマスは回らない
 	std::vector<std::vector<bool>> isConvRot_;
 
-	//テストプレイクリアしたかどうか
-	//true : クリア
-	//false : 未クリア
-	bool isClear_;
 public:
 	MapEditScene(GameObject* parent);
 
@@ -48,8 +44,8 @@ private:
 	int mathChangeNumLimit_;
 	//おいてる障害物の数
 	int mathChangeNum_;
-	//コストを表示するトランスフォーム
-	std::string tCostText_;
+	//コストを表示する位置
+	XMFLOAT3 costTextPos_;
 	Text* pText_;
 public:
 	bool isMathChangeNumLimit();
@@ -104,12 +100,23 @@ public:
 	//マスの説明の表示のDraw
 	void ExpantionDraw();
 
-	
+
+//テストプレイについて
+private:
+	//テストプレイクリアしたかどうか
+	//true : クリア
+	//false : 未クリア
+	bool isClear_;
+	//テストプレイができるかどうか
+	bool canTest_;
+public:
 	//マップエディターを表示するかしないか
 	//引数 false : 表示
 	//　　 true : 非表示
 	void IsHidden(bool _isHidden);
-
+	//テストプレイができるかどうか
+	void CheckCanTest();
+	//クリアしたかどうかのセッター
 	void SetIsClear(bool _isClear) { isClear_ = _isClear; }
 };
 
