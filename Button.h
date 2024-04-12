@@ -14,6 +14,8 @@ class Button
 	bool isCanPush_;
 	//カーソルが合うか
 	bool isCursorMatched_;
+	//ボタンを表示するかどうか
+	bool isDisp_;
 
 	int hPict_;
 
@@ -49,4 +51,7 @@ public:
 	void SetAlpha(int _alpha);
 
 	void SetIsCanPush(bool _isPush) { isCanPush_ = _isPush; }
+
+	//ボタンを表示するかのセッター
+	void SetIsDisplay(bool _isDisp) { isDisp_ = _isDisp; }
 };

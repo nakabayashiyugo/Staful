@@ -109,11 +109,17 @@ private:
 	bool isClear_;
 	//テストプレイができるかどうか
 	bool canTest_;
+
+	//マップエディターを表示するか
+	//true : 表示
+	//false : 非表示
+	bool isDisp_;
 public:
 	//マップエディターを表示するかしないか
 	//引数 false : 表示
 	//　　 true : 非表示
-	void IsHidden(bool _isHidden);
+	void IsDisplay(bool _isDisp);
+	void SetIsDisp(bool _isDisp) { isDisp_ = _isDisp; }
 	//テストプレイができるかどうか
 	void CheckCanTest();
 	//クリアしたかどうかのセッター

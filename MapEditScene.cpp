@@ -22,6 +22,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//テストプレイについて
 	isClear_(false),
 	canTest_(false),
+	isDisp_(true),
 
 	YSIZE(ZSIZE), 
 	hTgtgRoute_(-1)
@@ -325,47 +326,51 @@ void MapEditScene::Update()
 
 void MapEditScene::Draw()
 {
-	//とげとげルート表示
-	auto itr = tTgtgRoute_.begin();
-	while (itr != tTgtgRoute_.end())
+	IsDisplay(isDisp_);
+	if(isDisp_)
 	{
-		if (itr->route_.scale_.x != 1)
+		//とげとげルート表示
+		auto itr = tTgtgRoute_.begin();
+		while (itr != tTgtgRoute_.end())
 		{
-			Image::SetTransform(hTgtgRoute_, itr->route_);
-			Image::Draw(hTgtgRoute_);
-			
+			if (itr->route_.scale_.x != 1)
+			{
+				Image::SetTransform(hTgtgRoute_, itr->route_);
+				Image::Draw(hTgtgRoute_);
+
+			}
+			itr++;
 		}
-		itr++;
+		//コスト表示
+		const XMFLOAT3 costPos(1000, 700, 0);
+		costTextPos_ = costPos;
+		std::string str = std::to_string(mathChangeNum_) + " / " + std::to_string(mathChangeNumLimit_);
+		pText_->Draw(costTextPos_.x, costTextPos_.y, str.c_str());
+
+		//マスの説明表示
+		ExpantionDraw();
+
+		for (int x = 0; x < XSIZE; x++)
+		{
+			for (int y = 0; y < YSIZE; y++)
+			{
+				//コンベアの回転
+				if (isConvRot_[x][YSIZE - 1 - y])
+				{
+					math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
+				}
+				if ((int)math_[x][YSIZE - 1 - y].mathPos_.rotate_.z % 90 == 0)
+				{
+					math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (int)(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z / 90) * 90;
+					isConvRot_[x][YSIZE - 1 - y] = false;
+				}
+
+				Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
+				Image::Draw(hPict_[math_[x][y].mathType_]);
+
+			}
+		}
 	}
-	//コスト表示
-	const XMFLOAT3 costPos(1000, 700, 0);
-	costTextPos_ = costPos;
-	std::string str = std::to_string(mathChangeNum_) + " / " + std::to_string(mathChangeNumLimit_);
-	pText_->Draw(costTextPos_.x, costTextPos_.y, str.c_str());
-
-	//マスの説明表示
-	ExpantionDraw();
-
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int y = 0; y < YSIZE; y++)
-		{
-			//コンベアの回転
-			if (isConvRot_[x][YSIZE - 1 - y])
-			{
-				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
-			}
-			if ((int)math_[x][YSIZE - 1 - y].mathPos_.rotate_.z % 90 == 0)
-			{
-				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (int)(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z / 90) * 90;
-				isConvRot_[x][YSIZE - 1 - y] = false;
-			}
-			
-			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
-			Image::Draw(hPict_[math_[x][y].mathType_]);
-
-		}
-	}	
 }
 
 void MapEditScene::Release()
@@ -734,7 +739,8 @@ void MapEditScene::SelectMathType()
 	if (pTestplayButton_->GetIsClicked())
 	{
 		pTestplayButton_->SetIsClicked(false);
-		IsHidden(true);
+		//マップエディター非表示
+		isDisp_ = false;
 		Write();
 		Instantiate<PlayScene>(this);
 	}
@@ -749,40 +755,17 @@ void MapEditScene::SelectMathType()
 	}
 }
 
-void MapEditScene::IsHidden(bool _isHidden)
+void MapEditScene::IsDisplay(bool _isDisp)
 {
-	//マス表示非表示切り替え
-	for (int i = 0; i < math_.size(); i++)
-	{
-		for (int j = 0; j < math_[i].size(); j++)
-		{
-			math_[i][j].mathPos_.position_.z = _isHidden;
-		}
-	}
-	//とげとげルート表示非表示切り替え
-	for (int i = 0; i < tTgtgRoute_.size(); i++)
-	{
-		tTgtgRoute_[i].route_.position_.z = _isHidden;
-	}
-	//コスト表示非表示切り替え
-	costTextPos_.z = _isHidden;
-	//マスの説明表示非表示切替
-	tExpantion_.position_.z = _isHidden;
 	//ボタン表示非表示切り替え
 	for (int i = 0; i < MATH_MAX; i++)
 	{
-		Transform mbTransform = pMathButton_[i]->GetTransform();
-		mbTransform.position_.z = _isHidden;
-		pMathButton_[i]->SetTransform(mbTransform);
+		pMathButton_[i]->SetIsDisplay(_isDisp);
 	}
 	//完了ボタン表示非表示切り替え
-	Transform cpTransform = pCompleteButton_->GetTransform();
-	cpTransform.position_.z = _isHidden;
-	pCompleteButton_->SetTransform(cpTransform);
+	pCompleteButton_->SetIsDisplay(_isDisp);
 	//テストプレイボタン表示非表示切り替え
-	Transform tpTransform = pTestplayButton_->GetTransform();
-	tpTransform.position_.z = _isHidden;
-	pTestplayButton_->SetTransform(tpTransform);
+	pTestplayButton_->SetIsDisplay(_isDisp);
 }
 
 void MapEditScene::CheckCanTest()

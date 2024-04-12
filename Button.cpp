@@ -9,7 +9,7 @@
 
 Button::Button(GameObject* parent)
 	: GameObject(parent, "Button"), isClick_(false),isRelease_(false),
-	hPict_(-1), isCanPush_(true), isCursorMatched_(false)
+	hPict_(-1), isCanPush_(true), isCursorMatched_(false), isDisp_(true)
 {
 	//親クラスがMapEditSceneなら
 	if (pParent_->GetObjectName() == "MapEditScene")
@@ -67,32 +67,35 @@ void Button::Update()
 
 void Button::Draw()
 {
-	//ボタンをクリックしたときの色
-	const XMFLOAT3 clickedColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
-	//ボタンをクリックしてない時の色
-	const XMFLOAT3 color = XMFLOAT3(1, 1, 1);
-	//このボタンが押せない時の色
-	const XMFLOAT3 notPush = XMFLOAT3(0.2f, 0.2f, 0.2f);
-	//ボタンにカーソルがあった時の色
-	const XMFLOAT3 cursorMatchColor = XMFLOAT3(0.7f, 0.7f, 0.7f);
+	if (isDisp_)
+	{
+		//ボタンをクリックしたときの色
+		const XMFLOAT3 clickedColor = XMFLOAT3(0.5f, 0.5f, 0.5f);
+		//ボタンをクリックしてない時の色
+		const XMFLOAT3 color = XMFLOAT3(1, 1, 1);
+		//このボタンが押せない時の色
+		const XMFLOAT3 notPush = XMFLOAT3(0.2f, 0.2f, 0.2f);
+		//ボタンにカーソルがあった時の色
+		const XMFLOAT3 cursorMatchColor = XMFLOAT3(0.7f, 0.7f, 0.7f);
 
-	XMFLOAT3 buttonColor;
-	buttonColor = color;
-	if (isCursorMatched_)
-	{
-		buttonColor = cursorMatchColor;
+		XMFLOAT3 buttonColor;
+		buttonColor = color;
+		if (isCursorMatched_)
+		{
+			buttonColor = cursorMatchColor;
+		}
+		if (isClick_)
+		{
+			buttonColor = clickedColor;
+		}
+		if (!isCanPush_)
+		{
+			buttonColor = notPush;
+		}
+		Image::SetColor(hPict_, buttonColor);
+		Image::SetTransform(hPict_, tPict_);
+		Image::Draw(hPict_);
 	}
-	if (isClick_)
-	{
-		buttonColor = clickedColor;
-	}
-	if (!isCanPush_)
-	{
-		buttonColor = notPush;
-	}
-	Image::SetColor(hPict_, buttonColor);
-	Image::SetTransform(hPict_, tPict_);
-	Image::Draw(hPict_);
 }
 
 void Button::Release()

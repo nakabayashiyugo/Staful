@@ -57,13 +57,13 @@ void PlayScene::Update()
 		{
 			pMES->SetIsClear(true);
 			//マップエディター表示
-			pMES->IsHidden(false);
+			pMES->SetIsDisp(true);
 			KillMe();
 		}
 		if (pPlayer_->GetStageState() == STATE_FAILURE)
 		{
 			//マップエディター表示
-			pMES->IsHidden(false);
+			pMES->SetIsDisp(true);
 			KillMe();
 		}
 	}
