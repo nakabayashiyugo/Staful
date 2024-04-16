@@ -8,10 +8,10 @@ class TitleScene
 {
 	int hStartButton_, hExitButton_;
 	int hStaful_;
-	Transform tStartButton_, tExitButton_;
+	Transform tStartButton_;
 	Transform tStaful_;
 
-	Button* pStartButton_, * pExitButton_;
+	Button* pStartButton_;
 public:
 	TitleScene(GameObject* parent);
 

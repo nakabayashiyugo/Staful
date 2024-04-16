@@ -13,24 +13,26 @@ enum SCENESTATE
 	SCENE_STAGE1,
 	SCENE_BETWEEN4,
 	SCENE_STAGE2,
+	SCENE_RESULT,
 	SCENE_TURNEND,
 };
 
-const int PLAYERNUM = 2;
+//プレイヤーの人数
+const int PLAYERNUMMAX = 2;
 
 class SceneTransition
 	:public GameObject, StageOrigin
 {
 	//playerがクリアしたかどうか
-	bool isClear_Player_[PLAYERNUM];
+	bool isClear_Player_[PLAYERNUMMAX];
 	//現在のターン数
 	int turnNum_;
-	//playerの番号
+	//現在プレイ中のプレイヤーの番号
 	int player_Num_;
 	//コースを保存するファイル番号
 	int saveNum_;
 	
-	PlayScene* pPS_[PLAYERNUM];
+	PlayScene* pPS_[PLAYERNUMMAX];
 
 	//ロゴの画像番号
 	int hPlayer1_, hPlayer2_;
@@ -58,19 +60,27 @@ public:
 	int GetSceneState() { return (int)sceneState_; };
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
 
+	//現在プレイ中のプレイヤーの番号のゲッター
 	int GetPlayerNum() { return player_Num_; }
 
 	int GetTurnNum() { return turnNum_; };
 
 	int GetSaveNum() { return saveNum_; };
 
+	bool GetIsClear(int _player_num)
+	{
+		if (_player_num < PLAYERNUMMAX && _player_num >= 0)
+		{
+			return isClear_Player_[_player_num];
+		}
+		return 0;
+	}
 	void SetIsClear(int _player_num, bool _isClear)
 	{
-		if (_player_num >= 2 && _player_num < 0)
+		if (_player_num < PLAYERNUMMAX && _player_num >= 0)
 		{
-			return;
+			isClear_Player_[_player_num] = _isClear;
 		}
-		isClear_Player_[_player_num] = _isClear;
 	}
 
 	//コースのファイルへの書き込み

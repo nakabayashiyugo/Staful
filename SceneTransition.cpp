@@ -2,6 +2,7 @@
 #include "MapEditScene.h"
 #include "PlayScene.h"
 #include "BetweenScene.h"
+#include "ResultScene.h"
 
 #include "Engine/SceneManager.h"
 #include "Engine/Image.h"
@@ -90,10 +91,12 @@ void SceneTransition::Update()
 			pPS_[player_Num_]->Instantiate<PlayScene>(this);
 			pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
 			break;
-		case SCENE_TURNEND:
-			ResultWrite();
-			pSM->ChangeScene(SCENE_ID_RESULT);
+		case SCENE_RESULT:
+			Instantiate<ResultScene>(this);
 			break;
+		case SCENE_TURNEND:
+			sceneState_ = SCENESTATE(0);
+			return;
 		default:
 			break;
 		}

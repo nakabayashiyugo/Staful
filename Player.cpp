@@ -61,9 +61,9 @@ Player::Player(GameObject* parent)
 	hurdle_Limit_(0),
 	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false)
 {
-	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize_x();
-	ZSIZE = (int)pTrans_->GetMathSize_z();
+	pST = (SceneTransition*)FindObject("SceneTransition");
+	XSIZE = (int)pST->GetMathSize_x();
+	ZSIZE = (int)pST->GetMathSize_z();
 
 	Math_Resize(XSIZE, ZSIZE, &math_);
 

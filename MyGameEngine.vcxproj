@@ -184,7 +184,6 @@
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="StageOrigin.cpp" />
     <ClCompile Include="PlayScene.cpp" />
-    <ClCompile Include="ThankyouScene.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="Togetoge.cpp" />
@@ -241,7 +240,6 @@
     <ClInclude Include="Stage.h" />
     <ClInclude Include="StageOrigin.h" />
     <ClInclude Include="PlayScene.h" />
-    <ClInclude Include="ThankyouScene.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TitleScene.h" />
     <ClInclude Include="Togetoge.h" />

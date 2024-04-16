@@ -44,7 +44,7 @@ protected:
 	//‚Æ‚°‚Æ‚°‚ªˆÚ“®‚·‚é”ÍˆÍ
 	std::vector<TOGETOGEROUTE> tTgtgRoute_;
 
-	SceneTransition* pTrans_;
+	SceneTransition* pST;
 
 	//ƒ}ƒX‚Ì—Ê
 	int XSIZE;

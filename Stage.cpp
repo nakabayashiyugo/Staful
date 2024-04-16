@@ -26,9 +26,9 @@ Stage::Stage(GameObject* parent)
 	{
 		hModel_[i] = -1;
 	}
-	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize_x();
-	ZSIZE = (int)pTrans_->GetMathSize_z();
+	pST = (SceneTransition*)FindObject("SceneTransition");
+	XSIZE = (int)pST->GetMathSize_x();
+	ZSIZE = (int)pST->GetMathSize_z();
 	Math_Resize(XSIZE, ZSIZE, &math_);
 	Math_Resize(XSIZE, ZSIZE, &makeHoleTimes_);
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");

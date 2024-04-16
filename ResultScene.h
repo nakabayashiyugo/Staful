@@ -5,6 +5,7 @@
 #include <vector>
 
 class Button;
+class SceneTransition;
 
 class ResultScene
 	:public GameObject
@@ -12,6 +13,10 @@ class ResultScene
 	//playerがクリアしたかどうかの値を受け取る
 	std::vector<bool> isClear_Player_;
 
+	Button* pButton_;
+	//ボタンの画像番号
+	int hButton_;
+	SceneTransition* pST_;
 public:
 	ResultScene(GameObject* parent);
 
@@ -27,6 +32,7 @@ public:
 	//開放
 	void Release() override;
 
-	//playerのリザルトを読み込む
-	void ResultRead();
+	//次のターンに行くボタンの初期化
+	//引数：ロードするファイルネーム
+	void ButtonInit(std::string _fileName);
 };

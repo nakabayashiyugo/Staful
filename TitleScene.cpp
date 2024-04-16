@@ -28,9 +28,6 @@ void TitleScene::Initialize()
 	//スタートボタンロード
 	hStartButton_ = Image::Load(sbStr);
 	assert(hStartButton_ >= 0);
-	//ゲーム終了ボタンロード
-	hExitButton_ = Image::Load(exStr);
-	assert(hExitButton_ >= 0);
 
 	hStaful_ = Image::Load("Assets\\Logo_Staful.png");
 	assert(hStaful_ >= 0);

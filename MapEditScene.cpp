@@ -32,9 +32,9 @@ MapEditScene::MapEditScene(GameObject* parent)
 		hPict_[i] = -1;	
 		hExpantion_[i] = -1;
 	}
-	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE =  (int)pTrans_->GetMathSize_x();
-	YSIZE =  (int)pTrans_->GetMathSize_z();
+	pST = (SceneTransition*)FindObject("SceneTransition");
+	XSIZE =  (int)pST->GetMathSize_x();
+	YSIZE =  (int)pST->GetMathSize_z();
 
 	Math_Resize(XSIZE, YSIZE, &math_);
 	Math_Resize(XSIZE, YSIZE, &math_origin_);
@@ -42,7 +42,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 	Texture* pTexture = (Texture*)FindObject("Texture");
 
-	saveNum_ = pTrans_->GetSaveNum();
+	saveNum_ = pST->GetSaveNum();
 
 	//障害物のおける制限調整
 	int mathChangeNumLimitFirst;
@@ -57,7 +57,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 		mathChangeNumLimitFirst = YSIZE;
 		mathChangeNumLimitPlus = YSIZE / 2;
 	}
-	mathChangeNumLimit_ = mathChangeNumLimitFirst + (pTrans_->GetTurnNum() - 1) * mathChangeNumLimitPlus;
+	mathChangeNumLimit_ = mathChangeNumLimitFirst + (pST->GetTurnNum() - 1) * mathChangeNumLimitPlus;
 
 	Read();
 }
@@ -151,7 +151,7 @@ void MapEditScene::Update()
 			case MATH_START:
 				if (Input::IsMouseButton(0))
 				{
-					if (pTrans_->GetTurnNum() == 1)
+					if (pST->GetTurnNum() == 1)
 					{
 						//スタートマスがすでにあるかどうか探索
 						for (int x = 0; x < XSIZE; x++)
@@ -171,7 +171,7 @@ void MapEditScene::Update()
 			case MATH_GOAL:
 				if (Input::IsMouseButton(0))
 				{
-					if (pTrans_->GetTurnNum() == 1)
+					if (pST->GetTurnNum() == 1)
 					{
 						//ゴールマスがすでにあるかどうか探索
 						for (int x = 0; x < XSIZE; x++)
@@ -750,7 +750,7 @@ void MapEditScene::SelectMathType()
 	if (pCompleteButton_->GetIsClicked())
 	{
 		Write();
-		pTrans_->SetNextScene();
+		pST->SetNextScene();
 		KillMe();
 	}
 }

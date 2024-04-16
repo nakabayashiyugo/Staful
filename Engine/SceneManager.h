@@ -8,7 +8,6 @@ enum SCENE_ID
 	SCENE_ID_TRANSITION,
 	SCENE_ID_TITLE,
 	SCENE_ID_RESULT,
-	SCENE_ID_THANK,
 };
 
 class SceneManager

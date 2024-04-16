@@ -13,14 +13,14 @@
 PlayScene::PlayScene(GameObject* parent)
 	: GameObject(parent, "PlayScene"), table_Change_(false), saveNum_(2)
 {
-	pTrans_ = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pTrans_->GetMathSize_x();
-	ZSIZE = (int)pTrans_->GetMathSize_z();
+	pST = (SceneTransition*)FindObject("SceneTransition");
+	XSIZE = (int)pST->GetMathSize_x();
+	ZSIZE = (int)pST->GetMathSize_z();
 
-	player_Num_ = pTrans_->GetPlayerNum();
+	player_Num_ = pST->GetPlayerNum();
 	Math_Resize(XSIZE, ZSIZE, &math_);
 	
-	saveNum_ = pTrans_->GetSaveNum();
+	saveNum_ = pST->GetSaveNum();
 
 	Read();
 }
@@ -39,13 +39,14 @@ void PlayScene::Update()
 	{
 		if (pPlayer_->GetStageState() == STATE_GOAL)
 		{
-			pTrans_->SetNextScene();
-			pTrans_->SetIsClear(player_Num_, true);
+			pST->SetNextScene();
+			pST->SetIsClear(player_Num_, true);
 			KillMe();
 		}
 		if (pPlayer_->GetStageState() == STATE_FAILURE)
 		{
-			pTrans_->SetNextScene();
+			pST->SetNextScene();
+			pST->SetIsClear(player_Num_, false);
 			KillMe();
 		}
 	}
