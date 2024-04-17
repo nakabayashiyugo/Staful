@@ -41,14 +41,16 @@ public:
 //コスト管理について
 private:
 	//置ける障害物の数
-	int mathChangeNumLimit_;
+	int costLimit_;
 	//おいてる障害物の数
-	int mathChangeNum_;
+	int curCost_;
+	//それぞれのマスのコスト
+	std::vector<int> costs_;
 	//コストを表示する位置
 	XMFLOAT3 costTextPos_;
 	Text* pText_;
 public:
-	bool isMathChangeNumLimit();
+	bool costManagement();
 
 
 //ファイルの書き込み・読み出しについて

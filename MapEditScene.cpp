@@ -14,7 +14,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"),
 	//コスト管理について
 	costTextPos_(XMFLOAT3(0, 0, 0)),
-	mathChangeNum_(0),
+	curCost_(0),
 	//マスの選択について
 	mathtype_(0),
 	//ファイルの書き込み・読み出しについて
@@ -44,20 +44,24 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 	saveNum_ = pST->GetSaveNum();
 
+	//それぞれのマスのコスト設定
+	costs_.resize(MATH_MAX);
+
+	costs_ = { 0, 1, 1, 1, 1, 1, 0, 0 };
 	//障害物のおける制限調整
-	int mathChangeNumLimitFirst;
-	int mathChangeNumLimitPlus;
+	int costLimitFirst;
+	int costLimitPlus;
 	if (XSIZE >= YSIZE)
 	{
-		mathChangeNumLimitFirst = XSIZE;
-		mathChangeNumLimitPlus = XSIZE / 2;
+		costLimitFirst = XSIZE;
+		costLimitPlus = XSIZE / 2;
 	}
 	else
 	{
-		mathChangeNumLimitFirst = YSIZE;
-		mathChangeNumLimitPlus = YSIZE / 2;
+		costLimitFirst = YSIZE;
+		costLimitPlus = YSIZE / 2;
 	}
-	mathChangeNumLimit_ = mathChangeNumLimitFirst + (pST->GetTurnNum() - 1) * mathChangeNumLimitPlus;
+	costLimit_ = costLimitFirst + (pST->GetTurnNum() - 1) * costLimitPlus;
 
 	Read();
 }
@@ -165,7 +169,7 @@ void MapEditScene::Update()
 					ChangeSelectMath(selectMath);
 				}
 			case MATH_CONVEYOR:
-				if (!isMathChangeNumLimit())
+				if (!costManagement())
 				{
 					if (Input::IsMouseButton(0))
 					{
@@ -184,7 +188,7 @@ void MapEditScene::Update()
 			case MATH_TOGETOGE:
 				if (Input::IsMouseButton(0))
 				{
-					if (!isMathChangeNumLimit())
+					if (!costManagement())
 					{
 						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
 						ChangeSelectMath(selectMath);
@@ -207,7 +211,7 @@ void MapEditScene::Update()
 				}
 				break;
 			default:
-				if (!isMathChangeNumLimit())
+				if (!costManagement())
 				{
 					if (Input::IsMouseButton(0))
 					{
@@ -315,7 +319,7 @@ void MapEditScene::Draw()
 		//コスト表示
 		const XMFLOAT3 costPos(1000, 700, 0);
 		costTextPos_ = costPos;
-		std::string str = std::to_string(mathChangeNum_) + " / " + std::to_string(mathChangeNumLimit_);
+		std::string str = std::to_string(curCost_) + " / " + std::to_string(costLimit_);
 		pText_->Draw(costTextPos_.x, costTextPos_.y, str.c_str());
 
 		//マスの説明表示
@@ -464,25 +468,19 @@ void MapEditScene::Read()
 	read.close();  //ファイルを閉じる
 }
 
-bool MapEditScene::isMathChangeNumLimit()
+bool MapEditScene::costManagement()
 {
-	int num = 0;
+	//コストの合計
+	int costSum = 0;
 	for (int x = 0; x < XSIZE; x++)
 	{
 		for (int y = 0; y < YSIZE; y++)
 		{
-			if (math_[x][y].mathType_ != math_origin_[x][y].mathType_)
-			{
-				if (math_[x][y].mathType_ != MATH_START &&
-					math_[x][y].mathType_ != MATH_GOAL)
-				{
-					num++;
-				}
-			}
+			costSum += costs_[(int)math_[x][y].mathType_];
 		}
 	}
-	mathChangeNum_ = num;
-	if (mathChangeNumLimit_ > num)
+	curCost_ = costSum;
+	if (costLimit_ > curCost_)
 	{
 		return false;
 	}
