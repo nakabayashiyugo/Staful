@@ -194,7 +194,10 @@ void Player::PlayUpdate()
 	}
 	if (playerState_ != prevPlayerState_)
 	{
-		SetAnimFramerate();
+		if (DestPosMathType() != MATH_WALL)
+		{
+			SetAnimFramerate();
+		}
 		prevPlayerState_ = playerState_;
 	}
 }
@@ -275,6 +278,7 @@ void Player::PlayerMove()
 		destPos_ = prevPos_;
 		//移動終了
 		moveFinished_ = true;
+		prevPlayerState_ = playerState_;
 		return;
 	}
 	//moveCountの毎秒増えていく値
@@ -289,12 +293,27 @@ void Player::PlayerMove()
 	vec.z = moveDir_.z * (moveCountInit - pEasing->EaseInSine(moveCount_));
 
 	velocity_ = XMLoadFloat3(&vec);
+	
+	//プレイヤーの方向変換
+	ChangePlayerDir(velocity_);
+
+	if (moveCount_ <= 0)
+	{
+		moveCount_ = moveCountInit;
+		//移動終了
+		moveFinished_ = true;
+	}
+	transform_.position_ = prevPos_ + velocity_;
+}
+
+void Player::ChangePlayerDir(XMVECTOR _vec)
+{
 	//進む方向に視線方向を合わせる
-	if (XMVectorGetX(XMVector3Length(velocity_)) != 0)
+	if (XMVectorGetX(XMVector3Length(_vec)) != 0)
 	{
 		//上方向が0の移動ベクトル
-		XMVECTOR normalVelo = XMVectorSet(XMVectorGetX(velocity_), 0,
-										  XMVectorGetZ(velocity_), 0);
+		XMVECTOR normalVelo = XMVectorSet(XMVectorGetX(_vec), 0,
+			XMVectorGetZ(_vec), 0);
 		XMVECTOR v = XMVector3Dot(eyeDirection_, XMVector3Normalize(normalVelo));
 
 		float angle = XMConvertToDegrees(acos(XMVectorGetX(v)));
@@ -309,13 +328,6 @@ void Player::PlayerMove()
 		}
 		transform_.rotate_.y = angle;
 	}
-	if (moveCount_ <= 0)
-	{
-		moveCount_ = moveCountInit;
-		//移動終了
-		moveFinished_ = true;
-	}
-	transform_.position_ = prevPos_ + velocity_;
 }
 
 MATHTYPE Player::DestPosMathType()

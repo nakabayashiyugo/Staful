@@ -96,6 +96,8 @@ public:
 	void PlayerOperation();
 	//移動
 	void PlayerMove();
+	//プレイヤーを引数の方向に向かせる
+	void ChangePlayerDir(XMVECTOR _vec);
 	//戻り値 : 引数の位置のマスの種類
 	MATHDEDAIL GetMathType(XMFLOAT3 _pos);
 	//移動先のマスの種類
