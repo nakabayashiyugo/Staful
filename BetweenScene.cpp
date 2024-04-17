@@ -93,14 +93,9 @@ void BetweenScene::Draw()
 	Image::SetTransform(hLogoCourse2_, tLogoCourse2_);
 	Image::Draw(hLogoCourse2_);
 
-	const float hpRectx = 112;
-	const float hpRecty = 17;
-	const float hpRectWidth = 280;
-	const float hpRectHeight = 75;
-	Image::SetRect(hPlayer1_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
+
 	Image::SetTransform(hPlayer1_, tPlayer1_);
 	Image::Draw(hPlayer1_);
-	Image::SetRect(hPlayer2_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
 	Image::SetTransform(hPlayer2_, tPlayer2_);
 	Image::Draw(hPlayer2_);
 	

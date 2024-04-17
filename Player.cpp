@@ -192,13 +192,9 @@ void Player::PlayUpdate()
 		DeadUpdate();
 		break;
 	}
-	if (playerState_ != prevPlayerState_)
+	if (XMVectorGetX(XMVector3Length(velocity_)) > 0)
 	{
-		if (DestPosMathType() != MATH_WALL)
-		{
-			SetAnimFramerate();
-		}
-		prevPlayerState_ = playerState_;
+		SetAnimFramerate();
 	}
 }
 
@@ -278,7 +274,7 @@ void Player::PlayerMove()
 		destPos_ = prevPos_;
 		//移動終了
 		moveFinished_ = true;
-		prevPlayerState_ = playerState_;
+		prevPlayerState_ = STATE_IDLE;
 		return;
 	}
 	//moveCountの毎秒増えていく値
@@ -293,9 +289,6 @@ void Player::PlayerMove()
 	vec.z = moveDir_.z * (moveCountInit - pEasing->EaseInSine(moveCount_));
 
 	velocity_ = XMLoadFloat3(&vec);
-	
-	//プレイヤーの方向変換
-	ChangePlayerDir(velocity_);
 
 	if (moveCount_ <= 0)
 	{
@@ -330,6 +323,14 @@ void Player::ChangePlayerDir(XMVECTOR _vec)
 	}
 }
 
+void Player::ChangePlayerDir(XMFLOAT3 _vec)
+{
+	//引数をXMVECTOR型に変換する
+	XMVECTOR velo;
+	velo = XMLoadFloat3(&_vec);
+	ChangePlayerDir(velo);
+}
+
 MATHTYPE Player::DestPosMathType()
 {
 	MATHTYPE retType;
@@ -352,6 +353,7 @@ MATHDEDAIL Player::GetMathType(XMFLOAT3 _pos)
 
 void Player::IdleUpdate()
 {
+	velocity_ = XMVectorSet(0, 0, 0, 0);
 	transform_.position_ = destPos_;
 	prevPos_ = transform_.position_;
 	moveFinished_ = false;
@@ -366,6 +368,7 @@ void Player::IdleUpdate()
 
 void Player::WalkUpdate()
 {
+	ChangePlayerDir(moveDir_);
 	PlayerMove();
 	if (moveFinished_)
 	{
@@ -375,6 +378,8 @@ void Player::WalkUpdate()
 
 void Player::JampUpdate()
 {
+	ChangePlayerDir(moveDir_);
+
 	//ジャンプ移動の通常の移動との距離の倍率
 	const int normalMoveVectoMult = 2;
 	//moveDir_を正規化するための変数
@@ -427,6 +432,8 @@ void Player::JampUpdate()
 
 void Player::FallUpdate()
 {
+	ChangePlayerDir(moveDir_);
+
 	upVecPlus_ += gravity_.y;
 	gravity_.y += gravityAcce_;
 	moveDir_.y += upVecPlus_;
@@ -434,6 +441,7 @@ void Player::FallUpdate()
 
 	if (moveFinished_)
 	{
+		gravity_.y = gravityAcce_;
 		playerState_ = STATE_IDLE;
 		if (DestPosMathType() == MATH_HOLE)
 		{
@@ -490,26 +498,30 @@ void Player::MathTypeEffect()
 
 void Player::SetAnimFramerate()
 {
-	switch (playerState_)
+	if (prevPlayerState_ != playerState_)
 	{
-	case STATE_IDLE:
-		startFrame_ = 1;
-		endFrame_ = 60;
-		break;
-	case STATE_WALK:
-		startFrame_ = 61;
-		endFrame_ = 120;
-		break;
-	case STATE_JAMP:
-		startFrame_ = 121;
-		endFrame_ = 150;
-		break;
-	case STATE_FALL:
-		startFrame_ = 150;
-		endFrame_ = 150;
-		break;
+		switch (playerState_)
+		{
+		case STATE_IDLE:
+			startFrame_ = 1;
+			endFrame_ = 60;
+			break;
+		case STATE_WALK:
+			startFrame_ = 61;
+			endFrame_ = 120;
+			break;
+		case STATE_JAMP:
+			startFrame_ = 121;
+			endFrame_ = 150;
+			break;
+		case STATE_FALL:
+			startFrame_ = 150;
+			endFrame_ = 150;
+			break;
+		}
+		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
 	}
-	Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
+	prevPlayerState_ = playerState_;
 }
 
 void Player::OnCollision(GameObject* pTarget)

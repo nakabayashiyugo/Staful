@@ -16,6 +16,10 @@ class ResultScene
 	Button* pButton_;
 	//ボタンの画像番号
 	int hButton_;
+	//画像番号
+	int hPlayer1_, hPlayer2_;
+	int hWin_, hLose_, hDraw_;
+
 	SceneTransition* pST_;
 public:
 	ResultScene(GameObject* parent);
@@ -35,4 +39,9 @@ public:
 	//次のターンに行くボタンの初期化
 	//引数：ロードするファイルネーム
 	void ButtonInit(std::string _fileName);
+
+	//画像のロード
+	void PictInit();
+	//画像の表示
+	void PictDraw();
 };

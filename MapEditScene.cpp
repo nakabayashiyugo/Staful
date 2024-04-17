@@ -317,7 +317,7 @@ void MapEditScene::Draw()
 			itr++;
 		}
 		//コスト表示
-		const XMFLOAT3 costPos(1000, 700, 0);
+		const XMFLOAT3 costPos(900, 600, 0);
 		costTextPos_ = costPos;
 		std::string str = std::to_string(curCost_) + " / " + std::to_string(costLimit_);
 		pText_->Draw(costTextPos_.x, costTextPos_.y, str.c_str());
@@ -617,7 +617,7 @@ void MapEditScene::ButtonInit()
 	pCompleteButton_ = (Button*)FindObject(buttonStr);
 	pCompleteButton_->SetPictNum(completeNum);
 
-	const XMFLOAT3 cbPos = XMFLOAT3(0.8f, -0.6f, 0);
+	const XMFLOAT3 cbPos = XMFLOAT3(0.8f, -0.7f, 0);
 	Transform cbTransform;
 	cbTransform.position_ = cbPos;
 	cbTransform.scale_ = obScale;
@@ -633,7 +633,7 @@ void MapEditScene::ButtonInit()
 	pTestplayButton_ = (Button*)FindObject(buttonStr);
 	pTestplayButton_->SetPictNum(testplayNum);
 
-	const XMFLOAT3 tbPos = XMFLOAT3(0.5f, -0.6f, 0);
+	const XMFLOAT3 tbPos = XMFLOAT3(0.8f, -0.6f, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;

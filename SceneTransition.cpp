@@ -21,7 +21,7 @@ SceneTransition::SceneTransition(GameObject* parent)
 	//ステージの最小サイズ
 	const int stageSizeMin = 5;
 	//ステージの最大サイズ
-	const int stageSizeMax = 20;
+	const int stageSizeMax = 18;
 	XSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
 	ZSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
 
@@ -108,12 +108,6 @@ void SceneTransition::Draw()
 {
 	Transform player;
 	player.position_ = XMFLOAT3(0.7, 0.8, 0);
-	const float hpRectx = 112;
-	const float hpRecty = 17;
-	const float hpRectWidth = 280;
-	const float hpRectHeight = 75;
-	Image::SetRect(hPlayer1_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
-	Image::SetRect(hPlayer2_, hpRectx, hpRecty, hpRectWidth, hpRectHeight);
 	switch (sceneState_)
 	{
 	case SCENE_MAPEDIT1:
@@ -127,41 +121,6 @@ void SceneTransition::Draw()
 		Image::Draw(hPlayer2_);
 		break;
 	}
-	/*if (isFinished_)
-	{
-		const int finishTime = 3;
-		static int cnt = 0;
-		cnt++;
-		if (cnt / FPS >= finishTime)
-		{
-			SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
-			pSM->ChangeScene(SCENE_ID_THANK);
-		}
-
-		
-		player.position_ = XMFLOAT3(-0.3, 0.1, 0);
-		Image::SetTransform(hPlayer1_, player);
-		player.position_ = XMFLOAT3(0.3, 0.1, 0);
-		Image::SetTransform(hPlayer2_, player);
-		if (isClear_Player_[0] == true && isClear_Player_[1] == false)
-		{
-			player.position_ = XMFLOAT3(-0.3, -0.1, 0);
-			Image::SetTransform(hWin_, player);
-			player.position_ = XMFLOAT3(0.3, -0.1, 0);
-			Image::SetTransform(hLose_, player);
-		}
-		else
-		{
-			player.position_ = XMFLOAT3(0.3, -0.3, 0);
-			Image::SetTransform(hWin_, player);
-			player.position_ = XMFLOAT3(-0.3, -0.3, 0);
-			Image::SetTransform(hLose_, player);
-		}
-		Image::Draw(hPlayer1_);
-		Image::Draw(hPlayer2_);
-		Image::Draw(hWin_);
-		Image::Draw(hLose_);
-	}*/
 }
 
 void SceneTransition::Release()
