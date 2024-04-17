@@ -64,41 +64,12 @@ MapEditScene::MapEditScene(GameObject* parent)
 
 void MapEditScene::Initialize()
 {
-	std::string filename[MATH_MAX] =
-	{
-		"Math_Floor.png",
-		"Math_Wall.png",
-		"MATH_Hole.png",
-		"Math_Conveyor.png",
-		"Math_Togetoge.png",
-		"Math_PitFall.png",
-		"Math_Start.png",
-		"Math_Goal.png",
-	};
-	for (int i = 0; i < MATH_MAX; i++)
-	{
-		filename[i] = "Assets\\" + filename[i];
-		hPict_[i] = Image::Load(filename[i]);
-		assert(hPict_[i] >= 0);
-	}
-	//テクスチャのサイズ
-	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
-
+	//マス初期化
+	MathInit();
 	//ボタンの初期化
-	ButtonInit(imageSize);
+	ButtonInit();
 	//マスの説明の初期化
 	ExpantionInit();
-	//マスのサイズ調整
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int y = 0; y < YSIZE; y++)
-		{
-			math_origin_[x][y] = math_[x][y];
-			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
-			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
-			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
-		}
-	}
 
 	hTgtgRoute_ = Image::Load("Assets\\Togetoge_Route.png");
 	assert(hTgtgRoute_ >= 0);
@@ -349,27 +320,8 @@ void MapEditScene::Draw()
 
 		//マスの説明表示
 		ExpantionDraw();
-
-		for (int x = 0; x < XSIZE; x++)
-		{
-			for (int y = 0; y < YSIZE; y++)
-			{
-				//コンベアの回転
-				if (isConvRot_[x][YSIZE - 1 - y])
-				{
-					math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
-				}
-				if ((int)math_[x][YSIZE - 1 - y].mathPos_.rotate_.z % 90 == 0)
-				{
-					math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (int)(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z / 90) * 90;
-					isConvRot_[x][YSIZE - 1 - y] = false;
-				}
-
-				Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
-				Image::Draw(hPict_[math_[x][y].mathType_]);
-
-			}
-		}
+		//マス表示
+		MathDraw();
 	}
 }
 
@@ -554,7 +506,7 @@ void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
 	CheckCanTest();
 }
 
-void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
+void MapEditScene::ButtonInit()
 {
 	//マス選択ボタンのファイルネーム指定
 	std::string buttonName[MATH_MAX] =
@@ -574,8 +526,7 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	//テストプレイボタン
 	std::string buttonTestplay = "Button_TestPlay.png";
 	//上のファイルが入ってるフォルダー
-	const std::string folderName1 = "Assets\\";
-	const std::string folderName2 = "MathButton\\";
+	std::string folderName = "Assets\\Button\\MathSelect\\";
 	//マス選択ボタンの画像番号
 	int mathButtonNum[MATH_MAX];
 	//その他のボタンの画像番号
@@ -584,17 +535,21 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	//マス選択ボタンのロード
 	for (int i = 0; i < MATH_MAX; i++)
 	{
-		buttonName[i] = folderName1 + folderName2 + buttonName[i];
+		buttonName[i] = folderName + buttonName[i];
 
 		mathButtonNum[i] = Image::Load(buttonName[i]);
 		assert(mathButtonNum[i] >= 0);
 	}
+	//ボタンのテクスチャサイズ
+	XMFLOAT3 imageSize = Image::GetTextureSize(mathButtonNum[0]);
+	//その他のボタンが入ってるフォルダ名
+	folderName = "Assets\\Button\\SceneTrans\\";
 	//完了ボタンのロード
-	buttonComplete = folderName1 + folderName2 + buttonComplete;
+	buttonComplete = folderName + buttonComplete;
 	completeNum = Image::Load(buttonComplete);
 	assert(completeNum >= 0);
 	//テストプレイボタンのロード
-	buttonTestplay = folderName1 + folderName2 + buttonTestplay;
+	buttonTestplay = folderName + buttonTestplay;
 	testplayNum = Image::Load(buttonTestplay);
 	assert(testplayNum >= 0);
 
@@ -603,7 +558,7 @@ void MapEditScene::ButtonInit(XMFLOAT3 _imageSize)
 	//ボタンのサイズ
 	const float mathButtonSize = MATHSIZE * normalMathtoMult;
 	//ボタンの大きさ設定
-	const XMFLOAT3 mbScale = XMFLOAT3(1.0f / _imageSize.x * mathButtonSize, 1.0f / _imageSize.y * mathButtonSize, 1);
+	const XMFLOAT3 mbScale = XMFLOAT3(1.0f / imageSize.x * mathButtonSize, 1.0f / imageSize.y * mathButtonSize, 1);
 	const int buttonInitNum = 1;
 	//ボタンのオブジェクトネーム
 	std::string buttonStr;
@@ -702,12 +657,11 @@ void MapEditScene::ExpantionInit()
 		"Expantion_Goal.png",
 	};
 	//マスの説明の画像が入ってるフォルダ名
-	std::string folderName1 = "Assets\\";
-	std::string folderName2 = "MathExpantion\\";
+	std::string folderName = "Assets\\MathExpantion\\";
 	//マスの説明画像ロード
 	for (int i = 1; i < MATH_MAX; i++)
 	{
-		expantionName[i] = folderName1 + folderName2 + expantionName[i];
+		expantionName[i] = folderName + expantionName[i];
 
 		hExpantion_[i] = Image::Load(expantionName[i]);
 		assert(hExpantion_[i] >= 0);
@@ -723,6 +677,65 @@ void MapEditScene::ExpantionDraw()
 
 	Image::SetTransform(hExpantion_[mathtype_], tExpantion_);
 	Image::Draw(hExpantion_[mathtype_]);
+}
+
+void MapEditScene::MathInit()
+{
+	//マスの画像ロード
+	std::string filename[MATH_MAX] =
+	{
+		"Math_Floor.png",
+		"Math_Wall.png",
+		"MATH_Hole.png",
+		"Math_Conveyor.png",
+		"Math_Togetoge.png",
+		"Math_PitFall.png",
+		"Math_Start.png",
+		"Math_Goal.png",
+	};
+	for (int i = 0; i < MATH_MAX; i++)
+	{
+		std::string folderName = "Assets\\MathType\\";
+		filename[i] = folderName + filename[i];
+		hPict_[i] = Image::Load(filename[i]);
+		assert(hPict_[i] >= 0);
+	}
+	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
+	//マスのサイズ調整
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int y = 0; y < YSIZE; y++)
+		{
+			math_origin_[x][y] = math_[x][y];
+			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
+			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
+			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
+		}
+	}
+}
+
+void MapEditScene::MathDraw()
+{
+	for (int x = 0; x < XSIZE; x++)
+	{
+		for (int y = 0; y < YSIZE; y++)
+		{
+			//コンベアの回転
+			if (isConvRot_[x][YSIZE - 1 - y])
+			{
+				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
+			}
+			if ((int)math_[x][YSIZE - 1 - y].mathPos_.rotate_.z % 90 == 0)
+			{
+				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (int)(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z / 90) * 90;
+				isConvRot_[x][YSIZE - 1 - y] = false;
+			}
+
+			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
+			Image::Draw(hPict_[math_[x][y].mathType_]);
+
+		}
+	}
 }
 
 void MapEditScene::SelectMathType()

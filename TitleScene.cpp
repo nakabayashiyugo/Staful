@@ -21,10 +21,9 @@ void TitleScene::Initialize()
 	std::string sbStr = "Button_GameStart.png";
 	std::string exStr = "Button_Exit.png";
 	//ボタンのファイルが入ってるフォルダ
-	std::string folderName1 = "Assets\\";
-	std::string folderName2 = "MathButton\\";
-	sbStr = folderName1 + folderName2 + sbStr;
-	exStr = folderName1 + folderName2 + exStr;
+	std::string folderName = "Assets\\Button\\SceneTrans\\";
+	sbStr = folderName + sbStr;
+	exStr = folderName + exStr;
 	//スタートボタンロード
 	hStartButton_ = Image::Load(sbStr);
 	assert(hStartButton_ >= 0);

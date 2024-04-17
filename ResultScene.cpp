@@ -66,9 +66,8 @@ void ResultScene::Release()
 void ResultScene::ButtonInit(std::string _fileName)
 {
 	//ボタンの画像が入ってるフォルダ名
-	std::string folderName1 = "Assets\\";
-	std::string folderName2 = "MathButton\\";
-	std::string fileName = folderName1 + folderName2 + _fileName;
+	std::string folderName = "Assets\\Button\\SceneTrans\\";
+	std::string fileName = folderName + _fileName;
 	hButton_ = Image::Load(fileName);
 	assert(hButton_ >= 0);
 

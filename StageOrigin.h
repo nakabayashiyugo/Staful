@@ -20,6 +20,20 @@ enum MATHTYPE
 	MATH_MAX,
 };
 
+//それぞれのマスのコスト
+enum MATHCOST
+{
+	COST_FLOOR = 0,
+	COST_WALL = 1,
+	COST_HOLE = 1,
+	COST_CONVEYOR = 1,
+	COST_TOGETOGE = 1,
+	COST_PITFALL = 1,
+	COST_START = 0,
+	COST_GOAL = 0,
+	COST_MAX,
+};
+
 struct MATHDEDAIL
 {
 	MATHTYPE mathType_; //マスの種類

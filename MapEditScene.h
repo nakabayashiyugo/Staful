@@ -65,6 +65,10 @@ private:
 	//選ばれてるマスの種類
 	int mathtype_;
 public:
+	//マスの初期化
+	void MathInit();
+	//マスの表示
+	void MathDraw();
 	//マスタイプ選択
 	void SelectMathType();
 	//クリックしたマスを選択してるマスに変える
@@ -83,7 +87,7 @@ private:
 	XMFLOAT3 texture_size_;
 public:
 	//マス選択ボタンの初期化
-	void ButtonInit(XMFLOAT3 _imageSize);
+	void ButtonInit();
 
 	int GetButtonNum() { return buttonNum_; }
 
