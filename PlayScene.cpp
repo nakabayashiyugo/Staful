@@ -11,7 +11,8 @@
 #include "Player.h"
 
 PlayScene::PlayScene(GameObject* parent)
-	: GameObject(parent, "PlayScene"), table_Change_(false), saveNum_(2)
+	: GameObject(parent, "PlayScene"), table_Change_(false), saveNum_(2),
+	floorHeight_(0), playerHeight_(floorHeight_ + MODELHEIGHT)
 {
 	pST = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pST->GetMathSize_x();

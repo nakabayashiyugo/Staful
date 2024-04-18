@@ -16,6 +16,7 @@
 #include "resource.h"
 
 const int MAKEHOLETIME = 1;
+
 const int FPS = 60;
 
 Stage::Stage(GameObject* parent)
@@ -109,7 +110,8 @@ void Stage::Draw()
 		for (int z = 0; z < ZSIZE; z++)
 		{
 			Transform mathTrans;
-			mathTrans.position_ = XMFLOAT3(x, 0, z);
+			
+			mathTrans.position_ = XMFLOAT3(x, pPlayScene_->GetFloorHeight(), z);
 
 			switch (math_[x][z].mathType_)
 			{

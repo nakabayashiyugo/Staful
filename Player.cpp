@@ -49,6 +49,9 @@ Player::Player(GameObject* parent)
 	prevPlayerState_(STATE_DEAD), 
 	stageState_(STATE_START),
 
+	//影について
+	hShadow_(-1),
+
 	//画像に関する変数の初期化
 	hFrame_(-1), 
 	hFrameOutline_(-1), 
@@ -69,6 +72,7 @@ Player::Player(GameObject* parent)
 	Math_Resize(XSIZE, ZSIZE, &math_);
 
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
+	playerHeight_ = pPlayScene_->GetPlayerHeight();
 
 	SetTableMath(pPlayScene_->GetTableMath());
 
@@ -78,11 +82,11 @@ Player::Player(GameObject* parent)
 		{
 			if (math_[x][z].mathType_ == MATH_START)
 			{
-				startPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
+				startPos_ = XMFLOAT3((float)x, playerHeight_, (float)z);
 			}
 			if (math_[x][z].mathType_ == MATH_GOAL)
 			{
-				goalPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
+				goalPos_ = XMFLOAT3((float)x, playerHeight_, (float)z);
 			}
 		}
 	}
@@ -105,6 +109,8 @@ void Player::Initialize()
 	assert(hTime_ >= 0);
 	
 	pTimer_ = new Timer(30);
+
+	ShadowInit();
 }
 
 void Player::Update()
@@ -139,7 +145,11 @@ void Player::Draw()
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 
+	//時間ゲージ
 	TimeGageManagement();
+
+	//影表示
+	ShadowDraw();
 
 	Image::SetTransform(hGage_, tGage_);
 	Image::SetTransform(hFrame_, tFrame_);
@@ -174,6 +184,8 @@ void Player::PlayUpdate()
 	{
 		stageState_ = STATE_FAILURE;
 	}
+
+	ShadowManagement();
 
 	switch (playerState_)
 	{
@@ -531,6 +543,34 @@ void Player::MathTypeEffect()
 		break;
 	default:break;
 	}
+}
+
+void Player::ShadowInit()
+{
+	//影のモデルのファイルネーム
+	std::string modelName = "Player_Shadow.fbx";
+	//モデルの入ってるフォルダ名
+	std::string folderName = "Assets\\";
+	modelName = folderName + modelName;
+
+	//モデルロード
+	hShadow_ = Model::Load(modelName);
+	assert(aShadow_ >= 0);
+}
+
+void Player::ShadowDraw()
+{
+	Model::SetTransform(hShadow_, tShadow_);
+	if (GetMathType(tShadow_.position_).mathType_ != MATH_HOLE)
+	{
+		Model::Draw(hShadow_);
+	}
+}
+
+void Player::ShadowManagement()
+{
+	tShadow_.position_ = transform_.position_;
+	tShadow_.position_.y = playerHeight_;
 }
 
 void Player::SetAnimFramerate()

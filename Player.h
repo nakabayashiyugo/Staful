@@ -56,6 +56,8 @@ public:
 private:
 	//スタート位置、ゴール位置
 	XMFLOAT3 startPos_, goalPos_;
+	//基準の高さ
+	float playerHeight_;
 	//移動が終了したか
 	bool moveFinished_;
 	float moveCount_;
@@ -131,6 +133,18 @@ public:
 	STAGE_STATE GetStageState() { return stageState_; }
 	
 
+//影について
+private:
+	//影のモデル番号
+	int hShadow_;
+	//影のトランスフォーム
+	Transform tShadow_;
+
+public:
+	void ShadowInit();
+	void ShadowDraw();
+	//影の動きの制御
+	void ShadowManagement();
 
 //プレイヤーのアニメーションについて
 private:
