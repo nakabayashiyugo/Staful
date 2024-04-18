@@ -7,11 +7,12 @@ class Timer;
 
 enum PLAYER_STATE
 {
-	STATE_IDLE = 0,
-	STATE_WALK,
-	STATE_JAMP,
-	STATE_FALL,
-	STATE_DEAD,
+	STATE_IDLE = 0,	//止まってるとき
+	STATE_WALK,		//歩いているとき
+	STATE_JAMP,		//ジャンプしたとき
+	STATE_FALL,		//落下しているとき
+	STATE_CONVMOVE,	//コンベアによって移動しているとき
+	STATE_DEAD,		//死んだとき
 };
 
 enum STAGE_STATE
@@ -29,11 +30,6 @@ class Player
 	int hModel_;
 
 	PlayScene* pPlayScene_;
-
-	XMFLOAT3 tableHitPoint_;
-	bool isTableHit_;
-
-	XMFLOAT3 centerPos_;
 
 	//障害物の置ける数
 	int hurdle_Limit_;
@@ -63,6 +59,8 @@ private:
 	//移動が終了したか
 	bool moveFinished_;
 	float moveCount_;
+	//上方向に舞うフレーム足される値の初期値
+	float upVecInit_;
 	//上方向の毎フレーム足される値
 	float upVecPlus_;
 	//移動方向
@@ -79,6 +77,8 @@ private:
 	XMVECTOR velocity_;
 	//視線ベクトル
 	XMVECTOR eyeDirection_;
+	//落ちた時の死ぬ高さ
+	float deadHeight_;
 
 	//立っているマスの情報
 	MATHDEDAIL standMath_;
@@ -103,12 +103,15 @@ public:
 	MATHDEDAIL GetMathType(XMFLOAT3 _pos);
 	//移動先のマスの種類
 	MATHTYPE DestPosMathType();
+	//移動先との間に壁があるか
+	bool WallCheck();
 
 	//それぞれの状態のUpdate
 	void IdleUpdate();
 	void WalkUpdate();
 	void JampUpdate();
 	void FallUpdate();
+	void ConvMoveUpdate();
 	void DeadUpdate();
 	//スタートマスに戻す
 	void ReturnToStartMath();
@@ -119,11 +122,14 @@ public:
 	bool Is_InSide_Table(XMFLOAT3 _pos);
 
 	//プレイヤーのポジションのゲッター
-	XMFLOAT3 GetPosition() { return centerPos_; }
+	XMFLOAT3 GetPosition() { return transform_.position_; }
+	//standMath_のゲッター
+	MATHDEDAIL GetStandMath() { return standMath_; }
 	//プレイヤーのステートのゲッター
 	PLAYER_STATE GetPlayerState() { return playerState_; }
 	//ゲームの進行度のステートのゲッター
 	STAGE_STATE GetStageState() { return stageState_; }
+	
 
 
 //プレイヤーのアニメーションについて

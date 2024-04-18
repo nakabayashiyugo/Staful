@@ -129,6 +129,26 @@ void PlayScene::Read()
 
 XMFLOAT3 PlayScene::GetPlayerPos()
 {
-	pPlayer_ = (Player*)FindObject("Player");
-	return pPlayer_->GetPosition();
+	XMFLOAT3 retMath = XMFLOAT3(0, 0, 0);
+	if (pPlayer_ == nullptr)
+	{
+		return retMath;
+	}
+	retMath = pPlayer_->GetPosition();
+	return retMath;
+}
+
+MATHDEDAIL PlayScene::GetPlayerStandMath()
+{
+	MATHDEDAIL retMath;
+	//•Ô‚·MATHDEDAIL‚Ì‰Šú’l
+	MATHTYPE retMathInit = MATH_FLOOR;
+	Transform retTransformInit;
+	retMath = { retMathInit, retTransformInit };
+	if (pPlayer_ == nullptr)
+	{
+		return retMath;
+	}
+	retMath = pPlayer_->GetStandMath();
+	return retMath;
 }

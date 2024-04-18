@@ -37,6 +37,7 @@ public:
 	std::vector<TOGETOGEROUTE> GetTogetogeRoute() { return tTgtgRoute_; }
 
 	XMFLOAT3 GetPlayerPos();
+	MATHDEDAIL GetPlayerStandMath();
 
 	void SetTableChange(bool _table_change) { table_Change_ = _table_change; }
 	bool GetTableChange() { return table_Change_; }

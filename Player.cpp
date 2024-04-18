@@ -34,7 +34,8 @@ Player::Player(GameObject* parent)
 	//プレイヤーの操作について
 	moveFinished_(false),
 	moveCount_(moveCountInit),
-	upVecPlus_(0),
+	upVecInit_(0),
+	upVecPlus_(upVecInit_),
 	moveDir_(0, 0, 0), 
 	destPos_(0, 0, 0), 
 	prevPos_(0, 0, 0),
@@ -42,6 +43,7 @@ Player::Player(GameObject* parent)
 	gravityAcce_(gravity_.y),
 	velocity_(XMVectorSet(0, 0, 0, 0)),
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
+	deadHeight_(-1.0f),
 
 	playerState_(STATE_IDLE), 
 	prevPlayerState_(STATE_DEAD), 
@@ -58,8 +60,7 @@ Player::Player(GameObject* parent)
 	isHitStop_(false), 
 
 	
-	hurdle_Limit_(0),
-	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false)
+	hurdle_Limit_(0)
 {
 	pST = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pST->GetMathSize_x();
@@ -188,12 +189,17 @@ void Player::PlayUpdate()
 	case STATE_FALL:
 		FallUpdate();
 		break;
+	case STATE_CONVMOVE:
+		ConvMoveUpdate();
+		break;
 	case STATE_DEAD:
 		DeadUpdate();
 		break;
 	}
+	//移動量が少しでもあったら
 	if (XMVectorGetX(XMVector3Length(velocity_)) > 0)
 	{
+		//アニメーションを更新する
 		SetAnimFramerate();
 	}
 }
@@ -269,7 +275,7 @@ void Player::PlayerOperation()
 void Player::PlayerMove()
 {
 	//移動先が壁だったら
-	if (DestPosMathType() == MATH_WALL)
+	if (WallCheck())
 	{
 		destPos_ = prevPos_;
 		//移動終了
@@ -342,6 +348,31 @@ MATHTYPE Player::DestPosMathType()
 	return retType;
 }
 
+bool Player::WallCheck()
+{
+	bool ret = false;
+	//上方向がないmoveDir_
+	XMFLOAT2 vec2MoveDir;
+	vec2MoveDir.x = moveDir_.x;
+	vec2MoveDir.y = moveDir_.z;
+	//moveDir_の長さ
+	float moveDirSize = XMVectorGetX(XMVector2Length(XMLoadFloat2(&vec2MoveDir)));
+
+	for (int i = 1; i <= moveDirSize; i++)
+	{
+		//moveDir_を正規化する変数
+		XMFLOAT2 normalMoveDir;
+		XMStoreFloat2(&normalMoveDir, XMVector2Normalize(XMLoadFloat2(&vec2MoveDir)));
+		destPos_.x = prevPos_.x + normalMoveDir.x * i;
+		destPos_.z = prevPos_.z + normalMoveDir.y * i;
+		if (GetMathType(destPos_).mathType_ == MATH_WALL)
+		{
+			ret = true;
+		}
+	}
+	return ret;
+}
+
 MATHDEDAIL Player::GetMathType(XMFLOAT3 _pos)
 {
 	if (!Is_InSide_Table(_pos))
@@ -358,8 +389,6 @@ void Player::IdleUpdate()
 	prevPos_ = transform_.position_;
 	moveFinished_ = false;
 	moveDir_ = moveInit;
-	//重力初期化
-	gravity_.y = gravityAcce_;
 	//playerの操作
 	PlayerOperation();
 	//立っているマスの効果
@@ -432,8 +461,6 @@ void Player::JampUpdate()
 
 void Player::FallUpdate()
 {
-	ChangePlayerDir(moveDir_);
-
 	upVecPlus_ += gravity_.y;
 	gravity_.y += gravityAcce_;
 	moveDir_.y += upVecPlus_;
@@ -441,13 +468,23 @@ void Player::FallUpdate()
 
 	if (moveFinished_)
 	{
+		upVecPlus_ = upVecInit_;
 		gravity_.y = gravityAcce_;
 		playerState_ = STATE_IDLE;
-		if (DestPosMathType() == MATH_HOLE)
+		if (DestPosMathType() == MATH_HOLE && transform_.position_.y <= deadHeight_)
 		{
 			playerState_ = STATE_DEAD;
 		}
 		moveFinished_ = false;
+	}
+}
+
+void Player::ConvMoveUpdate()
+{
+	PlayerMove();
+	if (moveFinished_)
+	{
+		playerState_ = STATE_IDLE;
 	}
 }
 
@@ -484,7 +521,7 @@ void Player::MathTypeEffect()
 		XMVECTOR rotConvVec = XMVector3Transform(converyor_velocity, yrot);
 		//移動方向を上のベクトルにする
 		XMStoreFloat3(&moveDir_, rotConvVec);
-		playerState_ = STATE_WALK;
+		playerState_ = STATE_CONVMOVE;
 		break;
 	case MATH_GOAL:
 		stageState_ = STATE_GOAL;
@@ -542,14 +579,19 @@ void Player::TimeGageManagement()
 	const XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
 	const XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
 
+	//時間ゲージの白いところのトランスフォーム
 	tFrame_.position_ =
 		XMFLOAT3(timerPos.x, timerPos.y, timerPos.z);
 	tFrame_.scale_ = timerScale;
 
+	//時間ゲージの枠のトランスフォーム
+	//時間ゲージの枠の太さ
+	float outlineThick = 0.05f;
 	tFrameOutline_.position_ =
 		XMFLOAT3(timerPos.x, timerPos.y, timerPos.z);
-	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.05f, timerScale.y + 0.05f, timerScale.z);
+	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + outlineThick, timerScale.y + outlineThick, timerScale.z);
 
+	//時間ゲージの緑のところのトランスフォーム
 	tGage_.position_ =
 		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
 			timerPos.y, timerPos.z);

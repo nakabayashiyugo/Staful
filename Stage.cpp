@@ -87,20 +87,17 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-	XMFLOAT3 playerPos = pPlayScene_->GetPlayerPos();
-	if (playerPos.x >= 0 && playerPos.x < XSIZE &&
-		playerPos.z >= 0 && playerPos.z < ZSIZE)
+	MATHDEDAIL pStandMath = pPlayScene_->GetPlayerStandMath();
+	if (pStandMath.mathType_ == MATH_PITFALL)
 	{
-		if (math_[(int)playerPos.x][(int)playerPos.z].mathType_ == MATH_PITFALL)
+		XMFLOAT3 playerPos = pPlayScene_->GetPlayerPos();
+		makeHoleTimes_[(int)playerPos.x][(int)playerPos.z]--;
+		if (makeHoleTimes_[(int)playerPos.x][(int)playerPos.z] <= 0)
 		{
-			makeHoleTimes_[(int)playerPos.x][(int)playerPos.z]--;
-			if (makeHoleTimes_[(int)playerPos.x][(int)playerPos.z] <= 0)
-			{
-				math_[(int)playerPos.x][(int)playerPos.z].mathType_ = MATH_HOLE;
-				Write();
-				pPlayScene_->Read();
-				pPlayScene_->SetTableChange(true);
-			}
+			math_[(int)playerPos.x][(int)playerPos.z].mathType_ = MATH_HOLE;
+			Write();
+			pPlayScene_->Read();
+			pPlayScene_->SetTableChange(true);
 		}
 	}
 }
