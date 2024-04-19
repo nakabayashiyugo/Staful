@@ -15,6 +15,8 @@
 #include "StageOrigin.h"
 
 const int MODELSIZE = 0.8f;
+//ジャンプ時の最高到達点
+const float JAMPMAXHEIGHT = 2;
 //移動しないとき
 const XMFLOAT3 moveInit(0, 0, 0);
 //前の移動距離
@@ -26,7 +28,11 @@ const XMFLOAT3 moveRight(1, 0, 0);
 //左の移動距離
 const XMFLOAT3 moveLeft(-1, 0, 0);
 //moveCount_の初期値
-const float moveCountInit = 1.0f;
+const float moveCountInit = 0.0f;
+//ジャンプ移動の通常の移動との距離の倍率
+const int normalMoveVectoMult = 2;
+//落ちる速度の初期値
+const float fallSpeedInit = 0.0f;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -34,8 +40,6 @@ Player::Player(GameObject* parent)
 	//プレイヤーの操作について
 	moveFinished_(false),
 	moveCount_(moveCountInit),
-	upVecInit_(0),
-	upVecPlus_(upVecInit_),
 	moveDir_(0, 0, 0), 
 	destPos_(0, 0, 0), 
 	prevPos_(0, 0, 0),
@@ -292,19 +296,20 @@ void Player::PlayerMove()
 		return;
 	}
 	//moveCountの毎秒増えていく値
-	const float cntUpdate = -0.03f;
+	const float cntUpdate = 0.03f;
 	moveCount_ += cntUpdate;
+	if (moveCount_ > 1) moveCount_ = 1;
 
 	Easing* pEasing = new Easing();
 	//velocity_に入れるためのXMFLOAT3型の変数
 	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
-	vec.x = moveDir_.x * (moveCountInit - pEasing->EaseInSine(moveCount_));
-	vec.y = moveDir_.y;
-	vec.z = moveDir_.z * (moveCountInit - pEasing->EaseInSine(moveCount_));
+	vec.x = moveDir_.x * pEasing->EaseOutQuad(moveCount_);
+	vec.y = moveDir_.y * pEasing->EaseOutCirc(moveCount_ * normalMoveVectoMult);
+	vec.z = moveDir_.z * pEasing->EaseOutQuad(moveCount_);
 
 	velocity_ = XMLoadFloat3(&vec);
 
-	if (moveCount_ <= 0)
+	if (moveCount_ >= 1)
 	{
 		moveCount_ = moveCountInit;
 		//移動終了
@@ -416,9 +421,7 @@ void Player::WalkUpdate()
 void Player::JampUpdate()
 {
 	ChangePlayerDir(moveDir_);
-
-	//ジャンプ移動の通常の移動との距離の倍率
-	const int normalMoveVectoMult = 2;
+	
 	//moveDir_を正規化するための変数
 	XMFLOAT3 normalMoveDir = XMFLOAT3(moveDir_.x, 0, moveDir_.z);
 	XMVECTOR dir;
@@ -431,36 +434,9 @@ void Player::JampUpdate()
 	moveDir_.x = normalMoveDir.x * normalMoveVectoMult;
 	moveDir_.z = normalMoveDir.z * normalMoveVectoMult;
 
-	//上方向のベクトルの初期化
-	const float upVecPlusInit = 0.1f;
-	upVecPlus_ = upVecPlusInit;
-	upVecPlus_ += gravity_.y;
-	gravity_.y += gravityAcce_;
-	moveDir_.y += upVecPlus_;
+	moveDir_.y = JAMPMAXHEIGHT;
 	PlayerMove();
 
-	//playerの状態をJAMPからFALLに切り替え
-	//移動前の位置を0,
-	//移動後の位置を1とした時の、
-	//JAMPからFALLに切り替える値
-	const float switchValue = 0.5f;
-	//現在の位置から移動前の位置を引いたベクトル
-	XMFLOAT3 distVec = XMFLOAT3(0, 0, 0);
-	distVec.x = transform_.position_.x - prevPos_.x;
-	distVec.z = transform_.position_.z - prevPos_.z;
-	//現在の位置と移動前の位置の直線距離
-	float dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&distVec)));
-	//上方向がない移動方向
-	XMFLOAT2 vec2MoveDir = XMFLOAT2(moveDir_.x, moveDir_.z);
-	//移動距離の長さ
-	float moveDist = XMVectorGetX(XMVector2Length(XMLoadFloat2(&vec2MoveDir)));
-
-	//現在の位置と移動前の位置の直線距離が、
-	//JAMPとFALLを切り替える値までに達していたら
-	if (dist >= moveDist * switchValue)
-	{
-		playerState_ = STATE_FALL;
-	}
 	if (moveFinished_)
 	{
 		playerState_ = STATE_IDLE;
@@ -469,14 +445,18 @@ void Player::JampUpdate()
 
 void Player::FallUpdate()
 {
-	upVecPlus_ += gravity_.y;
+	fallSpeed_ += gravity_.y;
 	gravity_.y += gravityAcce_;
-	moveDir_.y += upVecPlus_;
-	PlayerMove();
+	XMFLOAT3 vec;
+	vec.x = XMVectorGetX(velocity_);
+	vec.y = fallSpeed_;
+	vec.z = XMVectorGetZ(velocity_);
+	velocity_ = XMLoadFloat3(&vec);
+	transform_.position_ += velocity_;
 
-	if (moveFinished_)
+	if (transform_.position_.y <= deadHeight_)
 	{
-		upVecPlus_ = upVecInit_;
+		fallSpeed_ = fallSpeedInit;
 		gravity_.y = gravityAcce_;
 		playerState_ = STATE_IDLE;
 		if (DestPosMathType() == MATH_HOLE && transform_.position_.y <= deadHeight_)
@@ -490,6 +470,7 @@ void Player::FallUpdate()
 void Player::ConvMoveUpdate()
 {
 	PlayerMove();
+
 	if (moveFinished_)
 	{
 		playerState_ = STATE_IDLE;
@@ -589,7 +570,7 @@ void Player::SetAnimFramerate()
 			break;
 		case STATE_WALK:
 			startFrame_ = 61;
-			endFrame_ = 120;
+			endFrame_ = 150;
 			break;
 		case STATE_JAMP:
 			startFrame_ = 121;

@@ -61,10 +61,8 @@ private:
 	//移動が終了したか
 	bool moveFinished_;
 	float moveCount_;
-	//上方向に舞うフレーム足される値の初期値
-	float upVecInit_;
-	//上方向の毎フレーム足される値
-	float upVecPlus_;
+	//落ちる速度
+	float fallSpeed_;
 	//移動方向
 	XMFLOAT3 moveDir_;
 	//移動先の位置
