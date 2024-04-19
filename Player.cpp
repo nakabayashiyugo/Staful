@@ -208,12 +208,8 @@ void Player::PlayUpdate()
 		DeadUpdate();
 		break;
 	}
-	//移動量が少しでもあったら
-	if (XMVectorGetX(XMVector3Length(velocity_)) > 0)
-	{
-		//アニメーションを更新する
-		SetAnimFramerate();
-	}
+	//アニメーションを更新する
+	SetAnimFramerate();
 }
 
 void Player::CameraPosSet()
@@ -555,13 +551,14 @@ void Player::ShadowInit()
 
 	//モデルロード
 	hShadow_ = Model::Load(modelName);
-	assert(aShadow_ >= 0);
+	assert(hShadow_ >= 0);
 }
 
 void Player::ShadowDraw()
 {
 	Model::SetTransform(hShadow_, tShadow_);
-	if (GetMathType(tShadow_.position_).mathType_ != MATH_HOLE)
+	if (GetMathType(tShadow_.position_).mathType_ != MATH_HOLE &&
+		playerState_ != STATE_DEAD)
 	{
 		Model::Draw(hShadow_);
 	}
@@ -575,11 +572,18 @@ void Player::ShadowManagement()
 
 void Player::SetAnimFramerate()
 {
+	//移動量がゼロだったら
+	if (XMVectorGetX(XMVector3Length(velocity_)) <= 0)
+	{
+		return;
+	}
+
 	if (prevPlayerState_ != playerState_)
 	{
 		switch (playerState_)
 		{
 		case STATE_IDLE:
+		case STATE_DEAD:
 			startFrame_ = 1;
 			endFrame_ = 60;
 			break;
