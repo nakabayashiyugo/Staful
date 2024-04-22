@@ -28,8 +28,8 @@ PlayScene::PlayScene(GameObject* parent)
 
 void PlayScene::Initialize()
 {
-	pPlayer_->Instantiate<Player>(this);
 	pStage_->Instantiate<Stage>(this);
+	pPlayer_->Instantiate<Player>(this);
 	pStage_ = (Stage*)FindObject("Stage");
 	pPlayer_ = (Player*)FindObject("Player");
 }

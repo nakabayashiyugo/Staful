@@ -34,11 +34,10 @@ class SceneTransition
 	
 	PlayScene* pPS_[PLAYERNUMMAX];
 
+	SCENESTATE sceneState_, prevSceneState_;
+
 	//ロゴの画像番号
 	int hPlayer1_, hPlayer2_;
-	int hWin_, hLose_;
-
-	SCENESTATE sceneState_, prevSceneState_;
 public:
 	SceneTransition(GameObject* parent);
 
@@ -53,6 +52,9 @@ public:
 
 	//開放
 	void Release() override;
+
+	//現在プレイ中のプレイヤー番号表示
+	void PlayerNumDraw();
 
 	int GetMathSize_x() { return XSIZE; };
 	int GetMathSize_z() { return ZSIZE; };

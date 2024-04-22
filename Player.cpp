@@ -155,6 +155,9 @@ void Player::Draw()
 	//影表示
 	ShadowDraw();
 
+	//プレイヤー番号表示
+	pST->PlayerNumDraw();
+
 	Image::SetTransform(hGage_, tGage_);
 	Image::SetTransform(hFrame_, tFrame_);
 	Image::SetTransform(hFrameOutline_, tFrameOutline_);
@@ -558,30 +561,40 @@ void Player::SetAnimFramerate()
 	{
 		return;
 	}
-
+	//それぞれのフレームレート
+	const int IDLE_FIRST = 1;
+	const int IDLE_END = 60;
+	const int WALK_FIRST = 61;
+	const int WALK_END = 120;
+	const int JAMP_FIRST = 121;
+	const int JAMP_END = 150;
+	const int FALL_FIRST = 150;
+	const int FALL_END = 150;
+	//アニメーションのスピード
+	const int animSpeed = 1;
 	if (prevPlayerState_ != playerState_)
 	{
 		switch (playerState_)
 		{
 		case STATE_IDLE:
 		case STATE_DEAD:
-			startFrame_ = 1;
-			endFrame_ = 60;
+			startFrame_ = IDLE_FIRST;
+			endFrame_ = IDLE_END;
 			break;
 		case STATE_WALK:
-			startFrame_ = 61;
-			endFrame_ = 150;
+			startFrame_ = WALK_FIRST;
+			endFrame_ = WALK_END;
 			break;
 		case STATE_JAMP:
-			startFrame_ = 121;
-			endFrame_ = 150;
+			startFrame_ = JAMP_FIRST;
+			endFrame_ = JAMP_END;
 			break;
 		case STATE_FALL:
-			startFrame_ = 150;
-			endFrame_ = 150;
+			startFrame_ = FALL_FIRST;
+			endFrame_ = FALL_END;
 			break;
 		}
-		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
+		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, animSpeed);
 	}
 	prevPlayerState_ = playerState_;
 }

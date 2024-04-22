@@ -16,7 +16,7 @@ SceneTransition::SceneTransition(GameObject* parent)
 	sceneState_(SCENE_MAPEDIT1), prevSceneState_(SCENE_TURNEND),
 	turnNum_(0), player_Num_(0), saveNum_(saveFileName1),
 	isClear_Player_{ false, false },
-	hPlayer1_(-1), hPlayer2_(-1), hWin_(-1), hLose_(-1)
+	hPlayer1_(-1), hPlayer2_(-1)
 {
 	//ステージの最小サイズ
 	const int stageSizeMin = 5;
@@ -45,14 +45,11 @@ void SceneTransition::Initialize()
 	Write();
 
 	sceneState_ = SCENESTATE(0);
+
 	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");
 	assert(hPlayer1_ >= 0);
 	hPlayer2_ = Image::Load("Assets\\Logo_Player2.png");
 	assert(hPlayer2_ >= 0);
-	hWin_ = Image::Load("Assets\\Logo_Win.png");
-	assert(hWin_ >= 0);
-	hLose_ = Image::Load("Assets\\Logo_Lose.png");
-	assert(hLose_ >= 0);
 }
 
 void SceneTransition::Update()
@@ -106,9 +103,18 @@ void SceneTransition::Update()
 
 void SceneTransition::Draw()
 {
+}
+
+void SceneTransition::Release()
+{
+}
+
+void SceneTransition::PlayerNumDraw()
+{
+	pST = (SceneTransition*)FindObject("SceneTransition");
 	Transform player;
 	player.position_ = XMFLOAT3(0.7, 0.8, 0);
-	switch (sceneState_)
+	switch (pST->GetSceneState())
 	{
 	case SCENE_MAPEDIT1:
 	case SCENE_STAGE1:
@@ -121,10 +127,6 @@ void SceneTransition::Draw()
 		Image::Draw(hPlayer2_);
 		break;
 	}
-}
-
-void SceneTransition::Release()
-{
 }
 
 

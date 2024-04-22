@@ -13,7 +13,6 @@
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"),
 	//コスト管理について
-	costTextPos_(XMFLOAT3(0, 0, 0)),
 	curCost_(0),
 	//マスの選択について
 	mathtype_(0),
@@ -169,7 +168,7 @@ void MapEditScene::Update()
 					ChangeSelectMath(selectMath);
 				}
 			case MATH_CONVEYOR:
-				if (!costManagement())
+				if (!CostManagement())
 				{
 					if (Input::IsMouseButton(0))
 					{
@@ -188,7 +187,7 @@ void MapEditScene::Update()
 			case MATH_TOGETOGE:
 				if (Input::IsMouseButton(0))
 				{
-					if (!costManagement())
+					if (!CostManagement())
 					{
 						tgtgRouteMathDown = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
 						ChangeSelectMath(selectMath);
@@ -211,7 +210,7 @@ void MapEditScene::Update()
 				}
 				break;
 			default:
-				if (!costManagement())
+				if (!CostManagement())
 				{
 					if (Input::IsMouseButton(0))
 					{
@@ -317,15 +316,15 @@ void MapEditScene::Draw()
 			itr++;
 		}
 		//コスト表示
-		const XMFLOAT3 costPos(900, 600, 0);
-		costTextPos_ = costPos;
-		std::string str = std::to_string(curCost_) + " / " + std::to_string(costLimit_);
-		pText_->Draw(costTextPos_.x, costTextPos_.y, str.c_str());
+		CostDraw();
 
 		//マスの説明表示
 		ExpantionDraw();
 		//マス表示
 		MathDraw();
+
+		//プレイヤー番号表示
+		pST->PlayerNumDraw();
 	}
 }
 
@@ -468,7 +467,7 @@ void MapEditScene::Read()
 	read.close();  //ファイルを閉じる
 }
 
-bool MapEditScene::costManagement()
+bool MapEditScene::CostManagement()
 {
 	//コストの合計
 	int costSum = 0;
@@ -488,6 +487,33 @@ bool MapEditScene::costManagement()
 	{
 		return true;
 	}
+}
+
+void MapEditScene::CostDraw()
+{
+	const std::string strCost = "cost";
+	const std::string strCostLimit = "costLimit";
+	//文字「cost」の表示位置
+	XMFLOAT3 costPos;
+	//文字「costLimit」の表示位置
+	XMFLOAT3 costLimitPos;
+	//コストの表示位置
+	XMFLOAT3 curCostPos;
+	//コスト表示の基準の位置
+	const XMFLOAT3 costPosBase(900, 600, 0);
+	//上の3つの位置のそれぞれの差
+	const XMFLOAT3 posDiff = XMFLOAT3(50, 30, 0);
+
+	costPos = costPosBase;
+	curCostPos = XMFLOAT3(costPos.x + posDiff.x, costPos.y + posDiff.y, costPosBase.z);
+	costLimitPos = XMFLOAT3(curCostPos.x + posDiff.x, curCostPos.y + posDiff.y, costPosBase.z);
+	//文字「cost」表示
+	pText_->Draw(costPos.x, costPos.y, strCost.c_str());
+	//コスト表示
+	std::string str = std::to_string(curCost_) + " / " + std::to_string(costLimit_);
+	pText_->Draw(curCostPos.x, curCostPos.y, str.c_str());
+	//文字「costLimit」表示
+	pText_->Draw(costLimitPos.x, costLimitPos.y, strCostLimit.c_str());
 }
 
 void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
@@ -617,7 +643,7 @@ void MapEditScene::ButtonInit()
 	pCompleteButton_ = (Button*)FindObject(buttonStr);
 	pCompleteButton_->SetPictNum(completeNum);
 
-	const XMFLOAT3 cbPos = XMFLOAT3(0.8f, -0.7f, 0);
+	const XMFLOAT3 cbPos = XMFLOAT3(-0.8f, -0.7f, 0);
 	Transform cbTransform;
 	cbTransform.position_ = cbPos;
 	cbTransform.scale_ = obScale;
@@ -633,7 +659,7 @@ void MapEditScene::ButtonInit()
 	pTestplayButton_ = (Button*)FindObject(buttonStr);
 	pTestplayButton_->SetPictNum(testplayNum);
 
-	const XMFLOAT3 tbPos = XMFLOAT3(0.8f, -0.6f, 0);
+	const XMFLOAT3 tbPos = XMFLOAT3(-0.8f, -0.6f, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;
@@ -745,7 +771,7 @@ void MapEditScene::SelectMathType()
 			mathtype_ = i;
 		}
 	}
-	pTestplayButton_->SetIsCanPush(canTest_);
+	pTestplayButton_->SetIsCanPush(canTest_ * isDisp_);
 	//テストプレイボタンが押されたら
 	if (pTestplayButton_->GetIsClicked())
 	{
@@ -756,7 +782,7 @@ void MapEditScene::SelectMathType()
 		Instantiate<PlayScene>(this);
 	}
 	//テストプレイクリアできないと押せないようにする
-	pCompleteButton_->SetIsCanPush(isClear_);
+	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
 	//完了ボタンが押されたら
 	if (pCompleteButton_->GetIsClicked())
 	{
