@@ -128,7 +128,7 @@ void Stage::Draw()
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_CONVEYOR:
-				mathTrans.rotate_.y = -(math_[x][z].mathPos_.rotate_.z);
+				mathTrans.rotate_.y = (math_[x][z].mathPos_.rotate_.z);
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;

@@ -10,7 +10,7 @@
 #include "../Engine/SceneManager.h"
 
 TitleScene::TitleScene(GameObject* parent)
-	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1)
+	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1), hModel_(-1)
 {
 	
 	
@@ -35,6 +35,9 @@ void TitleScene::Initialize()
 	pStartButton_->Instantiate<Button>(this);
 	pStartButton_ = (Button*)FindObject("Button");
 	pStartButton_->SetPictNum(hStartButton_);
+
+	hModel_ = Model::Load("Assets\\Block_Converyor.fbx");
+	assert(hModel_ >= 0);
 }
 
 void TitleScene::Update()
@@ -66,6 +69,10 @@ void TitleScene::Draw()
 
 	Image::SetTransform(hStaful_, tStaful_);
 	Image::Draw(hStaful_);
+
+	transform_.position_.z = -5;
+	Model::SetTransform(hModel_, transform_);
+	Model::Draw(hModel_);
 }
 
 void TitleScene::Release()
