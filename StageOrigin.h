@@ -39,6 +39,9 @@ protected:
 	//マスの大きさ
 	const int MATHSIZE = 30;
 
+	//Floorのモデルの高さ
+	const int MODELHEIGHT = 1;
+
 	//すべてのマスの情報
 	std::vector<std::vector<MATHDEDAIL>> math_;
 	//とげとげが移動する範囲

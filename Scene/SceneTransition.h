@@ -1,6 +1,6 @@
 #pragma once
-#include "Engine/GameObject.h"
-#include "StageOrigin.h"
+#include "../Engine/GameObject.h"
+#include "../StageOrigin.h"
 class PlayScene;
 
 enum SCENESTATE

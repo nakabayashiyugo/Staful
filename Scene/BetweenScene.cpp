@@ -3,9 +3,9 @@
 #include "BetweenScene.h"
 #include "SceneTransition.h"
 
-#include "Engine/Image.h"
-#include "Engine/SceneManager.h"
-#include "Engine/Easing.h"
+#include "../Engine/Image.h"
+#include "../Engine/SceneManager.h"
+#include "../Engine/Easing.h"
 
 const float PIE = 3.141592;
 const int FPS = 60;

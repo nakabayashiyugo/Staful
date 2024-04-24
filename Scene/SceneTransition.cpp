@@ -4,9 +4,9 @@
 #include "BetweenScene.h"
 #include "ResultScene.h"
 
-#include "Engine/SceneManager.h"
-#include "Engine/Image.h"
-#include "Engine/Input.h"
+#include "../Engine/SceneManager.h"
+#include "../Engine/Image.h"
+#include "../Engine/Input.h"
 
 const int FPS = 60;
 const int saveFileName1 = 1, saveFileName2 = 2;

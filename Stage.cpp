@@ -8,8 +8,9 @@
 #include "Engine/RootJob.h"
 #include "Engine/Camera.h"
 
-#include "SceneTransition.h"
-#include "PlayScene.h"
+#include "Scene/SceneTransition.h"
+#include "Scene/PlayScene.h"
+
 #include "Stage.h"
 #include "Togetoge.h"
 

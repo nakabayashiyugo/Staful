@@ -1,14 +1,15 @@
 #include "PlayScene.h"
 
-#include "Engine/Input.h"
-#include "Engine/SceneManager.h"
-#include "Engine/Image.h"
+#include "../Engine/Input.h"
+#include "../Engine/SceneManager.h"
+#include "../Engine/Image.h"
 
 #include "SceneTransition.h"
 #include "MapEditScene.h"
-#include "Timer.h"
-#include "Stage.h"
-#include "Player.h"
+
+#include "../Timer.h"
+#include "../Stage.h"
+#include "../Player.h"
 
 PlayScene::PlayScene(GameObject* parent)
 	: GameObject(parent, "PlayScene"), table_Change_(false), saveNum_(2),

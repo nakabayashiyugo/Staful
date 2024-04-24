@@ -1,14 +1,15 @@
 #include "MapEditScene.h"
 
-#include "Engine/SceneManager.h"
-#include "Engine/Image.h"
-#include "Engine/Input.h"
-#include "Engine/Text.h"
+#include "../Engine/SceneManager.h"
+#include "../Engine/Image.h"
+#include "../Engine/Input.h"
+#include "../Engine/Text.h"
 
-#include "resource.h"
+#include "../resource.h"
+#include "../Button.h"
+
 #include "SceneTransition.h"
 #include "PlayScene.h"
-#include "Button.h"
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"),

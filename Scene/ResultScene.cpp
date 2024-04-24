@@ -1,11 +1,13 @@
 #include "ResultScene.h"
-#include "Button.h"
+
 #include "SceneTransition.h"
 
-#include "Engine/Image.h"
-#include "Engine/Input.h"
-#include "Engine/Direct3D.h"
-#include "Engine/SceneManager.h"
+#include "../Button.h"
+
+#include "../Engine/Image.h"
+#include "../Engine/Input.h"
+#include "../Engine/Direct3D.h"
+#include "../Engine/SceneManager.h"
 
 ResultScene::ResultScene(GameObject* parent)
 	: GameObject(parent, "ResultScene")

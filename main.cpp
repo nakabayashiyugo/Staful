@@ -12,10 +12,11 @@
 
 #include "DirectXCollision.h"
 #include "resource.h"
-#include "MapEditScene.h"
 #include "Stage.h"
-#include "SceneTransition.h"
 #include "Player.h"
+
+#include "Scene/MapEditScene.h"
+#include "Scene/SceneTransition.h"
 
 //ƒŠƒ“ƒJ
 #pragma comment(lib, "d3d11.lib")

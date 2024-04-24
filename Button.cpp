@@ -1,6 +1,6 @@
 #include "Button.h"
-#include "SceneTransition.h"
-#include "MapEditScene.h"
+#include "Scene/SceneTransition.h"
+#include "Scene/MapEditScene.h"
 
 #include "Engine/Image.h"
 #include "Engine/Input.h"

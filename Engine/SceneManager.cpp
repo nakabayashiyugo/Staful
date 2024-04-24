@@ -1,9 +1,9 @@
 #include "SceneManager.h"
-#include "../ResultScene.h"
-#include "../TitleScene.h"
-#include "../PlayScene.h"
-#include "../MapEditScene.h"
-#include "../SceneTransition.h"
+#include "../Scene/ResultScene.h"
+#include "../Scene/TitleScene.h"
+#include "../Scene/PlayScene.h"
+#include "../Scene/MapEditScene.h"
+#include "../Scene/SceneTransition.h"
 #include "Model.h"
 
 SceneManager::SceneManager(GameObject* parent)

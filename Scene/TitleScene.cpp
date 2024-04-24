@@ -1,12 +1,13 @@
 #include "TitleScene.h"
 #include "SceneTransition.h"
-#include "Button.h"
 
-#include "Engine/Image.h"
-#include "Engine/Model.h"
-#include "Engine/Input.h"
-#include "Engine/Direct3D.h"
-#include "Engine/SceneManager.h"
+#include "../Button.h"
+
+#include "../Engine/Image.h"
+#include "../Engine/Model.h"
+#include "../Engine/Input.h"
+#include "../Engine/Direct3D.h"
+#include "../Engine/SceneManager.h"
 
 TitleScene::TitleScene(GameObject* parent)
 	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1)

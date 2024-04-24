@@ -157,7 +157,6 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BetweenScene.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="Engine\Easing.cpp" />
     <ClCompile Include="Engine\FbxParts.cpp" />
@@ -178,42 +177,22 @@
     <ClCompile Include="Engine\Texture.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="MapEditScene.cpp" />
-    <ClCompile Include="ResultScene.cpp" />
-    <ClCompile Include="SceneTransition.cpp" />
+    <ClCompile Include="Scene\BetweenScene.cpp" />
+    <ClCompile Include="Scene\MapEditScene.cpp" />
+    <ClCompile Include="Scene\PlayScene.cpp" />
+    <ClCompile Include="Scene\ResultScene.cpp" />
+    <ClCompile Include="Scene\SceneTransition.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="StageOrigin.cpp" />
-    <ClCompile Include="PlayScene.cpp" />
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="TitleScene.cpp" />
     <ClCompile Include="Togetoge.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Simple2D.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0_level_9_3</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0_level_9_3</ShaderModel>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0_level_9_3</ShaderModel>
-      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DisableOptimizations>
-      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EnableDebuggingInformation>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VS</EntryPointName>
-    </FxCompile>
-    <FxCompile Include="Simple3D.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VS</EntryPointName>
-      <DisableOptimizations Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DisableOptimizations>
-      <EnableDebuggingInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EnableDebuggingInformation>
-    </FxCompile>
+    <FxCompile Include="Shader\Simple2D.hlsl" />
+    <FxCompile Include="Shader\Simple3D.hlsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BetweenScene.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="Engine\Easing.h" />
     <ClInclude Include="Engine\FbxParts.h" />
@@ -234,14 +213,15 @@
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="MapEditScene.h" />
-    <ClInclude Include="ResultScene.h" />
-    <ClInclude Include="SceneTransition.h" />
+    <ClInclude Include="Scene\BetweenScene.h" />
+    <ClInclude Include="Scene\MapEditScene.h" />
+    <ClInclude Include="Scene\PlayScene.h" />
+    <ClInclude Include="Scene\ResultScene.h" />
+    <ClInclude Include="Scene\SceneTransition.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="StageOrigin.h" />
-    <ClInclude Include="PlayScene.h" />
     <ClInclude Include="Timer.h" />
-    <ClInclude Include="TitleScene.h" />
     <ClInclude Include="Togetoge.h" />
   </ItemGroup>
   <ItemGroup>

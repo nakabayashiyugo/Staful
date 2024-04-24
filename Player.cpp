@@ -8,8 +8,8 @@
 #include "Engine/SphereCollider.h"
 #include "Engine/Easing.h"
 
-#include "PlayScene.h"
-#include "SceneTransition.h"
+#include "Scene/PlayScene.h"
+#include "Scene/SceneTransition.h"
 #include "Stage.h"
 #include "Timer.h"
 #include "StageOrigin.h"
