@@ -89,8 +89,8 @@ Player::Player(GameObject* parent)
 
 void Player::Initialize()
 {
-	std::string fileName = "Assets\\Player";
-	fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
+	std::string fileName = "Assets\\Walking02.fbx";
+	//fileName += std::to_string(pPlayScene_->GetPlayerNum() + 1) + ".fbx";
 	hModel_ = Model::Load(fileName);
 	assert(hModel_ >= 0);
 
@@ -102,6 +102,8 @@ void Player::Initialize()
 	assert(hGage_ >= 0);
 	hTime_ = Image::Load("Assets\\Logo_TIME.png");
 	assert(hTime_ >= 0);
+
+	transform_.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
 	
 	pTimer_ = new Timer(30);
 }

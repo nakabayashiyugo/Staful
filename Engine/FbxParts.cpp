@@ -28,25 +28,18 @@ HRESULT FbxParts::Init(FbxNode* pNode)
 		MessageBox(nullptr, "頂点データ用バッファの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
-	hr = InitIndex(mesh);		//インデックスバッファ準備
-	if (FAILED(hr))
-	{
-		//エラー処理
-		MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
-		return hr;
-	}
-	hr = IntConstantBuffer();	//コンスタントバッファ準備
-	if (FAILED(hr))
-	{
-		//エラー処理
-		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
-		return hr;
-	}
 	hr = InitMaterial(pNode);
 	if (FAILED(hr))
 	{
 		//エラー処理
 		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
+	hr = InitIndex(mesh);		//インデックスバッファ準備
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "インデックスバッファの作成に失敗しました", "エラー", MB_OK);
 		return hr;
 	}
 	hr = InitSkelton(mesh);		//骨の情報を準備
@@ -55,16 +48,21 @@ HRESULT FbxParts::Init(FbxNode* pNode)
 		//エラー処理
 		MessageBox(nullptr, "スケルトン情報の初期化に失敗しました。", "エラー", MB_OK);
 	}
+	hr = IntConstantBuffer();	//コンスタントバッファ準備
+	if (FAILED(hr))
+	{
+		//エラー処理
+		MessageBox(nullptr, "コンスタントバッファの作成に失敗しました", "エラー", MB_OK);
+		return hr;
+	}
 
 	return hr;
 }
 
 HRESULT FbxParts::InitVertex(fbxsdk::FbxMesh* mesh)
 {
-	//頂点情報を入れる配列
 	pVertices_ = new VERTEX[vertexCount_];
 
-	//全ポリゴン
 	for (DWORD poly = 0; poly < polygonCount_; poly++)
 	{
 		//3頂点分
@@ -74,12 +72,12 @@ HRESULT FbxParts::InitVertex(fbxsdk::FbxMesh* mesh)
 
 			/////////////////////////頂点の位置/////////////////////////////////////
 			FbxVector4 pos = mesh->GetControlPointAt(index);
-			pVertices_[index].position = XMVectorSet((float)-pos[0], (float)pos[1], (float)pos[2], 0);
+			pVertices_[index].position = XMVectorSet((float)pos[0], (float)pos[1], (float)pos[2], 0);
 
 			/////////////////////////頂点の法線/////////////////////////////////////
 			FbxVector4 Normal;
 			mesh->GetPolygonVertexNormal(poly, vertex, Normal);	//ｉ番目のポリゴンの、ｊ番目の頂点の法線をゲット
-			pVertices_[index].normal = XMVectorSet((float)-Normal[0], (float)Normal[1], (float)Normal[2], 0);
+			pVertices_[index].normal = XMVectorSet((float)Normal[0], (float)Normal[1], (float)Normal[2], 0);
 
 			///////////////////////////頂点のＵＶ/////////////////////////////////////
 			FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
@@ -89,6 +87,8 @@ HRESULT FbxParts::InitVertex(fbxsdk::FbxMesh* mesh)
 		}
 	}
 
+
+	///////////////////////////頂点のＵＶ/////////////////////////////////////
 	int m_dwNumUV = mesh->GetTextureUVCount();
 	FbxLayerElementUV* pUV = mesh->GetLayer(0)->GetUVs();
 	if (m_dwNumUV > 0 && pUV->GetMappingMode() == FbxLayerElement::eByControlPoint)
@@ -96,15 +96,14 @@ HRESULT FbxParts::InitVertex(fbxsdk::FbxMesh* mesh)
 		for (int k = 0; k < m_dwNumUV; k++)
 		{
 			FbxVector2 uv = pUV->GetDirectArray().GetAt(k);
-			pVertices_[k].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0.0f);
+			pVertices_[k].uv = XMVectorSet((float)uv.mData[0], (float)(1.0f - uv.mData[1]), 0.0f, 0);
 		}
 	}
 
-	HRESULT hr;
 
 	// 頂点データ用バッファの設定
 	D3D11_BUFFER_DESC bd_vertex;
-	bd_vertex.ByteWidth = sizeof(VERTEX) * vertexCount_;
+	bd_vertex.ByteWidth = sizeof(VERTEX) * mesh->GetControlPointsCount();
 	bd_vertex.Usage = D3D11_USAGE_DYNAMIC;
 	bd_vertex.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bd_vertex.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -112,13 +111,7 @@ HRESULT FbxParts::InitVertex(fbxsdk::FbxMesh* mesh)
 	bd_vertex.StructureByteStride = 0;
 	D3D11_SUBRESOURCE_DATA data_vertex;
 	data_vertex.pSysMem = pVertices_;
-	hr = Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
-	if (FAILED(hr))
-	{
-		//エラー処理
-		MessageBox(nullptr, "頂点データ用バッファの作成に失敗しました", "エラー", MB_OK);
-		return hr;
-	}
+	Direct3D::pDevice_->CreateBuffer(&bd_vertex, &data_vertex, &pVertexBuffer_);
 
 	return S_OK;
 }
