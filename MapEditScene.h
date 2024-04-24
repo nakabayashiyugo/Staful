@@ -46,11 +46,10 @@ private:
 	int curCost_;
 	//それぞれのマスのコスト
 	std::vector<int> costs_;
-	//コストを表示する位置
-	XMFLOAT3 costTextPos_;
 	Text* pText_;
 public:
-	bool costManagement();
+	bool CostManagement();
+	void CostDraw();
 
 
 //ファイルの書き込み・読み出しについて

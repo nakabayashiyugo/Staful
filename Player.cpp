@@ -15,6 +15,8 @@
 #include "StageOrigin.h"
 
 const int MODELSIZE = 0.8f;
+//ジャンプ時の最高到達点
+const float JAMPMAXHEIGHT = 2;
 //移動しないとき
 const XMFLOAT3 moveInit(0, 0, 0);
 //前の移動距離
@@ -26,7 +28,11 @@ const XMFLOAT3 moveRight(1, 0, 0);
 //左の移動距離
 const XMFLOAT3 moveLeft(-1, 0, 0);
 //moveCount_の初期値
-const float moveCountInit = 1.0f;
+const float moveCountInit = 0.0f;
+//ジャンプ移動の通常の移動との距離の倍率
+const int normalMoveVectoMult = 2;
+//落ちる速度の初期値
+const float fallSpeedInit = 0.0f;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -34,7 +40,6 @@ Player::Player(GameObject* parent)
 	//プレイヤーの操作について
 	moveFinished_(false),
 	moveCount_(moveCountInit),
-	upVecPlus_(0),
 	moveDir_(0, 0, 0), 
 	destPos_(0, 0, 0), 
 	prevPos_(0, 0, 0),
@@ -42,10 +47,14 @@ Player::Player(GameObject* parent)
 	gravityAcce_(gravity_.y),
 	velocity_(XMVectorSet(0, 0, 0, 0)),
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
+	deadHeight_(-1.0f),
 
 	playerState_(STATE_IDLE), 
 	prevPlayerState_(STATE_DEAD), 
 	stageState_(STATE_START),
+
+	//影について
+	hShadow_(-1),
 
 	//画像に関する変数の初期化
 	hFrame_(-1), 
@@ -58,8 +67,7 @@ Player::Player(GameObject* parent)
 	isHitStop_(false), 
 
 	
-	hurdle_Limit_(0),
-	tableHitPoint_(XMFLOAT3(0, 0, 0)), isTableHit_(false)
+	hurdle_Limit_(0)
 {
 	pST = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pST->GetMathSize_x();
@@ -68,6 +76,7 @@ Player::Player(GameObject* parent)
 	Math_Resize(XSIZE, ZSIZE, &math_);
 
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
+	playerHeight_ = pPlayScene_->GetPlayerHeight();
 
 	SetTableMath(pPlayScene_->GetTableMath());
 
@@ -77,11 +86,11 @@ Player::Player(GameObject* parent)
 		{
 			if (math_[x][z].mathType_ == MATH_START)
 			{
-				startPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
+				startPos_ = XMFLOAT3((float)x, playerHeight_, (float)z);
 			}
 			if (math_[x][z].mathType_ == MATH_GOAL)
 			{
-				goalPos_ = XMFLOAT3((float)x, 1.0f, (float)z);
+				goalPos_ = XMFLOAT3((float)x, playerHeight_, (float)z);
 			}
 		}
 	}
@@ -106,6 +115,8 @@ void Player::Initialize()
 	transform_.scale_ = XMFLOAT3(0.2f, 0.2f, 0.2f);
 	
 	pTimer_ = new Timer(30);
+
+	ShadowInit();
 }
 
 void Player::Update()
@@ -140,7 +151,14 @@ void Player::Draw()
 	Model::SetTransform(hModel_, transform_);
 	Model::Draw(hModel_);
 
+	//時間ゲージ
 	TimeGageManagement();
+
+	//影表示
+	ShadowDraw();
+
+	//プレイヤー番号表示
+	pST->PlayerNumDraw();
 
 	Image::SetTransform(hGage_, tGage_);
 	Image::SetTransform(hFrame_, tFrame_);
@@ -176,6 +194,8 @@ void Player::PlayUpdate()
 		stageState_ = STATE_FAILURE;
 	}
 
+	ShadowManagement();
+
 	switch (playerState_)
 	{
 	case STATE_IDLE:
@@ -190,14 +210,15 @@ void Player::PlayUpdate()
 	case STATE_FALL:
 		FallUpdate();
 		break;
+	case STATE_CONVMOVE:
+		ConvMoveUpdate();
+		break;
 	case STATE_DEAD:
 		DeadUpdate();
 		break;
 	}
-	if (XMVectorGetX(XMVector3Length(velocity_)) > 0)
-	{
-		SetAnimFramerate();
-	}
+	//アニメーションを更新する
+	SetAnimFramerate();
 }
 
 void Player::CameraPosSet()
@@ -271,7 +292,7 @@ void Player::PlayerOperation()
 void Player::PlayerMove()
 {
 	//移動先が壁だったら
-	if (DestPosMathType() == MATH_WALL)
+	if (WallCheck())
 	{
 		destPos_ = prevPos_;
 		//移動終了
@@ -280,19 +301,20 @@ void Player::PlayerMove()
 		return;
 	}
 	//moveCountの毎秒増えていく値
-	const float cntUpdate = -0.03f;
+	const float cntUpdate = 0.03f;
 	moveCount_ += cntUpdate;
+	if (moveCount_ > 1) moveCount_ = 1;
 
 	Easing* pEasing = new Easing();
 	//velocity_に入れるためのXMFLOAT3型の変数
 	XMFLOAT3 vec = XMFLOAT3(0, 0, 0);
-	vec.x = moveDir_.x * (moveCountInit - pEasing->EaseInSine(moveCount_));
-	vec.y = moveDir_.y;
-	vec.z = moveDir_.z * (moveCountInit - pEasing->EaseInSine(moveCount_));
+	vec.x = moveDir_.x * pEasing->EaseOutQuad(moveCount_);
+	vec.y = moveDir_.y * pEasing->EaseOutCirc(moveCount_ * normalMoveVectoMult);
+	vec.z = moveDir_.z * pEasing->EaseOutQuad(moveCount_);
 
 	velocity_ = XMLoadFloat3(&vec);
 
-	if (moveCount_ <= 0)
+	if (moveCount_ >= 1)
 	{
 		moveCount_ = moveCountInit;
 		//移動終了
@@ -344,6 +366,31 @@ MATHTYPE Player::DestPosMathType()
 	return retType;
 }
 
+bool Player::WallCheck()
+{
+	bool ret = false;
+	//上方向がないmoveDir_
+	XMFLOAT2 vec2MoveDir;
+	vec2MoveDir.x = moveDir_.x;
+	vec2MoveDir.y = moveDir_.z;
+	//moveDir_の長さ
+	float moveDirSize = XMVectorGetX(XMVector2Length(XMLoadFloat2(&vec2MoveDir)));
+
+	for (int i = 1; i <= moveDirSize; i++)
+	{
+		//moveDir_を正規化する変数
+		XMFLOAT2 normalMoveDir;
+		XMStoreFloat2(&normalMoveDir, XMVector2Normalize(XMLoadFloat2(&vec2MoveDir)));
+		destPos_.x = prevPos_.x + normalMoveDir.x * i;
+		destPos_.z = prevPos_.z + normalMoveDir.y * i;
+		if (GetMathType(destPos_).mathType_ == MATH_WALL)
+		{
+			ret = true;
+		}
+	}
+	return ret;
+}
+
 MATHDEDAIL Player::GetMathType(XMFLOAT3 _pos)
 {
 	if (!Is_InSide_Table(_pos))
@@ -360,8 +407,6 @@ void Player::IdleUpdate()
 	prevPos_ = transform_.position_;
 	moveFinished_ = false;
 	moveDir_ = moveInit;
-	//重力初期化
-	gravity_.y = gravityAcce_;
 	//playerの操作
 	PlayerOperation();
 	//立っているマスの効果
@@ -381,9 +426,7 @@ void Player::WalkUpdate()
 void Player::JampUpdate()
 {
 	ChangePlayerDir(moveDir_);
-
-	//ジャンプ移動の通常の移動との距離の倍率
-	const int normalMoveVectoMult = 2;
+	
 	//moveDir_を正規化するための変数
 	XMFLOAT3 normalMoveDir = XMFLOAT3(moveDir_.x, 0, moveDir_.z);
 	XMVECTOR dir;
@@ -396,36 +439,9 @@ void Player::JampUpdate()
 	moveDir_.x = normalMoveDir.x * normalMoveVectoMult;
 	moveDir_.z = normalMoveDir.z * normalMoveVectoMult;
 
-	//上方向のベクトルの初期化
-	const float upVecPlusInit = 0.1f;
-	upVecPlus_ = upVecPlusInit;
-	upVecPlus_ += gravity_.y;
-	gravity_.y += gravityAcce_;
-	moveDir_.y += upVecPlus_;
+	moveDir_.y = JAMPMAXHEIGHT;
 	PlayerMove();
 
-	//playerの状態をJAMPからFALLに切り替え
-	//移動前の位置を0,
-	//移動後の位置を1とした時の、
-	//JAMPからFALLに切り替える値
-	const float switchValue = 0.5f;
-	//現在の位置から移動前の位置を引いたベクトル
-	XMFLOAT3 distVec = XMFLOAT3(0, 0, 0);
-	distVec.x = transform_.position_.x - prevPos_.x;
-	distVec.z = transform_.position_.z - prevPos_.z;
-	//現在の位置と移動前の位置の直線距離
-	float dist = XMVectorGetX(XMVector3Length(XMLoadFloat3(&distVec)));
-	//上方向がない移動方向
-	XMFLOAT2 vec2MoveDir = XMFLOAT2(moveDir_.x, moveDir_.z);
-	//移動距離の長さ
-	float moveDist = XMVectorGetX(XMVector2Length(XMLoadFloat2(&vec2MoveDir)));
-
-	//現在の位置と移動前の位置の直線距離が、
-	//JAMPとFALLを切り替える値までに達していたら
-	if (dist >= moveDist * switchValue)
-	{
-		playerState_ = STATE_FALL;
-	}
 	if (moveFinished_)
 	{
 		playerState_ = STATE_IDLE;
@@ -434,22 +450,35 @@ void Player::JampUpdate()
 
 void Player::FallUpdate()
 {
-	ChangePlayerDir(moveDir_);
-
-	upVecPlus_ += gravity_.y;
+	fallSpeed_ += gravity_.y;
 	gravity_.y += gravityAcce_;
-	moveDir_.y += upVecPlus_;
-	PlayerMove();
+	XMFLOAT3 vec;
+	vec.x = XMVectorGetX(velocity_);
+	vec.y = fallSpeed_;
+	vec.z = XMVectorGetZ(velocity_);
+	velocity_ = XMLoadFloat3(&vec);
+	transform_.position_ += velocity_;
 
-	if (moveFinished_)
+	if (transform_.position_.y <= deadHeight_)
 	{
+		fallSpeed_ = fallSpeedInit;
 		gravity_.y = gravityAcce_;
 		playerState_ = STATE_IDLE;
-		if (DestPosMathType() == MATH_HOLE)
+		if (DestPosMathType() == MATH_HOLE && transform_.position_.y <= deadHeight_)
 		{
 			playerState_ = STATE_DEAD;
 		}
 		moveFinished_ = false;
+	}
+}
+
+void Player::ConvMoveUpdate()
+{
+	PlayerMove();
+
+	if (moveFinished_)
+	{
+		playerState_ = STATE_IDLE;
 	}
 }
 
@@ -486,7 +515,7 @@ void Player::MathTypeEffect()
 		XMVECTOR rotConvVec = XMVector3Transform(converyor_velocity, yrot);
 		//移動方向を上のベクトルにする
 		XMStoreFloat3(&moveDir_, rotConvVec);
-		playerState_ = STATE_WALK;
+		playerState_ = STATE_CONVMOVE;
 		break;
 	case MATH_GOAL:
 		stageState_ = STATE_GOAL;
@@ -498,30 +527,76 @@ void Player::MathTypeEffect()
 	}
 }
 
+void Player::ShadowInit()
+{
+	//影のモデルのファイルネーム
+	std::string modelName = "Player_Shadow.fbx";
+	//モデルの入ってるフォルダ名
+	std::string folderName = "Assets\\";
+	modelName = folderName + modelName;
+
+	//モデルロード
+	hShadow_ = Model::Load(modelName);
+	assert(hShadow_ >= 0);
+}
+
+void Player::ShadowDraw()
+{
+	Model::SetTransform(hShadow_, tShadow_);
+	if (GetMathType(tShadow_.position_).mathType_ != MATH_HOLE &&
+		playerState_ != STATE_DEAD)
+	{
+		Model::Draw(hShadow_);
+	}
+}
+
+void Player::ShadowManagement()
+{
+	tShadow_.position_ = transform_.position_;
+	tShadow_.position_.y = playerHeight_;
+}
+
 void Player::SetAnimFramerate()
 {
+	//移動量がゼロだったら
+	if (XMVectorGetX(XMVector3Length(velocity_)) <= 0)
+	{
+		return;
+	}
+	//それぞれのフレームレート
+	const int IDLE_FIRST = 1;
+	const int IDLE_END = 60;
+	const int WALK_FIRST = 61;
+	const int WALK_END = 120;
+	const int JAMP_FIRST = 121;
+	const int JAMP_END = 150;
+	const int FALL_FIRST = 150;
+	const int FALL_END = 150;
+	//アニメーションのスピード
+	const int animSpeed = 1;
 	if (prevPlayerState_ != playerState_)
 	{
 		switch (playerState_)
 		{
 		case STATE_IDLE:
-			startFrame_ = 1;
-			endFrame_ = 60;
+		case STATE_DEAD:
+			startFrame_ = IDLE_FIRST;
+			endFrame_ = IDLE_END;
 			break;
 		case STATE_WALK:
-			startFrame_ = 61;
-			endFrame_ = 120;
+			startFrame_ = WALK_FIRST;
+			endFrame_ = WALK_END;
 			break;
 		case STATE_JAMP:
-			startFrame_ = 121;
-			endFrame_ = 150;
+			startFrame_ = JAMP_FIRST;
+			endFrame_ = JAMP_END;
 			break;
 		case STATE_FALL:
-			startFrame_ = 150;
-			endFrame_ = 150;
+			startFrame_ = FALL_FIRST;
+			endFrame_ = FALL_END;
 			break;
 		}
-		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, 1);
+		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, animSpeed);
 	}
 	prevPlayerState_ = playerState_;
 }
@@ -544,14 +619,19 @@ void Player::TimeGageManagement()
 	const XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
 	const XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
 
+	//時間ゲージの白いところのトランスフォーム
 	tFrame_.position_ =
 		XMFLOAT3(timerPos.x, timerPos.y, timerPos.z);
 	tFrame_.scale_ = timerScale;
 
+	//時間ゲージの枠のトランスフォーム
+	//時間ゲージの枠の太さ
+	float outlineThick = 0.05f;
 	tFrameOutline_.position_ =
 		XMFLOAT3(timerPos.x, timerPos.y, timerPos.z);
-	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + 0.05f, timerScale.y + 0.05f, timerScale.z);
+	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + outlineThick, timerScale.y + outlineThick, timerScale.z);
 
+	//時間ゲージの緑のところのトランスフォーム
 	tGage_.position_ =
 		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
 			timerPos.y, timerPos.z);

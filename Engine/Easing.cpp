@@ -28,3 +28,8 @@ float Easing::EaseInOutBack(float _value)
 		return (pow(2 * _value - 2, 2) * ((c2 + 1) * (_value * 2 - 2) + c2) + 2) / 2;
 	}
 }
+
+float Easing::EaseOutQuad(float _value)
+{
+	return 1 - (1 - _value) * (1 - _value);;
+}

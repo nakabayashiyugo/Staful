@@ -3,6 +3,9 @@
 class PlayScene;
 class Togetoge;
 
+//Floor‚Ìƒ‚ƒfƒ‹‚Ì‚‚³
+const int MODELHEIGHT = 1;
+
 class Stage
 	:public GameObject, StageOrigin
 {

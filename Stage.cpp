@@ -16,6 +16,7 @@
 #include "resource.h"
 
 const int MAKEHOLETIME = 1;
+
 const int FPS = 60;
 
 Stage::Stage(GameObject* parent)
@@ -87,20 +88,17 @@ void Stage::Initialize()
 
 void Stage::Update()
 {
-	XMFLOAT3 playerPos = pPlayScene_->GetPlayerPos();
-	if (playerPos.x >= 0 && playerPos.x < XSIZE &&
-		playerPos.z >= 0 && playerPos.z < ZSIZE)
+	MATHDEDAIL pStandMath = pPlayScene_->GetPlayerStandMath();
+	if (pStandMath.mathType_ == MATH_PITFALL)
 	{
-		if (math_[(int)playerPos.x][(int)playerPos.z].mathType_ == MATH_PITFALL)
+		XMFLOAT3 playerPos = pPlayScene_->GetPlayerPos();
+		makeHoleTimes_[(int)playerPos.x][(int)playerPos.z]--;
+		if (makeHoleTimes_[(int)playerPos.x][(int)playerPos.z] <= 0)
 		{
-			makeHoleTimes_[(int)playerPos.x][(int)playerPos.z]--;
-			if (makeHoleTimes_[(int)playerPos.x][(int)playerPos.z] <= 0)
-			{
-				math_[(int)playerPos.x][(int)playerPos.z].mathType_ = MATH_HOLE;
-				Write();
-				pPlayScene_->Read();
-				pPlayScene_->SetTableChange(true);
-			}
+			math_[(int)playerPos.x][(int)playerPos.z].mathType_ = MATH_HOLE;
+			Write();
+			pPlayScene_->Read();
+			pPlayScene_->SetTableChange(true);
 		}
 	}
 }
@@ -112,7 +110,8 @@ void Stage::Draw()
 		for (int z = 0; z < ZSIZE; z++)
 		{
 			Transform mathTrans;
-			mathTrans.position_ = XMFLOAT3(x, 0, z);
+			
+			mathTrans.position_ = XMFLOAT3(x, pPlayScene_->GetFloorHeight(), z);
 
 			switch (math_[x][z].mathType_)
 			{

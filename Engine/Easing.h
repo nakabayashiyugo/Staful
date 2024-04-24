@@ -9,5 +9,6 @@ public:
 	float EaseInSine(float _value);
 	float EaseOutCirc(float _value);
 	float EaseInOutBack(float _value);
+	float EaseOutQuad(float _value);
 };
 
