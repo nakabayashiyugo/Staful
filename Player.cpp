@@ -298,6 +298,7 @@ void Player::PlayerMove()
 		prevPlayerState_ = STATE_IDLE;
 		return;
 	}
+	DestPosMathType();
 	//moveCount‚Ì–ˆ•b‘‚¦‚Ä‚¢‚­’l
 	const float cntUpdate = 0.03f;
 	moveCount_ += cntUpdate;

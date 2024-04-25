@@ -159,37 +159,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
             countFps++;
 
-            
-            static bool isDialog = false;
-            if (((SceneManager*)pRootJob->FindChildObject("SceneManager"))->GetCurrentSceneID() == SCENE_ID_TRANSITION)
-            {
-                //ヒットストップ
-                if (((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_STAGE1 ||
-                    ((SceneTransition*)pRootJob->FindChildObject("SceneTransition"))->GetSceneState() == SCENESTATE::SCENE_STAGE2)
-                {
-                    static float cnt = 0;
-                    auto pl = ((Player*)pRootJob->FindChildObject("Player"));
-                    if (pl != nullptr)
-                    {
-                        if (pl->GetHitStop())
-                        {
-                            cnt++;
-                            if (((Player*)pRootJob->FindChildObject("Player"))->GetHitStopTime() <= cnt / FPS)
-                            {
-                                pl->SetHitStop(false);
-                                cnt = 0;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-                    }
-                }
-            }
-
-
-
             timeEndPeriod(1);
 
             //カメラ、更新

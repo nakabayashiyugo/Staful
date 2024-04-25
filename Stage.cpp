@@ -114,6 +114,9 @@ void Stage::Draw()
 			
 			mathTrans.position_ = XMFLOAT3(x, pPlayScene_->GetFloorHeight(), z);
 
+			//ÉRÉìÉxÉAÇÃèâä˙ÇÃrotate
+			const int convRotInit = 180;
+
 			switch (math_[x][z].mathType_)
 			{
 			case MATH_FLOOR:
@@ -128,7 +131,8 @@ void Stage::Draw()
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_CONVEYOR:
-				mathTrans.rotate_.y = (math_[x][z].mathPos_.rotate_.z);
+				mathTrans.rotate_.y = convRotInit;
+				mathTrans.rotate_.y += -math_[x][z].mathPos_.rotate_.z;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
