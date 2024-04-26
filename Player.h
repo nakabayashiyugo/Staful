@@ -4,6 +4,7 @@
 
 class PlayScene;
 class Timer;
+class Shaker;
 
 enum PLAYER_STATE
 {
@@ -51,7 +52,12 @@ public:
 	//当たり判定
 	void OnCollision(GameObject* pTarget) override;
 
-
+//カメラについて
+private:
+	Shaker* pShaker_;
+public:
+	//カメラの位置
+	void CameraPosSet();
 //プレイヤーの操作について
 private:
 	//スタート位置、ゴール位置
@@ -90,8 +96,6 @@ private:
 	STAGE_STATE stageState_;
 public:
 	void PlayUpdate();
-	//カメラの位置
-	void CameraPosSet();
 	//プレイヤーの操作に関する関数
 	void PlayerOperation();
 	//移動

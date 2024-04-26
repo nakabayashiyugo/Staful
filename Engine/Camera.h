@@ -31,9 +31,4 @@ namespace Camera
 
 	//プロジェクション行列を取得
 	XMMATRIX GetProjectionMatrix();
-
-	//カメラの振動
-	//引数1 : 振動の時間
-	//引数2 : 振動の強さ
-	void Vibration(float _vibTime, float _vibPower);
 };

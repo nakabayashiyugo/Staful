@@ -7,6 +7,7 @@
 #include "Engine/Fbx.h"
 #include "Engine/SphereCollider.h"
 #include "Engine/Easing.h"
+#include "Engine/Shaker.h"
 
 #include "Scene/PlayScene.h"
 #include "Scene/SceneTransition.h"
@@ -115,10 +116,19 @@ void Player::Initialize()
 	pTimer_ = new Timer(30);
 
 	ShadowInit();
+	
+	transform_.position_ = startPos_;
+	pShaker_ = new Shaker();
+	pShaker_->ShakeInit(&transform_.position_, 5, 1);
+	pShaker_->SetIsShake(true);
 }
 
 void Player::Update()
 {
+	if (pShaker_->GetIsShake())
+	{
+		pShaker_->ShakeUpdate();
+	}
 	Stage* pStage = (Stage*)FindObject("Stage");
 	
 	switch (stageState_)

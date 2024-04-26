@@ -1,13 +1,16 @@
 #include "Camera.h"
+
+#include "Easing.h"
+
 #include "../Timer.h"
 
 namespace Camera
 {
 	//変数
-	XMVECTOR position_;	//カメラの位置（視点）
-	XMVECTOR target_;	//見る位置（焦点）
-	XMMATRIX viewMatrix_;	//ビュー行列
-	XMMATRIX projMatrix_;	//プロジェクション行列
+	XMVECTOR position_;			//カメラの位置（視点）
+	XMVECTOR target_;			//見る位置（焦点）
+	XMMATRIX viewMatrix_;		//ビュー行列
+	XMMATRIX projMatrix_;		//プロジェクション行列
 }
 
 //初期化
@@ -67,20 +70,4 @@ XMMATRIX Camera::GetViewMatrix()
 XMMATRIX Camera::GetProjectionMatrix()
 {
 	return projMatrix_;
-}
-
-void Camera::Vibration(float _vibTime, float _vibPower)
-{
-	//振動前のカメラの位置
-	static const XMVECTOR camPosOrig = position_;
-	static Timer* pTimer = new Timer(_vibTime);
-	//カメラの振動回数(カメラが移動して元の位置に戻ってくるで1回)
-	//とりあえず5 ～ 15
-	const int camVibMin = 5;
-	const int camVibMax = 15;
-	static const int vibNum = (rand() % camVibMax - camVibMin) + camVibMin;
-	//カメラの振動の方向
-	XMFLOAT3 camVibDir = XMFLOAT3(rand(), rand(), rand());
-
-
 }
