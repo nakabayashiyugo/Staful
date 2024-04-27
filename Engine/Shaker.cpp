@@ -16,6 +16,7 @@ Shaker::Shaker()
 	shakeNum_ = SHAKENUM;
 	isShake_ = false;
 	prevIsShake_ = false;
+
 }
 
 Shaker::~Shaker()
@@ -28,12 +29,14 @@ void Shaker::ShakeInit(XMFLOAT3 *_position, float _vibTime, float _vibPower)
 {
 	shakeTime_ = _vibTime;
 	shakePower_ = _vibPower;
+	//振動の回数の初期化
+	shakeNum_ = SHAKENUM;
 	//振動前のオブジェクトの位置
 	position_ = _position;
 	pTimer_ = new Timer(shakeTime_);
 	pEasing_ = new Easing();
 	//オブジェクトの振動の方向
-	shakeDir_ = XMVectorSet(rand() % 10, rand() % 10, rand() % 10, 0);
+	shakeDir_ = XMVectorSet(rand(), rand(), rand(), 0);
 	//オブジェクトの振動の方向にオブジェクトの振動の強さ分の長さを持たせる
 	shakeDir_ = XMVector3Normalize(shakeDir_) * shakePower_ * SHAKEDEC;
 }

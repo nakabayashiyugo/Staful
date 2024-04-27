@@ -54,10 +54,23 @@ public:
 
 //カメラについて
 private:
-	Shaker* pShaker_;
+	//カメラの位置
+	XMFLOAT3 camPos_;
+	//カメラの見るオブジェクト
+	XMFLOAT3 camTarget_;
+	//カメラの見るオブジェクトとカメラの距離
+	XMFLOAT3 dirCamToPlayer_;
+
+	Shaker* pCamShaker_;
 public:
 	//カメラの位置
 	void CameraPosSet();
+	//カメラの振動の初期化
+	void CameraShakeInit();
+	//カメラの振動
+	void CameraShake();
+
+
 //プレイヤーの操作について
 private:
 	//スタート位置、ゴール位置
@@ -85,6 +98,8 @@ private:
 	XMVECTOR eyeDirection_;
 	//落ちた時の死ぬ高さ
 	float deadHeight_;
+	//スタートマスに戻っているか
+	bool isReturn_;
 
 	//立っているマスの情報
 	MATHDEDAIL standMath_;

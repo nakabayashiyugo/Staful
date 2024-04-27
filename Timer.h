@@ -5,13 +5,13 @@ const int FPS = 60;
 
 class Timer
 {
-	int count_time_;
-	int current_time_;
-	int limit_time_;
+	float count_time_;
+	float current_time_;
+	float limit_time_;
 
 	bool isTimeUpped_;
 public:
-	Timer(int _limitTime);
+	Timer(float _limitTime);
 
 	//‰Šú‰»
 	void Initialize();

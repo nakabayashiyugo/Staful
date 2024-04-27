@@ -2,7 +2,7 @@
 #include "Windows.h"
 #include "Engine/Image.h"
 
-Timer::Timer(int _limitTime):
+Timer::Timer(float _limitTime):
 	count_time_(0),
 	current_time_(0),
 	limit_time_(_limitTime),
@@ -19,7 +19,7 @@ void Timer::Update()
 	count_time_++;
 	current_time_ = count_time_ / FPS;
 
-	if (count_time_ % FPS == 0)
+	if ((int)count_time_ % FPS == 0)
 	{
 		std::string resStr = std::to_string(limit_time_ - current_time_) + '\n';
 		OutputDebugString(resStr.c_str());

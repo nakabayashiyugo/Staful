@@ -38,6 +38,10 @@ const float fallSpeedInit = 0.0f;
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
 	hModel_(-1),
+	//カメラについて
+	camPos_(XMFLOAT3(0, 0, 0)),
+	camTarget_(XMFLOAT3(0, 0, 0)),
+	dirCamToPlayer_(XMFLOAT3(0, 0, 0)),
 	//プレイヤーの操作について
 	moveFinished_(false),
 	moveCount_(moveCountInit),
@@ -49,6 +53,7 @@ Player::Player(GameObject* parent)
 	velocity_(XMVectorSet(0, 0, 0, 0)),
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
 	deadHeight_(-1.0f),
+	isReturn_(false),
 
 	playerState_(STATE_IDLE), 
 	prevPlayerState_(STATE_DEAD), 
@@ -116,19 +121,13 @@ void Player::Initialize()
 	pTimer_ = new Timer(30);
 
 	ShadowInit();
-	
-	transform_.position_ = startPos_;
-	pShaker_ = new Shaker();
-	pShaker_->ShakeInit(&transform_.position_, 5, 1);
-	pShaker_->SetIsShake(true);
+
+	//カメラの振動　初期化
+	pCamShaker_ = new Shaker();
 }
 
 void Player::Update()
 {
-	if (pShaker_->GetIsShake())
-	{
-		pShaker_->ShakeUpdate();
-	}
 	Stage* pStage = (Stage*)FindObject("Stage");
 	
 	switch (stageState_)
@@ -231,16 +230,41 @@ void Player::PlayUpdate()
 
 void Player::CameraPosSet()
 {
+	const XMFLOAT3 dirCamToPlayerInit = XMFLOAT3(0, 7, -5);
 	//カメラ
 	//プレイヤーとカメラとの距離
-	const XMFLOAT3 dirCamToPlayer = XMFLOAT3(0, 7, -5);
+	dirCamToPlayer_ = dirCamToPlayerInit;
+	//カメラが見ているオブジェクト
+	camTarget_ = XMFLOAT3(transform_.position_.x, 0, transform_.position_.z);
 	//カメラの位置
-	const XMFLOAT3 camPos = XMFLOAT3(transform_.position_.x + dirCamToPlayer.x,
-		dirCamToPlayer.y,
-		transform_.position_.z + dirCamToPlayer.z);
-	const XMFLOAT3 camTarget = XMFLOAT3(transform_.position_.x, 0, transform_.position_.z);
-	Camera::SetPosition(camPos);
-	Camera::SetTarget(camTarget);
+	camPos_ = XMFLOAT3(camTarget_.x + dirCamToPlayer_.x,
+						camTarget_.y + dirCamToPlayer_.y,
+						camTarget_.z + dirCamToPlayer_.z);
+	//カメラ振動
+	CameraShake();
+	Camera::SetPosition(camPos_);
+	Camera::SetTarget(camTarget_);
+}
+
+void Player::CameraShakeInit()
+{
+	//カメラの振動時間
+	const float camShakeTime = 0.2f;
+	//カメラの振動の強さ
+	const float camShakePower = 0.5f;
+	pCamShaker_->ShakeInit(&camPos_, camShakeTime, camShakePower);
+	pCamShaker_->SetIsShake(true);
+}
+
+void Player::CameraShake()
+{
+	if (pCamShaker_->GetIsShake())
+	{
+		pCamShaker_->ShakeUpdate();
+		camTarget_ = XMFLOAT3(camPos_.x - dirCamToPlayer_.x,
+			camPos_.y - dirCamToPlayer_.y,
+			camPos_.z - dirCamToPlayer_.z);
+	}
 }
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
@@ -493,18 +517,25 @@ void Player::ConvMoveUpdate()
 
 void Player::DeadUpdate()
 {
-	ReturnToStartMath();
+	if (!pCamShaker_->GetIsShake())
+	{
+		ReturnToStartMath();
+	}
 }
 
 void Player::ReturnToStartMath()
 {
+	isReturn_ = true;
 	moveDir_.x = startPos_.x - prevPos_.x;
 	moveDir_.y = 0;
 	moveDir_.z = startPos_.z - prevPos_.z;
 	PlayerMove();
-	transform_.position_.y = 10;
+	//スタートマスに戻るときのプレイヤーの高さ
+	const float returnHeight = 10;
+	transform_.position_.y = returnHeight;
 	if (moveFinished_)
 	{
+		isReturn_ = false;
 		stageState_ = STATE_START;
 	}
 }
@@ -567,6 +598,8 @@ void Player::ShadowManagement()
 
 void Player::SetAnimFramerate()
 {
+	nowFrame_ = Model::GetAnimFrame(hModel_);
+
 	//移動量がゼロだったら
 	if (XMVectorGetX(XMVector3Length(velocity_)) <= 0)
 	{
@@ -588,7 +621,6 @@ void Player::SetAnimFramerate()
 		switch (playerState_)
 		{
 		case STATE_IDLE:
-		case STATE_DEAD:
 			startFrame_ = IDLE_FIRST;
 			endFrame_ = IDLE_END;
 			break;
@@ -604,17 +636,28 @@ void Player::SetAnimFramerate()
 			startFrame_ = FALL_FIRST;
 			endFrame_ = FALL_END;
 			break;
+		case STATE_DEAD:
+			endFrame_ = startFrame_ = nowFrame_;
 		}
 		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, animSpeed);
 	}
+
+	if (isReturn_)
+	{
+		startFrame_ = IDLE_FIRST;
+		endFrame_ = IDLE_END;
+		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, animSpeed);
+	}
+
 	prevPlayerState_ = playerState_;
 }
 
 void Player::OnCollision(GameObject* pTarget)
 {
 	//とげとげと当たったら
-	if (pTarget->GetObjectName() == "Togetoge")
+	if (pTarget->GetObjectName() == "Togetoge" && playerState_ != STATE_DEAD)
 	{
+		CameraShakeInit();
 		moveCount_ = moveCountInit;
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;

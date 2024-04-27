@@ -13,7 +13,6 @@ class TitleScene
 
 	Button* pStartButton_;
 
-	int hModel_;
 public:
 	TitleScene(GameObject* parent);
 
