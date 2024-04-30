@@ -381,7 +381,7 @@ HRESULT FbxParts::InitSkelton(FbxMesh* pMesh)
 
 void FbxParts::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_3D);
+	Direct3D::SetShader(Direct3D::SHADER_3D);
 	transform.Calclation();//トランスフォームを計算
 
 	for (int i = 0; i < materialCount_; i++)

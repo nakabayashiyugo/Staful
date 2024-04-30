@@ -158,10 +158,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Engine\BillBoard.cpp" />
     <ClCompile Include="Engine\Easing.cpp" />
     <ClCompile Include="Engine\FbxParts.cpp" />
     <ClCompile Include="Engine\Shaker.cpp" />
     <ClCompile Include="Engine\Text.cpp" />
+    <ClCompile Include="Engine\VFX.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Engine\Camera.cpp" />
     <ClCompile Include="Engine\Direct3D.cpp" />
@@ -190,15 +192,27 @@
     <ClCompile Include="Togetoge.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Shader\BillBoard.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0_level_9_3</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0_level_9_3</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">4.0</ShaderModel>
+    </FxCompile>
     <FxCompile Include="Shader\Simple2D.hlsl" />
     <FxCompile Include="Shader\Simple3D.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Engine\BillBoard.h" />
     <ClInclude Include="Engine\Easing.h" />
     <ClInclude Include="Engine\FbxParts.h" />
     <ClInclude Include="Engine\Shaker.h" />
     <ClInclude Include="Engine\Text.h" />
+    <ClInclude Include="Engine\VFX.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Engine\Camera.h" />
     <ClInclude Include="Engine\Direct3D.h" />

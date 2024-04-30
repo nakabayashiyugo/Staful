@@ -52,7 +52,7 @@ HRESULT Sprite::Load(std::string filename)
 
 void Sprite::Draw(Transform& transform, RECT rect, float alpha, XMFLOAT3 color)
 {
-	Direct3D::SetShader(SHADER_2D);
+	Direct3D::SetShader(Direct3D::SHADER_2D);
 	transform.Calclation();//トランスフォームを計算
 
 	SetBufferToPipeline();

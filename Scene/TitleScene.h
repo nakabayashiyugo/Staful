@@ -2,6 +2,7 @@
 #include "../Engine/GameObject.h"
 
 class Button;
+class BillBoard;
 
 class TitleScene
 	:public GameObject
@@ -13,6 +14,10 @@ class TitleScene
 
 	Button* pStartButton_;
 
+
+	int hModel_;
+
+	BillBoard* bb;
 public:
 	TitleScene(GameObject* parent);
 

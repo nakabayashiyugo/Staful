@@ -638,6 +638,7 @@ void Player::SetAnimFramerate()
 			break;
 		case STATE_DEAD:
 			endFrame_ = startFrame_ = nowFrame_;
+			break;
 		}
 		Model::SetAnimFrame(hModel_, startFrame_, endFrame_, animSpeed);
 	}

@@ -49,7 +49,7 @@ HRESULT Quad::Initialize()
 
 void Quad::Draw(Transform& transform)
 {
-	Direct3D::SetShader(SHADER_3D);
+	Direct3D::SetShader(Direct3D::SHADER_3D);
 	transform.Calclation();//トランスフォームを計算
 
 	PassDataToCB(transform);

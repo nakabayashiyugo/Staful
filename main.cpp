@@ -9,6 +9,7 @@
 #include "Engine/RootJob.h"
 #include "Engine/Model.h"
 #include "Engine/SceneManager.h"
+#include "Engine/VFX.h"
 
 #include "DirectXCollision.h"
 #include "resource.h"
@@ -164,6 +165,9 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //カメラ、更新
             Camera::Update();
 
+            //エフェクト、更新
+            VFX::Update();
+
             //入力、更新
             Input::Update();
 
@@ -175,12 +179,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
             //ルートジョブからすべてのオブジェクトのドローを呼ぶ
             pRootJob->DrawSub();
 
+            //エフェクト、描画
+            VFX::Draw();
+
             //描画処理
             Direct3D::EndDraw();
         }
     }
 
     //解放処理
+    VFX::Release();
     Model::Release();
     pRootJob->ReleaseSub();
     Input::Release();

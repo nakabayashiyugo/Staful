@@ -12,10 +12,11 @@ namespace Direct3D
 	ID3D11RenderTargetView* pRenderTargetView_ = nullptr;	//レンダーターゲットビュー
     ID3D11Texture2D* pDepthStencil;			//深度ステンシル
     ID3D11DepthStencilView* pDepthStencilView;		//深度ステンシルビュー
+    ID3D11DepthStencilState* pDepthStencilState[BLEND_MAX];
 
     D3D11_VIEWPORT vp;
 
-    ID3D11BlendState* pBlendState;
+    ID3D11BlendState* pBlendState[BLEND_MAX];
 
     struct SHADER_BUNDLE
     {
@@ -122,21 +123,28 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
     pDevice_->CreateDepthStencilView(pDepthStencil, NULL, &pDepthStencilView);
 
     //ブレンドステート
-    D3D11_BLEND_DESC BlendDesc;
-    ZeroMemory(&BlendDesc, sizeof(BlendDesc));
-    BlendDesc.AlphaToCoverageEnable = FALSE;
-    BlendDesc.IndependentBlendEnable = FALSE;
-    BlendDesc.RenderTarget[0].BlendEnable = TRUE;//半透明使うかどうか
-    BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;//今描画しようとしているもの
-    BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;//すでに描画されているもの
-    BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
-    BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
-    BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
-    BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
-    BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
-    pDevice_->CreateBlendState(&BlendDesc, &pBlendState);
-    float blendFactor[4] = { D3D11_BLEND_ZERO , D3D11_BLEND_ZERO , D3D11_BLEND_ZERO ,D3D11_BLEND_ZERO };
-    pContext_->OMSetBlendState(pBlendState, blendFactor, 0xffffffff);
+    {
+        D3D11_BLEND_DESC BlendDesc;
+        ZeroMemory(&BlendDesc, sizeof(BlendDesc));
+        BlendDesc.AlphaToCoverageEnable = FALSE;
+        BlendDesc.IndependentBlendEnable = FALSE;
+        BlendDesc.RenderTarget[0].BlendEnable = TRUE;//半透明使うかどうか
+        BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;//今描画しようとしているもの
+        BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;//すでに描画されているもの
+        BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+        BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+        BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+        BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+        BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+        pDevice_->CreateBlendState(&BlendDesc, &pBlendState[BLEND_DEFAULT]);
+        float blendFactor[4] = { D3D11_BLEND_ZERO , D3D11_BLEND_ZERO , D3D11_BLEND_ZERO ,D3D11_BLEND_ZERO };
+        pContext_->OMSetBlendState(pBlendState[BLEND_DEFAULT], blendFactor, 0xffffffff);
+
+        //加算合成（重なるほど光って見える効果）
+        BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+        pDevice_->CreateBlendState(&BlendDesc, &pBlendState[BLEND_ADD]);
+    }
     
     //データを画面に描画するための一通りの設定（パイプライン）
     pContext_->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);  // データの入力種類を指定
@@ -152,6 +160,16 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
         return hr;
     }
     return S_OK;
+}
+
+void Direct3D::SetBlendMode(BLEND_MODE blendMode)
+{
+    //加算合成
+    float blendFactor[4] = { D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO };
+    pContext_->OMSetBlendState(pBlendState[blendMode], blendFactor, 0xffffffff);
+
+    //Zバッファへの書き込み
+    pContext_->OMSetDepthStencilState(pDepthStencilState[blendMode], 0);
 }
 
 //描画開始
@@ -220,6 +238,13 @@ HRESULT Direct3D::InitShader()
         //失敗したときの処理
         MessageBox(nullptr, "2Dシェーダの作成に失敗しました", "エラー", MB_OK);
         return hr;
+    }
+
+    hr = InitShaderBillBoard();
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        MessageBox(nullptr, "BillBoardシェーダの作成に失敗しました", "エラー", MB_OK);
     }
 
     return S_OK;
@@ -352,6 +377,74 @@ HRESULT Direct3D::InitShader2D()
     pContext_->PSSetShader(shaderBundle[SHADER_2D].pPixelShader_, NULL, 0);	//ピクセルシェーダー
     pContext_->IASetInputLayout(shaderBundle[SHADER_2D].pVertexLayout_);	//頂点インプットレイアウト
     pContext_->RSSetState(shaderBundle[SHADER_2D].pRasterizerState_);		//ラスタライザー
+
+    return S_OK;
+}
+
+HRESULT Direct3D::InitShaderBillBoard()
+{
+    HRESULT hr;
+
+    // 頂点シェーダの作成（コンパイル）
+    ID3DBlob* pCompileVS = nullptr;
+    D3DCompileFromFile(L"Shader/BillBoard.hlsl", nullptr, nullptr, "VS", "vs_5_0", NULL, 0, &pCompileVS, NULL);
+    hr = pDevice_->CreateVertexShader(pCompileVS->GetBufferPointer(),
+        pCompileVS->GetBufferSize(), NULL, &shaderBundle[SHADER_BILLBOARD].pVertexShader_);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        MessageBox(nullptr, "頂点バッファのコンパイルに失敗しました", "エラー", MB_OK);
+        return hr;
+    }
+
+    //頂点インプットレイアウト
+    std::vector<D3D11_INPUT_ELEMENT_DESC> layout = {
+        { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,  D3D11_INPUT_PER_VERTEX_DATA, 0 },	//位置
+        { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, sizeof(DirectX::XMVECTOR) , D3D11_INPUT_PER_VERTEX_DATA, 0 },//UV座標
+    };
+    //hr = pDevice_->CreateInputLayout(layout, sizeof(layout) / sizeof(D3D11_INPUT_ELEMENT_DESC), pCompileVS->GetBufferPointer(), pCompileVS->GetBufferSize(), &pVertexLayout_);
+    hr = pDevice_->CreateInputLayout(layout.data(), layout.size(), pCompileVS->GetBufferPointer(),
+        pCompileVS->GetBufferSize(), &shaderBundle[SHADER_BILLBOARD].pVertexLayout_);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        MessageBox(nullptr, "頂点インプットレイアウトの設定に失敗しました", "エラー", MB_OK);
+        return hr;
+    }
+
+    SAFE_RELEASE(pCompileVS);
+
+    // ピクセルシェーダの作成（コンパイル）
+    ID3DBlob* pCompilePS = nullptr;
+    D3DCompileFromFile(L"Shader/Simple2D.hlsl", nullptr, nullptr, "PS", "ps_5_0", NULL, 0, &pCompilePS, NULL);
+    hr = pDevice_->CreatePixelShader(pCompilePS->GetBufferPointer(),
+        pCompilePS->GetBufferSize(), NULL, &shaderBundle[SHADER_BILLBOARD].pPixelShader_);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        MessageBox(nullptr, "ピクセルシェーダのコンパイルに失敗しました", "エラー", MB_OK);
+        return hr;
+    }
+    SAFE_RELEASE(pCompilePS);
+
+    //ラスタライザ作成
+    D3D11_RASTERIZER_DESC rdc = {};
+    rdc.CullMode = D3D11_CULL_BACK;
+    rdc.FillMode = D3D11_FILL_SOLID;
+    rdc.FrontCounterClockwise = FALSE;
+    hr = pDevice_->CreateRasterizerState(&rdc, &shaderBundle[SHADER_BILLBOARD].pRasterizerState_);
+    if (FAILED(hr))
+    {
+        //失敗したときの処理
+        MessageBox(nullptr, "ラスタライザの作成に失敗しました", "エラー", MB_OK);
+        return hr;
+    }
+
+    //それぞれをデバイスコンテキストにセット
+    pContext_->VSSetShader(shaderBundle[SHADER_BILLBOARD].pVertexShader_, NULL, 0);	//頂点シェーダー
+    pContext_->PSSetShader(shaderBundle[SHADER_BILLBOARD].pPixelShader_, NULL, 0);	//ピクセルシェーダー
+    pContext_->IASetInputLayout(shaderBundle[SHADER_BILLBOARD].pVertexLayout_);	//頂点インプットレイアウト
+    pContext_->RSSetState(shaderBundle[SHADER_BILLBOARD].pRasterizerState_);		//ラスタライザー
 
     return S_OK;
 }

@@ -31,4 +31,7 @@ namespace Camera
 
 	//プロジェクション行列を取得
 	XMMATRIX GetProjectionMatrix();
+
+	//ビルボード用回転行列を取得
+	XMMATRIX GetBillboardMatrix();
 };

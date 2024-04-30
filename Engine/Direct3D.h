@@ -11,18 +11,25 @@
 #define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
 #define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
 
-enum SHADER_TYPE
-{
-	SHADER_2D,
-	SHADER_3D,
-	SHADER_MAX,
-};
-
 namespace Direct3D
 {
+	enum SHADER_TYPE
+	{
+		SHADER_2D,
+		SHADER_3D,
+		SHADER_BILLBOARD,
+		SHADER_MAX,
+	};
+
 	extern ID3D11Device* pDevice_;				//デバイス
 	extern ID3D11DeviceContext* pContext_;		//デバイスコンテキスト
 	extern int scrWidth, scrHeight;
+
+	//■ブレンドモード
+	enum BLEND_MODE
+	{
+		BLEND_DEFAULT, BLEND_ADD, BLEND_MAX
+	};
 
 	//初期化
 	HRESULT Initialize(int winW, int winH, HWND hWnd);
@@ -31,8 +38,14 @@ namespace Direct3D
 	HRESULT InitShader();
 	HRESULT InitShader3D();
 	HRESULT InitShader2D();
+	HRESULT InitShaderBillBoard();
 
 	void SetShader(SHADER_TYPE type);
+
+	//ブレンドモードの変更
+	//引数：blendMode	BLEND_DEFAULT	通常
+	//					BLEND_ADD		加算合成（パーティクル用）
+	void SetBlendMode(BLEND_MODE blendMode);
 
 	//描画開始
 	void BeginDraw();
