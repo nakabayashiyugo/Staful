@@ -16,8 +16,6 @@ class TitleScene
 
 
 	int hModel_;
-
-	BillBoard* bb;
 public:
 	TitleScene(GameObject* parent);
 

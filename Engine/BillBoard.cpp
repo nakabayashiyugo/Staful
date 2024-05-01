@@ -87,7 +87,6 @@ HRESULT BillBoard::Load(std::string fileName)
 //描画
 void BillBoard::Draw(XMMATRIX matWorld, XMFLOAT4 color)
 {
-	Direct3D::SetShader(Direct3D::SHADER_BILLBOARD);
 	//コンスタントバッファに渡す情報
 	CONSTANT_BUFFER cb;
 	cb.matWVP = XMMatrixTranspose(matWorld * Camera::GetViewMatrix() * Camera::GetProjectionMatrix());

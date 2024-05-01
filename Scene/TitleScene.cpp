@@ -43,11 +43,7 @@ void TitleScene::Initialize()
 	assert(hModel_ >= 0);
 
 	EmitterData eData;
-	eData.position = transform_.position_;
-	//VFX::Start(eData);
-
-	bb = new BillBoard();
-	bb->Load("Assets\\Effect\\defaultParticle.png");
+	VFX::Start(eData);
 }
 
 void TitleScene::Update()
@@ -63,7 +59,6 @@ void TitleScene::Update()
 
 void TitleScene::Draw()
 {
-	bb->Draw(XMMatrixIdentity(), XMFLOAT4(1, 1, 1, 1));
 	////スタートボタンのトランスフォーム
 	//const XMFLOAT3 sbPos = XMFLOAT3(0.0f, -0.1f, 0.0f);
 	//const XMFLOAT3 sbScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
