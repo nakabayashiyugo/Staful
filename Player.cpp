@@ -70,7 +70,6 @@ Player::Player(GameObject* parent)
 
 	//ヒットストップに関する変数の初期化
 	hitStopTime_(0.2f), 
-	isHitStop_(false), 
 
 	
 	hurdle_Limit_(0)
@@ -248,11 +247,9 @@ void Player::CameraPosSet()
 
 void Player::CameraShakeInit()
 {
-	//カメラの振動時間
-	const float camShakeTime = 0.2f;
 	//カメラの振動の強さ
 	const float camShakePower = 0.5f;
-	pCamShaker_->ShakeInit(&camPos_, camShakeTime, camShakePower);
+	pCamShaker_->ShakeInit(&camPos_, hitStopTime_, camShakePower);
 	pCamShaker_->SetIsShake(true);
 }
 
@@ -519,6 +516,7 @@ void Player::DeadUpdate()
 {
 	if (!pCamShaker_->GetIsShake())
 	{
+		VFX::End(deadEmitHandle_);
 		ReturnToStartMath();
 	}
 }
@@ -653,6 +651,10 @@ void Player::SetAnimFramerate()
 	prevPlayerState_ = playerState_;
 }
 
+void Player::HitStopUpdate()
+{
+}
+
 void Player::OnCollision(GameObject* pTarget)
 {
 	//とげとげと当たったら
@@ -665,7 +667,6 @@ void Player::OnCollision(GameObject* pTarget)
 		moveCount_ = moveCountInit;
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
-		isHitStop_ = true;
 	}
 }
 
@@ -698,11 +699,15 @@ void Player::TimeGageManagement()
 
 void Player::EmitterDataAssign(XMFLOAT3 _hitTgtgPos)
 {
-	//自分の位置ととげとげの位置の間にエフェクト出す
+	// 自分の位置を 0
+	// 当たったとげとげの位置を 1 としたときの
+	// エフェクトを出す位置
+	const float deadEffectPos = 0.5f;
+	//上の位置ににエフェクト出す
 	deadEmitData_.position =
-		XMFLOAT3(transform_.position_.x + (_hitTgtgPos.x - transform_.position_.x),
-				 transform_.position_.y + (_hitTgtgPos.y - transform_.position_.y),
-				 transform_.position_.z + (_hitTgtgPos.z - transform_.position_.z));
-
-	VFX::Start(deadEmitData_);
+		XMFLOAT3(transform_.position_.x + ((_hitTgtgPos.x - transform_.position_.x) * deadEffectPos),
+				 transform_.position_.y + ((_hitTgtgPos.y - transform_.position_.y) * deadEffectPos),
+				 transform_.position_.z + ((_hitTgtgPos.z - transform_.position_.z) * deadEffectPos));
+	
+	deadEmitHandle_ = VFX::Start(deadEmitData_);
 }

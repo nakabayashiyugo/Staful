@@ -179,10 +179,8 @@ private:
 	float hitStopTime_;
 	bool isHitStop_;
 public:
-	//ヒットストップ
-	float GetHitStopTime() { return hitStopTime_; }
-	bool GetHitStop() { return isHitStop_; }
-	void SetHitStop(bool _ishit) { isHitStop_ = _ishit; }
+	//ヒットストップ中の処理
+	void HitStopUpdate();
 
 
 //時間ゲージについて
@@ -204,6 +202,8 @@ public:
 private:
 	//とげとげと当たった時に出るエフェクトに関するデータ
 	EmitterData deadEmitData_;
+	//とげとげと当たった時に出るエフェクトに関するデータのハンドル
+	int deadEmitHandle_;
 
 public:
 	//とげとげと当たった時に出るエフェクトの代入
