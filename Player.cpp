@@ -1,5 +1,7 @@
 #include "Player.h"
 
+#include <map>
+
 #include "Engine/Input.h"
 #include "Engine/Camera.h"
 #include "Engine/Model.h"
@@ -70,9 +72,9 @@ Player::Player(GameObject* parent)
 
 	//ヒットストップに関する変数の初期化
 	hitStopTime_(0.2f), 
-
-	
-	hurdle_Limit_(0)
+	isHitStop_(false),
+	pHitStopTimer_(nullptr),
+	isCamShake_(true)
 {
 	pST = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pST->GetMathSize_x();
@@ -250,7 +252,7 @@ void Player::CameraShakeInit()
 	//カメラの振動の強さ
 	const float camShakePower = 0.5f;
 	pCamShaker_->ShakeInit(&camPos_, hitStopTime_, camShakePower);
-	pCamShaker_->SetIsShake(true);
+	pCamShaker_->SetIsShake(isCamShake_);
 }
 
 void Player::CameraShake()
@@ -514,7 +516,8 @@ void Player::ConvMoveUpdate()
 
 void Player::DeadUpdate()
 {
-	if (!pCamShaker_->GetIsShake())
+	HitStopUpdate();
+	if (!isHitStop_)
 	{
 		VFX::End(deadEmitHandle_);
 		ReturnToStartMath();
@@ -651,8 +654,22 @@ void Player::SetAnimFramerate()
 	prevPlayerState_ = playerState_;
 }
 
+void Player::HitStopInit()
+{
+	pHitStopTimer_ = new Timer(hitStopTime_);
+	isHitStop_ = true;
+}
+
 void Player::HitStopUpdate()
 {
+	if (isHitStop_)
+	{
+		pHitStopTimer_->Update();
+		if (pHitStopTimer_->isTimeUpped())
+		{
+			isHitStop_ = false;
+		}
+	}
 }
 
 void Player::OnCollision(GameObject* pTarget)
@@ -663,7 +680,8 @@ void Player::OnCollision(GameObject* pTarget)
 		CameraShakeInit();
 		//エフェクト
 		EmitterDataAssign(pTarget->GetTransform().position_);
-
+		//ヒットストップ
+		HitStopInit();
 		moveCount_ = moveCountInit;
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
@@ -699,15 +717,46 @@ void Player::TimeGageManagement()
 
 void Player::EmitterDataAssign(XMFLOAT3 _hitTgtgPos)
 {
+	//エフェクトのファイルが入ってるフォルダー
+	const std::string folderName = "Assets\\Effect\\";
+	//使うエフェクトのファイル名
+	std::string fileName = "Effect_Dead.png";
+	fileName = folderName + fileName;
 	// 自分の位置を 0
 	// 当たったとげとげの位置を 1 としたときの
 	// エフェクトを出す位置
-	const float deadEffectPos = 0.5f;
-	//上の位置ににエフェクト出す
-	deadEmitData_.position =
-		XMFLOAT3(transform_.position_.x + ((_hitTgtgPos.x - transform_.position_.x) * deadEffectPos),
-				 transform_.position_.y + ((_hitTgtgPos.y - transform_.position_.y) * deadEffectPos),
-				 transform_.position_.z + ((_hitTgtgPos.z - transform_.position_.z) * deadEffectPos));
-	
+	const float effectPos = 0.5f;
+	//上方向に足される値
+	const float upDirPlus = 0.5f;
+	//エフェクトを出す位置
+	const XMFLOAT3 deadEffectPos = 
+		XMFLOAT3(transform_.position_.x + ((_hitTgtgPos.x - transform_.position_.x) * effectPos),
+			transform_.position_.y + ((_hitTgtgPos.y - transform_.position_.y) * effectPos + upDirPlus),
+			transform_.position_.z + ((_hitTgtgPos.z - transform_.position_.z) * effectPos));
+	//エフェクトの方向
+	const XMFLOAT3 deadEffectDir =
+		XMFLOAT3(_hitTgtgPos.x - transform_.position_.x,
+			_hitTgtgPos.y - transform_.position_.y,
+			_hitTgtgPos.z - transform_.position_.z);
+	//エフェクトの方向の誤差
+	const XMFLOAT3 dirRnd = XMFLOAT3(0, 100, 100);
+	//パーティクルが発射されるフレーム数
+	const int particleDelay = 1;
+	//パーティクルのスピード
+	const float particleSpeed = 0.5f;
+	//パーティクルの生存時間(フレーム数)
+	const int particleLifeTime = 2;
+
+	//それぞれ代入
+	deadEmitData_.textureFileName = fileName;
+	XMStoreFloat3(&deadEmitData_.position, XMLoadFloat3(&deadEffectPos));
+	deadEmitData_.position.y += upDirPlus;
+	deadEmitData_.directionRnd = dirRnd;
+	XMStoreFloat3(&deadEmitData_.direction, XMVector3Normalize(XMLoadFloat3(&deadEffectDir)));
+	deadEmitData_.delay = particleDelay;
+	deadEmitData_.speed = particleSpeed;
+	deadEmitData_.lifeTime = particleLifeTime;
+
+
 	deadEmitHandle_ = VFX::Start(deadEmitData_);
 }

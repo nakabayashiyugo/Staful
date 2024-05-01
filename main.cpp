@@ -26,8 +26,7 @@
 //定数宣言
 const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
 const char* GAME_TITLE = "サンプルゲーム";
-const int WINDOW_WIDTH = 1200;  //ウィンドウの幅
-const int WINDOW_HEIGHT = 800; //ウィンドウの高さ
+
 const int FPS = 60;
 
 RootJob* pRootJob = nullptr;
@@ -102,7 +101,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     HRESULT hr;
 
     //Direct3D初期化
-    hr = Direct3D::Initialize(WINDOW_WIDTH, WINDOW_HEIGHT, hWnd);
+    hr = Direct3D::Initialize(winW, winH, hWnd);
     if (FAILED(hr))
     {
         //失敗したときの処理

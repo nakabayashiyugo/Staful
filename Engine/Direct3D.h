@@ -11,6 +11,9 @@
 #define SAFE_DELETE(p) if(p != nullptr){ delete p; p = nullptr;}
 #define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
 
+const int WINDOW_WIDTH = 1200;  //ウィンドウの幅
+const int WINDOW_HEIGHT = 700; //ウィンドウの高さ
+
 namespace Direct3D
 {
 	enum SHADER_TYPE
@@ -23,7 +26,8 @@ namespace Direct3D
 
 	extern ID3D11Device* pDevice_;				//デバイス
 	extern ID3D11DeviceContext* pContext_;		//デバイスコンテキスト
-	extern int scrWidth, scrHeight;
+	extern int aft_scrWidth, aft_scrHeight;		//変更後のウィンドウサイズ
+	extern int bfr_scrWidth, bfr_scrHeight;		//変更前のウィンドウサイズ
 
 	//■ブレンドモード
 	enum BLEND_MODE

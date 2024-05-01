@@ -32,9 +32,6 @@ class Player
 	int hModel_;
 
 	PlayScene* pPlayScene_;
-
-	//障害物の置ける数
-	int hurdle_Limit_;
 public:
 	Player(GameObject* parent);
 
@@ -178,7 +175,14 @@ private:
 	//ヒットストップの時間
 	float hitStopTime_;
 	bool isHitStop_;
+
+	Timer* pHitStopTimer_;
+
+	//ヒットストップ時カメラを振動させるか
+	bool isCamShake_;
 public:
+	//ヒットストップの初期化
+	void HitStopInit();
 	//ヒットストップ中の処理
 	void HitStopUpdate();
 

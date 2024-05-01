@@ -4,8 +4,6 @@
 
 #include "../Timer.h"
 
-//振動する回数
-const int SHAKENUM = 5;
 //振動の移動量を制限する値
 const float SHAKEDEC = 0.01f;
 
@@ -13,7 +11,6 @@ Shaker::Shaker()
 {	
 	shakeTime_ = 0;
 	shakePower_ = 0;			
-	shakeNum_ = SHAKENUM;
 	isShake_ = false;
 	prevIsShake_ = false;
 
@@ -29,8 +26,6 @@ void Shaker::ShakeInit(XMFLOAT3 *_position, float _vibTime, float _vibPower)
 {
 	shakeTime_ = _vibTime;
 	shakePower_ = _vibPower;
-	//振動の回数の初期化
-	shakeNum_ = SHAKENUM;
 	//振動前のオブジェクトの位置
 	position_ = _position;
 	pTimer_ = new Timer(shakeTime_);
@@ -60,12 +55,6 @@ void Shaker::ShakeUpdate()
 	if (ease <= 0)
 	{
 		moveCount = moveCountInit;
-		shakeNum_--;
-		if (shakeNum_ <= 0)
-		{
-			isShake_ = false;
-			return;
-		}
 		//オブジェクトの振動の方向
 		shakeDir_ = XMVectorSet(rand() % 10, rand() % 10, rand() % 10, 0);
 		//オブジェクトの振動の方向にオブジェクトの振動の強さ分の長さを持たせる

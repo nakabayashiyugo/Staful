@@ -41,12 +41,12 @@ void Text::Draw(int x, int y, const char* str)
 	float px, py;
 
 	//引数は左上原点だが、スプライトは画面中央が原点なので、画面サイズの半分ずらす
-	px = (float)(x - Direct3D::scrWidth / 2);
-	py = (float)(-y + Direct3D::scrHeight / 2);	//Y軸は+-反転
+	px = (float)(x - Direct3D::aft_scrWidth / 2);
+	py = (float)(-y + Direct3D::aft_scrHeight / 2);	//Y軸は+-反転
 
 	//スプライトはPositionを1ずらすと画面サイズの半分ずれるので、ピクセル単位に変換
-	px /= (float)(Direct3D::scrWidth / 2.0f);
-	py /= (float)(Direct3D::scrHeight / 2.0f);
+	px /= (float)(Direct3D::aft_scrWidth / 2.0f);
+	py /= (float)(Direct3D::aft_scrHeight / 2.0f);
 
 
 	//１文字ずつ表示する
@@ -72,7 +72,7 @@ void Text::Draw(int x, int y, const char* str)
 		Image::Draw(hPict_);
 
 		//次の位置にずらす
-		px += width_ / (float)(Direct3D::scrWidth / 2.0f);
+		px += width_ / (float)(Direct3D::aft_scrWidth / 2.0f);
 	}
 }
 

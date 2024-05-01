@@ -12,7 +12,6 @@ private:
 	XMVECTOR shakeDir_;			//U“®‚·‚é•ûŒü
 	float shakeTime_;			//U“®‚·‚éŠÔ
 	float shakePower_;			//U“®‚Ì‹­‚³
-	int shakeNum_;				//U“®‚·‚é‰ñ”
 	bool isShake_, prevIsShake_;//U“®‚·‚é‚©‚Ç‚¤‚©
 	Timer* pTimer_;
 	Easing* pEasing_;

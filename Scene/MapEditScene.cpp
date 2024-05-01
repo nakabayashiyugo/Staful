@@ -101,8 +101,8 @@ void MapEditScene::Update()
 	const int xsizeMax = XSIZE - 1;
 	//y方向のマスの数
 	const int ysizeMax = YSIZE - 1;
-	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::scrWidth / 2) - MATHSIZE / 2;
-	mousePosY -= ((-(math_[xsizeMax][ysizeMax].mathPos_.position_.y) + 1.0f) * Direct3D::scrHeight / 2) - MATHSIZE / 2;
+	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
+	mousePosY -= ((-(math_[xsizeMax][ysizeMax].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
 
 	selectMath.x = (int)(mousePosX / MATHSIZE);
 	selectMath.y = ysizeMax - (int)(mousePosY / MATHSIZE);
@@ -604,7 +604,7 @@ void MapEditScene::ButtonInit()
 		//マス選択ボタンの位置
 		XMFLOAT3 mbPos;
 		mbPos.x = (float)((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbScale.x + mbInitPos.x;
-		mbPos.y = -(((float)((buttonNum_ - buttonInitNum) / mbNewLineNum * mbNewLineNum) / Direct3D::scrHeight) * mathButtonSize) + mbInitPos.y;
+		mbPos.y = -(((float)((buttonNum_ - buttonInitNum) / mbNewLineNum * mbNewLineNum) / Direct3D::bfr_scrHeight) * mathButtonSize) + mbInitPos.y;
 		mbPos.z = mbInitPos.z;
 
 		Transform mbTransform;
@@ -660,7 +660,7 @@ void MapEditScene::ButtonInit()
 	pTestplayButton_ = (Button*)FindObject(buttonStr);
 	pTestplayButton_->SetPictNum(testplayNum);
 
-	const XMFLOAT3 tbPos = XMFLOAT3(-0.8f, -0.6f, 0);
+	const XMFLOAT3 tbPos = XMFLOAT3(-0.8f, 0, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;
@@ -733,8 +733,8 @@ void MapEditScene::MathInit()
 		{
 			math_origin_[x][y] = math_[x][y];
 			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
-			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::scrWidth) * MATHSIZE;
-			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::scrHeight) * MATHSIZE;
+			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::bfr_scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::bfr_scrWidth) * MATHSIZE;
+			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::bfr_scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::bfr_scrHeight) * MATHSIZE;
 		}
 	}
 }
