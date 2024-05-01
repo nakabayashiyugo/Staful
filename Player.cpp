@@ -659,6 +659,9 @@ void Player::OnCollision(GameObject* pTarget)
 	if (pTarget->GetObjectName() == "Togetoge" && playerState_ != STATE_DEAD)
 	{
 		CameraShakeInit();
+		//エフェクト
+		EmitterDataAssign(pTarget->GetTransform().position_);
+
 		moveCount_ = moveCountInit;
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
@@ -691,4 +694,15 @@ void Player::TimeGageManagement()
 	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) /
 		100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
 		, timerScale.y, timerScale.z);
+}
+
+void Player::EmitterDataAssign(XMFLOAT3 _hitTgtgPos)
+{
+	//自分の位置ととげとげの位置の間にエフェクト出す
+	deadEmitData_.position =
+		XMFLOAT3(transform_.position_.x + (_hitTgtgPos.x - transform_.position_.x),
+				 transform_.position_.y + (_hitTgtgPos.y - transform_.position_.y),
+				 transform_.position_.z + (_hitTgtgPos.z - transform_.position_.z));
+
+	VFX::Start(deadEmitData_);
 }

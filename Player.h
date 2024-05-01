@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/GameObject.h"
 #include "StageOrigin.h"
+#include "Engine/VFX.h"
 
 class PlayScene;
 class Timer;
@@ -197,4 +198,15 @@ private:
 public:
 	//時間ゲージ
 	void TimeGageManagement();
+
+
+//エフェクトについて
+private:
+	//とげとげと当たった時に出るエフェクトに関するデータ
+	EmitterData deadEmitData_;
+
+public:
+	//とげとげと当たった時に出るエフェクトの代入
+	//引数 : 当たったとげとげの位置
+	void EmitterDataAssign(XMFLOAT3 _hitTgtgPos);
 };
