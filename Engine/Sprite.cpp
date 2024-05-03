@@ -73,10 +73,10 @@ void Sprite::Release()
 void Sprite::InitVertexData()
 {
 	vertices_ = {
-	{ XMVectorSet((0	/ Direct3D::bfr_scrWidth) * 2 - 1.0f,				 -(0	/ Direct3D::bfr_scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
-	{ XMVectorSet((Direct3D::bfr_scrWidth / Direct3D::bfr_scrWidth) * 2 - 1.0f,  -(0	/ Direct3D::bfr_scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
-	{ XMVectorSet((Direct3D::bfr_scrWidth / Direct3D::bfr_scrWidth) * 2 - 1.0f,  -(Direct3D::bfr_scrHeight / Direct3D::bfr_scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
-	{ XMVectorSet((0	/ Direct3D::bfr_scrWidth) * 2 - 1.0f,				 -(Direct3D::bfr_scrHeight / Direct3D::bfr_scrHeight) * 2 + 1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
+	{ XMVectorSet(-1.0f, 1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f) },	// 四角形の頂点（左上）
+	{ XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f) }, // 四角形の頂点（右上）
+	{ XMVectorSet(1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) }, // 四角形の頂点（右下）
+	{ XMVectorSet(-1.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) }  // 四角形の頂点（左下）
 	};
 	vertexNum_ = vertices_.size();
 

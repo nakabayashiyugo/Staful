@@ -38,14 +38,19 @@ void Button::Update()
 
 		XMFLOAT3 startButtonSize = Image::GetTextureSize(hPict_);
 
+		//ボタンの位置のyが0.0fのときのカーソルとの誤差
+		float cursorErrorInit = 9.0f;
+		//ボタンの位置のyとカーソルとの誤差
+		float cursorError = cursorErrorInit + (-tPict_.position_.y * 10);
+
 		//ボタンの右の座標
 		float SBRight = tPict_.position_.x * (Direct3D::bfr_scrWidth / 2) + (startButtonSize.x * tPict_.scale_.x / 2);
 		//ボタンの左の座標
 		float SBLeft = tPict_.position_.x * (Direct3D::bfr_scrWidth / 2) - (startButtonSize.x * tPict_.scale_.x / 2);
 		//ボタンの上の座標
-		float SBUp = -((tPict_.position_.y * (Direct3D::bfr_scrHeight / 2) + (startButtonSize.y * tPict_.scale_.y / 2)));
+		float SBUp = -((tPict_.position_.y * (Direct3D::bfr_scrHeight / 2) + (startButtonSize.y * tPict_.scale_.y / 2))) + cursorError;
 		//ボタンの下の座標
-		float SBDown = -((tPict_.position_.y * (Direct3D::bfr_scrHeight / 2) - (startButtonSize.y * tPict_.scale_.y / 2)));
+		float SBDown = SBUp + (startButtonSize.y * tPict_.scale_.y);
 
 		if (mousePos_.x >= SBLeft && mousePos_.x <= SBRight &&
 			mousePos_.y >= SBUp && mousePos_.y <= SBDown)

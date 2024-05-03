@@ -12,7 +12,7 @@
 #define SAFE_RELEASE(p) if(p != nullptr){ p->Release(); p = nullptr;}
 
 const int WINDOW_WIDTH = 1200;  //ウィンドウの幅
-const int WINDOW_HEIGHT = 700; //ウィンドウの高さ
+const int WINDOW_HEIGHT = 800; //ウィンドウの高さ
 
 namespace Direct3D
 {
