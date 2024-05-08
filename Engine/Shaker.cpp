@@ -56,7 +56,7 @@ void Shaker::ShakeUpdate()
 	{
 		moveCount = moveCountInit;
 		//オブジェクトの振動の方向
-		shakeDir_ = XMVectorSet(rand() % 10, rand() % 10, rand() % 10, 0);
+		shakeDir_ = XMVectorSet(rand(), rand(), rand(), 0);
 		//オブジェクトの振動の方向にオブジェクトの振動の強さ分の長さを持たせる
 		shakeDir_ = XMVector3Normalize(shakeDir_) * shakePower_ * SHAKEDEC;
 	}
