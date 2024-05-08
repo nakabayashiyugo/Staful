@@ -32,6 +32,8 @@ const XMFLOAT3 moveRight(1, 0, 0);
 const XMFLOAT3 moveLeft(-1, 0, 0);
 //moveCount_の初期値
 const float moveCountInit = 0.0f;
+//moveCount_の移動が終了する値
+const float moveCountEnd = 1.0f;
 //ジャンプ移動の通常の移動との距離の倍率
 const int normalMoveVectoMult = 2;
 //落ちる速度の初期値
@@ -335,7 +337,7 @@ void Player::PlayerMove()
 	//moveCountの毎秒増えていく値
 	const float cntUpdate = 0.03f;
 	moveCount_ += cntUpdate;
-	if (moveCount_ > 1) moveCount_ = 1;
+	if (moveCount_ > moveCountEnd) moveCount_ = moveCountEnd;
 
 	Easing* pEasing = new Easing();
 	//velocity_に入れるためのXMFLOAT3型の変数
@@ -346,7 +348,7 @@ void Player::PlayerMove()
 
 	velocity_ = XMLoadFloat3(&vec);
 
-	if (moveCount_ >= 1)
+	if (moveCount_ >= moveCountEnd)
 	{
 		moveCount_ = moveCountInit;
 		//移動終了
