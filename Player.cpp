@@ -32,6 +32,8 @@ const XMFLOAT3 moveRight(1, 0, 0);
 const XMFLOAT3 moveLeft(-1, 0, 0);
 //moveCount_の初期値
 const float moveCountInit = 0.0f;
+//moveCntUpdate_の初期値
+const float moveCntUpdateInit = 0.03f;
 //moveCount_の移動が終了する値
 const float moveCountEnd = 1.0f;
 //ジャンプ移動の通常の移動との距離の倍率
@@ -49,6 +51,7 @@ Player::Player(GameObject* parent)
 	//プレイヤーの操作について
 	moveFinished_(false),
 	moveCount_(moveCountInit),
+	moveCntUpdate_(moveCntUpdateInit),
 	moveDir_(0, 0, 0), 
 	destPos_(0, 0, 0), 
 	prevPos_(0, 0, 0),
@@ -77,7 +80,11 @@ Player::Player(GameObject* parent)
 	hitStopTime_(0.2f), 
 	isHitStop_(false),
 	pHitStopTimer_(nullptr),
-	isCamShake_(true)
+	isCamShake_(true),
+
+	//アニメーションに関する変数
+	//移動にかかるフレーム数
+	moveFrameNum_(moveCountEnd / moveCntUpdateInit)
 
 {
 	pST = (SceneTransition*)FindObject("SceneTransition");
@@ -611,6 +618,7 @@ void Player::SetAnimFramerate()
 	const int FALL_END = 150;
 	//アニメーションのスピード
 	const int animSpeed = 1;
+	const int moveAnimSpeed = 
 	if (prevPlayerState_ != playerState_)
 	{
 		switch (playerState_)
@@ -622,6 +630,7 @@ void Player::SetAnimFramerate()
 		case STATE_WALK:
 			startFrame_ = WALK_FIRST;
 			endFrame_ = WALK_END;
+
 			break;
 		case STATE_JAMP:
 			startFrame_ = JAMP_FIRST;

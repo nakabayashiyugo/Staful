@@ -78,6 +78,8 @@ private:
 	//移動が終了したか
 	bool moveFinished_;
 	float moveCount_;
+	//moveCount_の毎フレームたされる値
+	float moveCntUpdate_;
 	//落ちる速度
 	float fallSpeed_;
 	//移動方向
@@ -165,6 +167,8 @@ public:
 private:
 	//アニメーションのフレーム
 	int nowFrame_, startFrame_, endFrame_;
+	//移動にかかるフレーム数
+	int moveFrameNum_;
 public:
 	//アニメーションのフレームレート
 	void SetAnimFramerate();
