@@ -431,12 +431,6 @@ void MapEditScene::Read()
 	//  ファイルを開く
 	//  ios::in は読み込み専用  ios::binary はバイナリ形式
 
-	if (!read) {
-		std::cout << "ファイルが開けません";
-		return;
-	}
-	//  ファイルが開けなかったときの対策
-
 	//ファイルの最後まで続ける
 	for (int i = 0; i < XSIZE; i++)
 	{
@@ -453,10 +447,6 @@ void MapEditScene::Read()
 	savefile = saveFolderName + "tgtgRoute";
 	savefile += std::to_string(saveNum_);
 	read.open(savefile, std::ios::in);
-	if (!read) {
-		std::cout << "ファイルが開けません";
-		return;
-	}
 
 	int i = 0;
 	while (!read.eof())

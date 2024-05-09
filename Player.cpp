@@ -71,12 +71,14 @@ Player::Player(GameObject* parent)
 	hFrameOutline_(-1), 
 	hGage_(-1), 
 	hTime_(-1),
+	gameTime_(30),
 
 	//ヒットストップに関する変数の初期化
 	hitStopTime_(0.2f), 
 	isHitStop_(false),
 	pHitStopTimer_(nullptr),
 	isCamShake_(true)
+
 {
 	pST = (SceneTransition*)FindObject("SceneTransition");
 	XSIZE = (int)pST->GetMathSize_x();
@@ -121,7 +123,7 @@ void Player::Initialize()
 	hTime_ = Image::Load("Assets\\Logo_TIME.png");
 	assert(hTime_ >= 0);
 	
-	pTimer_ = new Timer(30);
+	pTimer_ = new Timer(gameTime_);
 
 	ShadowInit();
 
@@ -274,48 +276,38 @@ bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 		_pos.z  >= 0 && _pos.z < ZSIZE;
 }
 
-void Player::PlayerOperation()
-{
-	if (playerState_ != STATE_DEAD)
-	{
+void Player::PlayerOperation(){
+	if (playerState_ != STATE_DEAD){
 		//前後左右移動
-		if (Input::IsKey(DIK_W))
-		{
+		if (Input::IsKey(DIK_W)){
 			//移動距離
 			moveDir_ = moveFront;
 			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE))
-			{
+			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
 			}
 		}
-		if (Input::IsKey(DIK_S))
-		{
+		if (Input::IsKey(DIK_S)){
 			//移動距離
 			moveDir_ = moveBack;
 			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE))
-			{
+			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
 			}
 		}
-		if (Input::IsKey(DIK_A))
-		{
+		if (Input::IsKey(DIK_A)){
 			//移動距離
 			moveDir_ = moveLeft;
 			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE))
-			{
+			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
 			}
 		}
-		if (Input::IsKey(DIK_D))
-		{
+		if (Input::IsKey(DIK_D)){
 			//移動距離
 			moveDir_ = moveRight;
 			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE))
-			{
+			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
 			}
 		}
@@ -712,8 +704,8 @@ void Player::TimeGageManagement()
 	tGage_.position_ =
 		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
 			timerPos.y, timerPos.z);
-	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime()) /
-		100 * (timerScale.x / (float(pTimer_->GetLimitTime()) / 100))
+	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime())
+		 * (timerScale.x / (float(pTimer_->GetLimitTime())))
 		, timerScale.y, timerScale.z);
 }
 

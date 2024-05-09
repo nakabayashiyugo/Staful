@@ -189,6 +189,8 @@ public:
 
 //時間ゲージについて
 private:
+	//制限時間
+	int gameTime_;
 	//時間ゲージの画像
 	int hFrame_, hGage_, hFrameOutline_;
 	int hTime_;
