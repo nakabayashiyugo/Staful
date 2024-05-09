@@ -101,6 +101,9 @@
     <ClCompile Include="Engine\VFX.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Audio.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Simple2D.hlsl">
@@ -197,6 +200,9 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Engine\VFX.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Audio.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>

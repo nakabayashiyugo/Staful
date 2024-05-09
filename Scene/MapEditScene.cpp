@@ -660,7 +660,7 @@ void MapEditScene::ButtonInit()
 	pTestplayButton_ = (Button*)FindObject(buttonStr);
 	pTestplayButton_->SetPictNum(testplayNum);
 
-	const XMFLOAT3 tbPos = XMFLOAT3(-0.8f, 0, 0);
+	const XMFLOAT3 tbPos = XMFLOAT3(-0.8f, -0.6f, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;
