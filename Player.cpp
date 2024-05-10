@@ -617,8 +617,11 @@ void Player::SetAnimFramerate()
 	const int FALL_FIRST = 150;
 	const int FALL_END = 150;
 	//アニメーションのスピード
-	const int animSpeed = 1;
-	const int moveAnimSpeed = 
+	float animSpeed = 1.0f;
+	//移動のアニメーションのスピード
+	float moveAnimSpeed = (float)(WALK_END - WALK_FIRST) / moveFrameNum_;
+	std::string resStr = std::to_string(moveAnimSpeed) + "\n";
+	OutputDebugString(resStr.c_str());
 	if (prevPlayerState_ != playerState_)
 	{
 		switch (playerState_)
@@ -630,7 +633,7 @@ void Player::SetAnimFramerate()
 		case STATE_WALK:
 			startFrame_ = WALK_FIRST;
 			endFrame_ = WALK_END;
-
+			animSpeed = moveAnimSpeed;
 			break;
 		case STATE_JAMP:
 			startFrame_ = JAMP_FIRST;
