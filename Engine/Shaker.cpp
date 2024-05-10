@@ -70,7 +70,7 @@ void Shaker::ShakeDirAssign()
 	
 	switch (shakeType_)
 	{
-	case TYPE_VETICAL:
+	case TYPE_VERTICAL:
 		//オブジェクトの振動の方向
 		shakeDir_ = XMVectorSet(0, rand() - RAND_MAX / 2, 0, 0);
 		break;

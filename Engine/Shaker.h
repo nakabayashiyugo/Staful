@@ -6,7 +6,7 @@ class Easing;
 
 enum SHAKETYPE
 {
-	TYPE_VETICAL = 0,
+	TYPE_VERTICAL = 0,
 	TYPE_BESIDE,
 	TYPE_RANDOM,
 	TYPE_MAX,

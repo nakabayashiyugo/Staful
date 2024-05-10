@@ -712,7 +712,7 @@ void Player::DamageDir(XMFLOAT3 _hitTgtgPos)
 	}
 	else
 	{
-		camShakeType = TYPE_VETICAL;
+		camShakeType = TYPE_VERTICAL;
 	}
 }
 
