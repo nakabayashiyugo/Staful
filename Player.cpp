@@ -40,6 +40,8 @@ const float moveCountEnd = 1.0f;
 const int normalMoveVectoMult = 2;
 //落ちる速度の初期値
 const float fallSpeedInit = 0.0f;
+//カメラの振動の種類
+SHAKETYPE camShakeType;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -240,6 +242,8 @@ void Player::PlayUpdate()
 	SetAnimFramerate();
 }
 
+
+
 void Player::CameraPosSet()
 {
 	const XMFLOAT3 dirCamToPlayerInit = XMFLOAT3(0, 7, -5);
@@ -261,8 +265,8 @@ void Player::CameraPosSet()
 void Player::CameraShakeInit()
 {
 	//カメラの振動の強さ
-	const float camShakePower = 0.5f;
-	pCamShaker_->ShakeInit(&camPos_, hitStopTime_, camShakePower);
+	const float camShakePower = 1;
+	pCamShaker_->ShakeInit(&camPos_, camShakeType, hitStopTime_, camShakePower);
 	pCamShaker_->SetIsShake(isCamShake_);
 }
 
@@ -683,6 +687,7 @@ void Player::OnCollision(GameObject* pTarget)
 	//とげとげと当たったら
 	if (pTarget->GetObjectName() == "Togetoge" && playerState_ != STATE_DEAD)
 	{
+		DamageDir(pTarget->GetTransform().position_);
 		CameraShakeInit();
 		//エフェクト
 		EmitterDataAssign(pTarget->GetTransform().position_);
@@ -691,6 +696,23 @@ void Player::OnCollision(GameObject* pTarget)
 		moveCount_ = moveCountInit;
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
+	}
+}
+
+void Player::DamageDir(XMFLOAT3 _hitTgtgPos)
+{
+	//当たったとげとげとの距離
+	XMFLOAT3 hitDir = XMFLOAT3(abs(transform_.position_.x - _hitTgtgPos.x),
+		abs(transform_.position_.y - _hitTgtgPos.y),
+		abs(transform_.position_.z - _hitTgtgPos.z));
+
+	if (hitDir.x > hitDir.y)
+	{
+		camShakeType = TYPE_BESIDE;
+	}
+	else
+	{
+		camShakeType = TYPE_VETICAL;
 	}
 }
 

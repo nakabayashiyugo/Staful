@@ -61,6 +61,8 @@ private:
 
 	Shaker* pCamShaker_;
 public:
+	//ダメージを受けた方向
+	void DamageDir(XMFLOAT3 _hitTgtgPos);
 	//カメラの位置
 	void CameraPosSet();
 	//カメラの振動の初期化

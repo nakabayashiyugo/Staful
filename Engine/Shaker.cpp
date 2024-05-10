@@ -1,5 +1,7 @@
 #include "Shaker.h"
 
+#include <time.h>
+
 #include "Easing.h"
 
 #include "../Timer.h"
@@ -22,18 +24,16 @@ Shaker::~Shaker()
 	delete pEasing_;
 }
 
-void Shaker::ShakeInit(XMFLOAT3 *_position, float _vibTime, float _vibPower)
+void Shaker::ShakeInit(XMFLOAT3 *_position, SHAKETYPE _shakeType, float _vibTime, float _vibPower)
 {
 	shakeTime_ = _vibTime;
 	shakePower_ = _vibPower;
+	shakeType_ = _shakeType;
 	//振動前のオブジェクトの位置
 	position_ = _position;
 	pTimer_ = new Timer(shakeTime_);
 	pEasing_ = new Easing();
-	//オブジェクトの振動の方向
-	shakeDir_ = XMVectorSet(rand(), rand(), rand(), 0);
-	//オブジェクトの振動の方向にオブジェクトの振動の強さ分の長さを持たせる
-	shakeDir_ = XMVector3Normalize(shakeDir_) * shakePower_ * SHAKEDEC;
+	ShakeDirAssign();
 }
 
 void Shaker::ShakeUpdate()
@@ -55,16 +55,36 @@ void Shaker::ShakeUpdate()
 	if (ease <= 0)
 	{
 		moveCount = moveCountInit;
-		//オブジェクトの振動の方向
-		shakeDir_ = XMVectorSet(rand(), rand(), rand(), 0);
-		//オブジェクトの振動の方向にオブジェクトの振動の強さ分の長さを持たせる
-		shakeDir_ = XMVector3Normalize(shakeDir_) * shakePower_ * SHAKEDEC;
+		ShakeDirAssign();
 	}
 	if (pTimer_->isTimeUpped())
 	{
 		isShake_ = false;
 		return;
 	}
+}
+
+void Shaker::ShakeDirAssign()
+{
+	srand(time(NULL));
+	
+	switch (shakeType_)
+	{
+	case TYPE_VETICAL:
+		//オブジェクトの振動の方向
+		shakeDir_ = XMVectorSet(0, rand() - RAND_MAX / 2, 0, 0);
+		break;
+	case TYPE_BESIDE:
+		//オブジェクトの振動の方向
+		shakeDir_ = XMVectorSet(rand() - RAND_MAX / 2, 0, 0, 0);
+		break;
+	case TYPE_RANDOM:
+		//オブジェクトの振動の方向
+		shakeDir_ = XMVectorSet(rand() - RAND_MAX / 2, rand() - RAND_MAX / 2, rand() - RAND_MAX / 2, 0);
+		break;
+	}
+	//オブジェクトの振動の方向にオブジェクトの振動の強さ分の長さを持たせる
+	shakeDir_ = XMVector3Normalize(shakeDir_) * shakePower_ * SHAKEDEC;
 }
 
 void Shaker::SetVibElem(float _vibTime, float _vibPower)

@@ -4,6 +4,14 @@
 class Timer;
 class Easing;
 
+enum SHAKETYPE
+{
+	TYPE_VETICAL = 0,
+	TYPE_BESIDE,
+	TYPE_RANDOM,
+	TYPE_MAX,
+};
+
 class Shaker
 {
 private:
@@ -16,6 +24,8 @@ private:
 	Timer* pTimer_;
 	Easing* pEasing_;
 
+	SHAKETYPE shakeType_;
+
 public:
 	Shaker();
 	~Shaker();
@@ -24,8 +34,11 @@ public:
 	//引数1 : 振動させたいオブジェクトのポジションのポインタ
 	//引数2 : 振動の時間
 	//引数3 : 振動の強さ
-	void ShakeInit(XMFLOAT3 *_position, float _vibTime, float _vibPower);
+	void ShakeInit(XMFLOAT3 *_position, SHAKETYPE _shakeType, float _vibTime, float _vibPower);
 	void ShakeUpdate();
+
+	//移動方向を決める
+	void ShakeDirAssign();
 
 	void SetVibElem(float _vibTime, float _vibPower);
 
