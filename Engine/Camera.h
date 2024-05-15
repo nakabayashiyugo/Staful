@@ -2,6 +2,8 @@
 #include "Direct3D.h"
 #include <DirectXMath.h>
 
+#include "Shaker.h"
+
 using namespace DirectX;
 
 //-----------------------------------------------------------
@@ -34,4 +36,9 @@ namespace Camera
 
 	//ビルボード用回転行列を取得
 	XMMATRIX GetBillboardMatrix();
+
+	//カメラの振動
+	//振動の初期化
+	void ShakeInit(SHAKETYPE _shakeType, float _vibTime, float _vibPower);
+	void CameraShake();
 };

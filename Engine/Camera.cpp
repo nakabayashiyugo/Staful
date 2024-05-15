@@ -12,6 +12,12 @@ namespace Camera
 	XMMATRIX viewMatrix_;		//ビュー行列
 	XMMATRIX projMatrix_;		//プロジェクション行列
 	XMMATRIX billBoard_;		//ビルボード用行列
+
+	//振動用
+	Shaker* camShaker_;			//カメラの振動用
+	XMFLOAT3 shakePos_;			//カメラ振動用のposition;
+	XMFLOAT3 dirCamToTarget_;	//カメラとカメラの見てるオブジェクトの位置の距離
+	XMFLOAT3 shakeDir_;			//カメラの振動の方向
 }
 
 //初期化
@@ -22,6 +28,8 @@ void Camera::Initialize()
 
 	//プロジェクション行列
 	projMatrix_ = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)800.0 / (FLOAT)600.0, 0.1f, 100.0f);
+	camShaker_ = new Shaker();
+	shakeDir_ = XMFLOAT3(1.0f, 1.0f, 1.0f);
 }
 
 //更新
@@ -82,4 +90,33 @@ XMMATRIX Camera::GetProjectionMatrix()
 XMMATRIX Camera::GetBillboardMatrix() 
 { 
 	return billBoard_; 
+}
+
+void Camera::ShakeInit(SHAKETYPE _shakeType, float _vibTime, float _vibPower)
+{
+	XMStoreFloat3(&shakePos_, position_);
+	camShaker_->ShakeInit(&shakePos_, _shakeType, _vibTime, _vibPower);
+	camShaker_->SetIsShake(true);
+	XMStoreFloat3(&dirCamToTarget_, position_ - target_);
+}
+
+void Camera::CameraShake()
+{
+	if (camShaker_->GetIsShake())
+	{
+		//カメラ振動
+		camShaker_->ShakeUpdate();
+		//カメラ振動中のtargetの位置
+		XMFLOAT3 shakeTarget = XMFLOAT3(shakePos_.x - dirCamToTarget_.x,
+			shakePos_.y - dirCamToTarget_.y,
+			shakePos_.z - dirCamToTarget_.z);
+		target_ = XMLoadFloat3(&shakeTarget);
+		
+		XMStoreFloat3(&shakeDir_, XMVector3Cross(XMVector3Normalize(XMLoadFloat3(&dirCamToTarget_)), XMVector3Normalize(XMLoadFloat3(&dirCamToTarget_))));
+		shakePos_ = XMFLOAT3(shakePos_.x * shakeDir_.x,
+							shakePos_.y * shakeDir_.y,
+							shakePos_.z * shakeDir_.z);
+		position_ = XMLoadFloat3(&shakePos_);
+	}
+	
 }

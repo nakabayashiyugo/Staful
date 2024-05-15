@@ -31,6 +31,7 @@ void Shaker::ShakeInit(XMFLOAT3 *_position, SHAKETYPE _shakeType, float _vibTime
 	shakeType_ = _shakeType;
 	//振動前のオブジェクトの位置
 	position_ = _position;
+	prevPosition_ = *position_;
 	pTimer_ = new Timer(shakeTime_);
 	pEasing_ = new Easing();
 	ShakeDirAssign();
@@ -47,7 +48,7 @@ void Shaker::ShakeUpdate()
 	const float moveCountPlus = 0.5f;
 	moveCount += moveCountPlus;
 	//prevPositionを入れるvector
-	XMVECTOR prevPosVec = XMLoadFloat3(position_);
+	XMVECTOR prevPosVec = XMLoadFloat3(&prevPosition_);
 	//retPosに値入れる
 	float ease = pEasing_->EaseInSine(moveCount);
 	XMStoreFloat3(position_, (prevPosVec * shakeDir_) * ease + prevPosVec);

@@ -16,7 +16,8 @@ class Shaker
 {
 private:
 	//カメラの振動に関する変数
-	XMFLOAT3 *position_;		//振動する前の位置
+	XMFLOAT3 *position_;		//振動するオブジェクトの位置
+	XMFLOAT3 prevPosition_;		//振動する前の位置
 	XMVECTOR shakeDir_;			//振動する方向
 	float shakeTime_;			//振動する時間
 	float shakePower_;			//振動の強さ

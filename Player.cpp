@@ -256,29 +256,26 @@ void Player::CameraPosSet()
 	camPos_ = XMFLOAT3(camTarget_.x + dirCamToPlayer_.x,
 						camTarget_.y + dirCamToPlayer_.y,
 						camTarget_.z + dirCamToPlayer_.z);
+	if (!isHitStop_)
+	{
+		Camera::SetPosition(camPos_);
+		Camera::SetTarget(camTarget_);
+	}
 	//カメラ振動
 	CameraShake();
-	Camera::SetPosition(camPos_);
-	Camera::SetTarget(camTarget_);
 }
 
 void Player::CameraShakeInit()
 {
 	//カメラの振動の強さ
 	const float camShakePower = 1;
-	pCamShaker_->ShakeInit(&camPos_, camShakeType, hitStopTime_, camShakePower);
-	pCamShaker_->SetIsShake(isCamShake_);
+	Camera::ShakeInit(camShakeType, hitStopTime_, camShakePower);
+	
 }
 
 void Player::CameraShake()
 {
-	if (pCamShaker_->GetIsShake())
-	{
-		pCamShaker_->ShakeUpdate();
-		camTarget_ = XMFLOAT3(camPos_.x - dirCamToPlayer_.x,
-			camPos_.y - dirCamToPlayer_.y,
-			camPos_.z - dirCamToPlayer_.z);
-	}
+	Camera::CameraShake();
 }
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
@@ -366,8 +363,7 @@ void Player::ChangePlayerDir(XMVECTOR _vec)
 	if (XMVectorGetX(XMVector3Length(_vec)) != 0)
 	{
 		//上方向が0の移動ベクトル
-		XMVECTOR normalVelo = XMVectorSet(XMVectorGetX(_vec), 0,
-			XMVectorGetZ(_vec), 0);
+		XMVECTOR normalVelo = XMVectorSet(XMVectorGetX(_vec), 0, XMVectorGetZ(_vec), 0);
 		XMVECTOR v = XMVector3Dot(eyeDirection_, XMVector3Normalize(normalVelo));
 
 		float angle = XMConvertToDegrees(acos(XMVectorGetX(v)));
