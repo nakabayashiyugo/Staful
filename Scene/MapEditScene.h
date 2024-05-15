@@ -14,6 +14,8 @@ class MapEditScene
 	//マスの縦方向の量
 	int YSIZE;
 
+	
+
 
 	//元々のマスの情報
 	std::vector<std::vector<MATHDEDAIL>> math_origin_;
@@ -37,6 +39,15 @@ public:
 	void Release() override;
 
 	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
+
+
+//マウスの操作について
+private:
+	//マウスの位置
+	XMFLOAT3 mousePos;
+public:
+	//マウスの位置の代入
+	void MousePosSet();
 
 //コスト管理について
 private:
@@ -129,5 +140,18 @@ public:
 	void CheckCanTest();
 	//クリアしたかどうかのセッター
 	void SetIsClear(bool _isClear) { isClear_ = _isClear; }
+
+
+//とげとげについて
+private:
+	//とげとげマスを押した位置
+	XMFLOAT3 tgtgRouteMathDown_;
+	//とげとげマスを押してドラッグして話した位置
+	XMFLOAT3 tgtgRouteMathUp_;
+public:
+	//とげとげルートの設定
+	void TogetogeRouteSet();
+	//とげとげマスが別のマスに変わった時の要素の削除
+	void TogetogeElemDelete();
 };
 
