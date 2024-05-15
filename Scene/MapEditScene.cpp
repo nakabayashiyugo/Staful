@@ -16,6 +16,8 @@ const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"),
+	//マウス操作
+	mousePos_(0, 0, 0),
 	//コスト管理について
 	curCost_(0),
 	//マスの選択について
@@ -93,20 +95,10 @@ void MapEditScene::Update()
 	//カーソルが置かれてるマスの位置
 	static XMFLOAT3 selectMath;
 	
+	MousePosSet();
 
-	//マウスの位置
-	float mousePosX = Input::GetMousePosition().x;
-	float mousePosY = Input::GetMousePosition().y;
-
-	//x方向のマスの数
-	const int xsizeMax = XSIZE - 1;
-	//y方向のマスの数
-	const int ysizeMax = YSIZE - 1;
-	mousePosX -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
-	mousePosY -= ((-(math_[xsizeMax][ysizeMax].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
-
-	selectMath.x = (int)(mousePosX / MATHSIZE);
-	selectMath.y = ysizeMax - (int)(mousePosY / MATHSIZE);
+	selectMath.x = (int)(mousePos_.x / MATHSIZE);
+	selectMath.y = YSIZE - 1 - (int)(mousePos_.y / MATHSIZE);
 
 	//マウスの位置がマス目から出たら
 	if (selectMath.x < 0 || selectMath.x >= XSIZE ||
@@ -225,77 +217,10 @@ void MapEditScene::Update()
 	}
 
 
-	//とげとげマスでクリックして話したとき
-	if (Input::IsMuoseButtonUp(1))
-	{
-		if (tgtgRouteMathDown_.x != -1)
-		{
-			tgtgRouteMathUp_ = XMFLOAT3((int)mousePosX / MATHSIZE, YSIZE - 1 - (int)(mousePosY / MATHSIZE), 0);
+	//とげとげルート設定
+	TogetogeRouteSet();
 
-			auto itr = tTgtgRoute_.begin();
-
-			while (itr != tTgtgRoute_.end())
-			{
-				if (itr->initPos_.x == tgtgRouteMathDown_.x &&
-					itr->initPos_.y == tgtgRouteMathDown_.y)
-				{
-					break;
-				}
-				itr++;
-			}
-			//とげとげルートの太さ
-			const int tgtgRouteThick = 5;
-			//縦移動
-			if (abs(tgtgRouteMathUp_.x - tgtgRouteMathDown_.x) < abs(tgtgRouteMathUp_.y - tgtgRouteMathDown_.y))
-			{
-
-				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x / tgtgRouteThick;
-				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp_.y - tgtgRouteMathDown_.y);
-
-				itr->route_.position_ = math_[(int)tgtgRouteMathDown_.x][((int)tgtgRouteMathUp_.y + tgtgRouteMathDown_.y) / 2].mathPos_.position_;
-
-				if (((int)tgtgRouteMathUp_.y + (int)tgtgRouteMathDown_.y) % 2 != 0)
-				{
-					itr->route_.position_.y += (math_[0][0].mathPos_.scale_.y) / 2;
-				}
-				itr->destPos_.y = tgtgRouteMathUp_.y;
-				itr->destPos_.x = tgtgRouteMathDown_.x;
-			}
-			//横移動
-			else
-			{
-				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x * abs(tgtgRouteMathUp_.x - tgtgRouteMathDown_.x);
-				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y / tgtgRouteThick;
-
-				itr->route_.position_ = math_[((int)tgtgRouteMathUp_.x + (int)tgtgRouteMathDown_.x) / 2][(int)tgtgRouteMathDown_.y].mathPos_.position_;
-
-				if (((int)tgtgRouteMathUp_.x + (int)tgtgRouteMathDown_.x) % 2 != 0)
-				{
-					itr->route_.position_.x += (math_[0][0].mathPos_.scale_.x) / 2;
-				}
-				itr->destPos_.x = tgtgRouteMathUp_.x;
-				itr->destPos_.y = tgtgRouteMathDown_.y;
-			}
-
-			if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
-			{
-				tTgtgRoute_.erase(itr);
-			}
-		}
-		tgtgRouteMathDown_ = mathInitPos;
-	}
-	
-	//ルートがあるとげとげのマスが他のマスに変更になったとき
-	auto itr = tTgtgRoute_.begin();
-	while (itr != tTgtgRoute_.end())
-	{
-		if (math_[itr->initPos_.x][itr->initPos_.y].mathType_ != MATH_TOGETOGE)
-		{
-			tTgtgRoute_.erase(itr);
-			break;
-		}
-		itr++;
-	}
+	TogetogeElemDelete();
 }
 
 
@@ -383,6 +308,16 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		return TRUE;
 	}
 	return FALSE;
+}
+
+void MapEditScene::MousePosSet()
+{
+	//マウスの位置
+	mousePos_.x = Input::GetMousePosition().x;
+	mousePos_.y = Input::GetMousePosition().y;
+
+	mousePos_.x -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
+	mousePos_.y -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
 }
 
 void MapEditScene::Write()
@@ -827,8 +762,78 @@ void MapEditScene::CheckCanTest()
 
 void MapEditScene::TogetogeRouteSet()
 {
+	//とげとげマスでクリックして話したとき
+	if (Input::IsMuoseButtonUp(1))
+	{
+		if (tgtgRouteMathDown_.x != -1)
+		{
+			tgtgRouteMathUp_ = XMFLOAT3((int)mousePos_.x / MATHSIZE, YSIZE - 1 - (int)(mousePos_.y / MATHSIZE), 0);
+
+			auto itr = tTgtgRoute_.begin();
+
+			while (itr != tTgtgRoute_.end())
+			{
+				if (itr->initPos_.x == tgtgRouteMathDown_.x &&
+					itr->initPos_.y == tgtgRouteMathDown_.y)
+				{
+					break;
+				}
+				itr++;
+			}
+			//とげとげルートの太さ
+			const int tgtgRouteThick = 5;
+			//縦移動
+			if (abs(tgtgRouteMathUp_.x - tgtgRouteMathDown_.x) < abs(tgtgRouteMathUp_.y - tgtgRouteMathDown_.y))
+			{
+
+				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x / tgtgRouteThick;
+				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp_.y - tgtgRouteMathDown_.y);
+
+				itr->route_.position_ = math_[(int)tgtgRouteMathDown_.x][((int)tgtgRouteMathUp_.y + tgtgRouteMathDown_.y) / 2].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp_.y + (int)tgtgRouteMathDown_.y) % 2 != 0)
+				{
+					itr->route_.position_.y += (math_[0][0].mathPos_.scale_.y) / 2;
+				}
+				itr->destPos_.y = tgtgRouteMathUp_.y;
+				itr->destPos_.x = tgtgRouteMathDown_.x;
+			}
+			//横移動
+			else
+			{
+				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x * abs(tgtgRouteMathUp_.x - tgtgRouteMathDown_.x);
+				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y / tgtgRouteThick;
+
+				itr->route_.position_ = math_[((int)tgtgRouteMathUp_.x + (int)tgtgRouteMathDown_.x) / 2][(int)tgtgRouteMathDown_.y].mathPos_.position_;
+
+				if (((int)tgtgRouteMathUp_.x + (int)tgtgRouteMathDown_.x) % 2 != 0)
+				{
+					itr->route_.position_.x += (math_[0][0].mathPos_.scale_.x) / 2;
+				}
+				itr->destPos_.x = tgtgRouteMathUp_.x;
+				itr->destPos_.y = tgtgRouteMathDown_.y;
+			}
+
+			if (itr->route_.scale_.x <= 0 && itr->route_.scale_.y <= 0)
+			{
+				tTgtgRoute_.erase(itr);
+			}
+		}
+		tgtgRouteMathDown_ = mathInitPos;
+	}
 }
 
 void MapEditScene::TogetogeElemDelete()
 {
+	//ルートがあるとげとげのマスが他のマスに変更になったとき
+	auto itr = tTgtgRoute_.begin();
+	while (itr != tTgtgRoute_.end())
+	{
+		if (math_[itr->initPos_.x][itr->initPos_.y].mathType_ != MATH_TOGETOGE)
+		{
+			tTgtgRoute_.erase(itr);
+			break;
+		}
+		itr++;
+	}
 }

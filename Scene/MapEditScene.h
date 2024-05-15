@@ -44,7 +44,7 @@ public:
 //マウスの操作について
 private:
 	//マウスの位置
-	XMFLOAT3 mousePos;
+	XMFLOAT3 mousePos_;
 public:
 	//マウスの位置の代入
 	void MousePosSet();
