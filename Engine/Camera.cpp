@@ -98,6 +98,22 @@ void Camera::ShakeInit(SHAKETYPE _shakeType, float _vibTime, float _vibPower)
 	camShaker_->ShakeInit(&shakePos_, _shakeType, _vibTime, _vibPower);
 	camShaker_->SetIsShake(true);
 	XMStoreFloat3(&dirCamToTarget_, position_ - target_);
+
+	//dirCamToTarget‚Ì‚ü‚ð‚Æ‚é
+	//dirCamToTarget‚ð‰ñ“]‚³‚¹‚éŠp“x
+	const float targetRot = 90;
+	//‰ñ“]‚³‚¹‚éŠp“x‚ðŽ‚Á‚½‰ñ“]s—ñ
+	XMMATRIX rot = XMMatrixRotationY(XMConvertToRadians(targetRot));
+	//dirCamToTarget‚ÌtargetRot“x‰ñ“]‚³‚¹‚½ü‚ÌƒxƒNƒgƒ‹
+	XMFLOAT3 targetRotVec = XMFLOAT3(dirCamToTarget_.z, dirCamToTarget_.y, dirCamToTarget_.x);
+	//XMStoreFloat3(&targetRotVec, XMVector3Transform(XMLoadFloat3(&dirCamToTarget_), rot));
+
+	//dirCamToTarget‚Æ‚»‚Ì90“x‰ñ“]‚³‚¹‚½ü‚ÌŠOÏ‚ð‚Æ‚é
+	//‚»‚ê‚ªdirCamToTarget‚Ì‚ü‚É‚È‚é
+	XMStoreFloat3(&shakeDir_, XMVector3Cross(XMVector3Normalize(XMLoadFloat3(&dirCamToTarget_)), XMVector3Normalize(XMLoadFloat3(&targetRotVec))));
+	XMStoreFloat3(&shakeDir_, XMVector3Normalize(XMLoadFloat3(&shakeDir_)));
+
+	camShaker_->SetShaft(shakeDir_);
 }
 
 void Camera::CameraShake()
@@ -112,10 +128,7 @@ void Camera::CameraShake()
 			shakePos_.z - dirCamToTarget_.z);
 		target_ = XMLoadFloat3(&shakeTarget);
 		
-		XMStoreFloat3(&shakeDir_, XMVector3Cross(XMVector3Normalize(XMLoadFloat3(&dirCamToTarget_)), XMVector3Normalize(XMLoadFloat3(&dirCamToTarget_))));
-		shakePos_ = XMFLOAT3(shakePos_.x * shakeDir_.x,
-							shakePos_.y * shakeDir_.y,
-							shakePos_.z * shakeDir_.z);
+
 		position_ = XMLoadFloat3(&shakePos_);
 	}
 	

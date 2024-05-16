@@ -15,7 +15,7 @@ Shaker::Shaker()
 	shakePower_ = 0;			
 	isShake_ = false;
 	prevIsShake_ = false;
-
+	shaft_ = XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 Shaker::~Shaker()
@@ -51,6 +51,7 @@ void Shaker::ShakeUpdate()
 	XMVECTOR prevPosVec = XMLoadFloat3(&prevPosition_);
 	//retPos‚É’l“ü‚ê‚é
 	float ease = pEasing_->EaseInSine(moveCount);
+	shakeDir_ *= shaft_;
 	XMStoreFloat3(position_, (prevPosVec * shakeDir_) * ease + prevPosVec);
 
 	if (ease <= 0)

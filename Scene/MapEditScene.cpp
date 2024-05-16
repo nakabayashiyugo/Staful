@@ -216,10 +216,9 @@ void MapEditScene::Update()
 		}
 	}
 
-
 	//とげとげルート設定
 	TogetogeRouteSet();
-
+	//とげとげマスがほかのマスに変わった時の要素の削除
 	TogetogeElemDelete();
 }
 
