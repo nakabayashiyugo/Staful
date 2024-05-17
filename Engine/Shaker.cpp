@@ -8,6 +8,8 @@
 
 //振動の移動量を制限する値
 const float SHAKEDEC = 0.01f;
+//moveCountの初期値
+const float moveCountInit = 0;
 
 Shaker::Shaker()
 {	
@@ -40,23 +42,19 @@ void Shaker::ShakeInit(XMFLOAT3 *_position, SHAKETYPE _shakeType, float _vibTime
 void Shaker::ShakeUpdate()
 {
 	pTimer_->Update();
-	//camMoveCountの初期値
-	const float moveCountInit = 0;
-	//カメラの動きを制御するカウント
-	static float moveCount = moveCountInit;
 	//camMoveCountの毎フレーム足される値
 	const float moveCountPlus = 0.5f;
-	moveCount += moveCountPlus;
+	moveCount_ += moveCountPlus;
 	//prevPositionを入れるvector
 	XMVECTOR prevPosVec = XMLoadFloat3(&prevPosition_);
 	//retPosに値入れる
-	float ease = pEasing_->EaseInSine(moveCount);
+	float ease = pEasing_->EaseInSine(moveCount_);
 	shakeDir_ *= shaft_;
 	XMStoreFloat3(position_, (prevPosVec * shakeDir_) * ease + prevPosVec);
 
 	if (ease <= 0)
 	{
-		moveCount = moveCountInit;
+		moveCount_ = moveCountInit;
 		ShakeDirAssign();
 	}
 	if (pTimer_->isTimeUpped())
@@ -68,6 +66,8 @@ void Shaker::ShakeUpdate()
 
 void Shaker::ShakeDirAssign()
 {
+	//カメラの動きを制御するカウント
+	moveCount_ = moveCountInit;
 	srand(time(NULL));
 	
 	switch (shakeType_)

@@ -41,4 +41,11 @@ namespace Camera
 	//振動の初期化
 	void ShakeInit(SHAKETYPE _shakeType, float _vibTime, float _vibPower);
 	void CameraShake();
+
+	// 球面線形補間関数
+	// out   : 補間ベクトル（出力）
+	// start : 開始ベクトル
+	// end : 終了ベクトル
+	// t : 補間値（0～1）
+	XMVECTOR* SphereLinear(XMVECTOR* out, XMVECTOR* start, XMVECTOR* end, float t);
 };

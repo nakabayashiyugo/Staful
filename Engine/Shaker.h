@@ -22,6 +22,7 @@ private:
 	float shakeTime_;			//U“®‚·‚éŠÔ
 	float shakePower_;			//U“®‚Ì‹­‚³
 	bool isShake_, prevIsShake_;//U“®‚·‚é‚©‚Ç‚¤‚©
+	float moveCount_;			//U“®‚Ì•âŠÔ’l
 	XMVECTOR shaft_;			//U“®‚Ì²
 	Timer* pTimer_;
 	Easing* pEasing_;
@@ -49,8 +50,7 @@ public:
 	//U“®‚·‚é‚©‚Ç‚¤‚©‚ÌƒQƒbƒ^[
 	bool GetIsShake() { return isShake_; }
 
-	//U“®‚Ì²‚ÌƒZƒbƒ^[
-	void SetShaft(XMVECTOR _shaft){ shaft_ = _shaft; }
-	void SetShaft(XMFLOAT3 _shaft) { SetShaft(XMLoadFloat3(&_shaft)); }
+	//•âŠÔ’l‚ÌƒQƒbƒ^[
+	float GetMoveCount() { return moveCount_; }
 };
 

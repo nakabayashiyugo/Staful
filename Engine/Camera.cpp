@@ -98,22 +98,6 @@ void Camera::ShakeInit(SHAKETYPE _shakeType, float _vibTime, float _vibPower)
 	camShaker_->ShakeInit(&shakePos_, _shakeType, _vibTime, _vibPower);
 	camShaker_->SetIsShake(true);
 	XMStoreFloat3(&dirCamToTarget_, position_ - target_);
-
-	//dirCamToTargetの垂線をとる
-	//dirCamToTargetを回転させる角度
-	const float targetRot = 90;
-	//回転させる角度を持った回転行列
-	XMMATRIX rot = XMMatrixRotationY(XMConvertToRadians(targetRot));
-	//dirCamToTargetのtargetRot度回転させた線のベクトル
-	XMFLOAT3 targetRotVec = XMFLOAT3(dirCamToTarget_.z, dirCamToTarget_.y, dirCamToTarget_.x);
-	//XMStoreFloat3(&targetRotVec, XMVector3Transform(XMLoadFloat3(&dirCamToTarget_), rot));
-
-	//dirCamToTargetとその90度回転させた線の外積をとる
-	//それがdirCamToTargetの垂線になる
-	XMStoreFloat3(&shakeDir_, XMVector3Cross(XMVector3Normalize(XMLoadFloat3(&dirCamToTarget_)), XMVector3Normalize(XMLoadFloat3(&targetRotVec))));
-	XMStoreFloat3(&shakeDir_, XMVector3Normalize(XMLoadFloat3(&shakeDir_)));
-
-	camShaker_->SetShaft(shakeDir_);
 }
 
 void Camera::CameraShake()
@@ -122,6 +106,8 @@ void Camera::CameraShake()
 	{
 		//カメラ振動
 		camShaker_->ShakeUpdate();
+		float cnt = camShaker_->GetMoveCount();
+		SphereLinear(&position_, &position_, )
 		//カメラ振動中のtargetの位置
 		XMFLOAT3 shakeTarget = XMFLOAT3(shakePos_.x - dirCamToTarget_.x,
 			shakePos_.y - dirCamToTarget_.y,
@@ -132,4 +118,26 @@ void Camera::CameraShake()
 		position_ = XMLoadFloat3(&shakePos_);
 	}
 	
+}
+
+XMVECTOR* Camera::SphereLinear(XMVECTOR* out, XMVECTOR* start, XMVECTOR* end, float t)
+{
+	XMVECTOR s, e;
+	s = XMVector3Normalize(*start);
+	e = XMVector3Normalize(*end);
+
+	// 2ベクトル間の角度（鋭角側）
+	float angle = acos(XMVectorGetX(XMVector3Dot(s, e)));
+	// sinθ
+	float SinTh = sin(angle);
+	// 補間係数
+	float Ps = sin(angle * (1 - t));
+	float Pe = sin(angle * t);
+
+	*out = (Ps * s + Pe * e) / SinTh;
+
+	// 一応正規化して球面線形補間に
+	*out = XMVector3Normalize(*out);
+
+	return out;
 }
