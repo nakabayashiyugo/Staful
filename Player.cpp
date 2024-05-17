@@ -596,6 +596,19 @@ void Player::ShadowManagement()
 {
 	tShadow_.position_ = transform_.position_;
 	tShadow_.position_.y = playerHeight_;
+
+	//影のスケールの最大値
+	const float shadowScaleMax = 1.0f;
+	//影のスケールが最大値になるときのプレイヤーの高さ
+	const float scaleMaxPlayerHeight = playerHeight_;
+	//影のスケールの最小値
+	const float shadowScaleMin = 0.0f;
+	//影のスケールが最小値になるときのプレイヤーの高さ
+	const float scaleMinPlayerHeight = 10.0f;
+
+	
+	tShadow_.scale_.x = shadowScaleMax - ((transform_.position_.y - scaleMaxPlayerHeight) / (scaleMinPlayerHeight - scaleMaxPlayerHeight));
+	tShadow_.scale_.z = tShadow_.scale_.x;
 }
 
 void Player::SetAnimFramerate()
