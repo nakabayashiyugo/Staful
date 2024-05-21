@@ -76,7 +76,7 @@ void Shaker::ShakeDirAssign()
 	//その下でshakeDir*shaftをshakeDirに入れる
 	//それに強さを持たせる
 	//オブジェクトの振動の方向
-	shakeDir_ = XMVectorSet(rand() - RAND_MAX / 2, rand() - RAND_MAX / 2, rand() - RAND_MAX / 4, 0);
+	shakeDir_ = XMVectorSet(rand() - RAND_MAX / 2, rand() - RAND_MAX / 2, rand() - RAND_MAX / 2, 0);
 	
 	const XMVECTOR verticalShake = XMVectorSet(0, 1, 0, 0);
 	const XMVECTOR besideShake = XMVectorSet(1, 0, 0, 0);
