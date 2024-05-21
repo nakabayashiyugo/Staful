@@ -6,9 +6,10 @@ class Easing;
 
 enum SHAKETYPE
 {
-	TYPE_VERTICAL = 0,
-	TYPE_BESIDE,
-	TYPE_RANDOM,
+	TYPE_VERTICAL = 0,	//縦揺れ
+	TYPE_BESIDE,		//横揺れ
+	TYPE_RANDOM,		//ランダム揺れ
+	TYPE_BASIC,		//指定なし
 	TYPE_MAX,
 };
 
@@ -37,7 +38,7 @@ public:
 	//引数1 : 振動させたいオブジェクトのポジションのポインタ
 	//引数2 : 振動の時間
 	//引数3 : 振動の強さ
-	void ShakeInit(XMFLOAT3 *_position, SHAKETYPE _shakeType, float _vibTime, float _vibPower);
+	void ShakeInit(XMFLOAT3 *_position, float _vibTime, float _vibPower);
 	void ShakeUpdate();
 
 	//移動方向を決める
@@ -52,5 +53,12 @@ public:
 
 	//補間値のゲッター
 	float GetMoveCount() { return moveCount_; }
+
+	//振動の軸のセッター
+	void SetShaft(XMVECTOR _shaft) { shaft_ = _shaft; }
+	void SetShaft(XMFLOAT3 _shaft) { shaft_ = XMLoadFloat3(&_shaft); }
+
+	//振動の種類のセッター
+	void SetShakeType(SHAKETYPE _type) { shakeType_ = _type; }
 };
 

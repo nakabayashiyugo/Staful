@@ -94,10 +94,29 @@ XMMATRIX Camera::GetBillboardMatrix()
 
 void Camera::ShakeInit(SHAKETYPE _shakeType, float _vibTime, float _vibPower)
 {
+	//カメラの振動の方向決め
+	switch (_shakeType)
+	{
+	case TYPE_BESIDE:
+		camShaker_->SetShakeType(TYPE_BESIDE);
+		break;
+	case TYPE_VERTICAL:
+		camShaker_->SetShakeType(TYPE_BASIC);
+		//カメラの位置からカメラの見てるターゲットの位置までのベクトル
+		XMStoreFloat3(&dirCamToTarget_, target_ - position_);
+		//上のベクトルの90度回転させたベクトル
+		XMVECTOR rotateVec = XMVectorSet(dirCamToTarget_.z, dirCamToTarget_.y, dirCamToTarget_.x, 0);
+		//二つのベクトルの外積をとる
+		XMVECTOR cross = XMVector3Cross(XMLoadFloat3(&dirCamToTarget_), rotateVec);
+		cross = XMVectorSet(0, XMVectorGetY(cross), XMVectorGetZ(cross), 0);
+		//このベクトルを振動の軸とする
+		camShaker_->SetShaft(cross);
+	}
+
 	XMStoreFloat3(&shakePos_, position_);
-	camShaker_->ShakeInit(&shakePos_, _shakeType, _vibTime, _vibPower);
+	camShaker_->ShakeInit(&shakePos_, _vibTime, _vibPower);
 	camShaker_->SetIsShake(true);
-	XMStoreFloat3(&dirCamToTarget_, position_ - target_);
+	
 }
 
 void Camera::CameraShake()
@@ -107,11 +126,10 @@ void Camera::CameraShake()
 		//カメラ振動
 		camShaker_->ShakeUpdate();
 		float cnt = camShaker_->GetMoveCount();
-		SphereLinear(&position_, &position_, )
 		//カメラ振動中のtargetの位置
-		XMFLOAT3 shakeTarget = XMFLOAT3(shakePos_.x - dirCamToTarget_.x,
-			shakePos_.y - dirCamToTarget_.y,
-			shakePos_.z - dirCamToTarget_.z);
+		XMFLOAT3 shakeTarget = XMFLOAT3(shakePos_.x + dirCamToTarget_.x,
+			shakePos_.y + dirCamToTarget_.y,
+			shakePos_.z + dirCamToTarget_.z);
 		target_ = XMLoadFloat3(&shakeTarget);
 		
 
