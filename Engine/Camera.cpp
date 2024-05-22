@@ -26,10 +26,12 @@ void Camera::Initialize()
 	position_ = XMVectorSet(0, 3, -10, 0);	//カメラの位置
 	target_ = XMVectorSet(0, 0, 0, 0);	//カメラの焦点
 
-	//プロジェクション行列
-	projMatrix_ = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)800.0 / (FLOAT)600.0, 0.1f, 100.0f);
 	camShaker_ = new Shaker();
 	shakeDir_ = XMFLOAT3(1.0f, 1.0f, 1.0f);
+
+	//プロジェクション行列
+	projMatrix_ = XMMatrixPerspectiveFovLH(XM_PIDIV4, (FLOAT)800.0 / (FLOAT)600.0, 0.1f, 100.0f);
+	
 }
 
 //更新
@@ -42,6 +44,10 @@ void Camera::Update()
 	//（常にカメラの方を向くように回転させる行列。パーティクルでしか使わない）
 	billBoard_ = XMMatrixLookAtLH(XMVectorSet(0, 0, 0, 0), target_ - position_, XMVectorSet(0, 1, 0, 0));
 	billBoard_ = XMMatrixInverse(nullptr, billBoard_);
+
+	//カメラの位置からカメラの見てるターゲットの位置までのベクトル
+	XMVECTOR dir = target_ - position_;
+	XMStoreFloat3(&dirCamToTarget_, dir);
 }
 
 //位置を設定
@@ -102,8 +108,6 @@ void Camera::ShakeInit(SHAKETYPE _shakeType, float _vibTime, float _vibPower)
 		break;
 	case TYPE_VERTICAL:
 		camShaker_->SetShakeType(TYPE_BASIC);
-		//カメラの位置からカメラの見てるターゲットの位置までのベクトル
-		XMStoreFloat3(&dirCamToTarget_, target_ - position_);
 		//上のベクトルの90度回転させたベクトル
 		XMVECTOR rotateVec = XMVectorSet(dirCamToTarget_.z, dirCamToTarget_.y, dirCamToTarget_.x, 0);
 		//二つのベクトルの外積をとる

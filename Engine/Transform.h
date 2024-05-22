@@ -37,6 +37,24 @@ public:
 		
 };
 
+inline bool operator == (XMVECTOR p, XMVECTOR v)
+{
+	bool ret = false;
+	if (XMVectorGetX(p) == XMVectorGetX(v))
+	{
+		ret = true;
+	}
+	if (XMVectorGetY(p) == XMVectorGetY(v))
+	{
+		ret = true;
+	}
+	if (XMVectorGetY(p) == XMVectorGetY(v))
+	{
+		ret = true;
+	}
+	return ret;
+}
+
 inline XMFLOAT3 operator += (XMFLOAT3& p, const XMVECTOR& v)
 {
 	XMVECTOR pv = XMLoadFloat3(&p);
