@@ -42,6 +42,8 @@ const int normalMoveVectoMult = 2;
 const float fallSpeedInit = 0.0f;
 //ƒJƒƒ‰‚ÌU“®‚Ìí—Ş
 SHAKETYPE camShakeType;
+//ƒJƒƒ‰‚ÌU“®‚Ì‹­‚³
+const float camShakePower = 2.0f;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -267,8 +269,6 @@ void Player::CameraPosSet()
 
 void Player::CameraShakeInit()
 {
-	//ƒJƒƒ‰‚ÌU“®‚Ì‹­‚³
-	const float camShakePower = 1;
 	Camera::ShakeInit(camShakeType, hitStopTime_, camShakePower);
 	
 }
