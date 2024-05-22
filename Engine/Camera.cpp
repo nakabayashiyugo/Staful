@@ -137,25 +137,3 @@ void Camera::CameraShake()
 	}
 	
 }
-
-XMVECTOR* Camera::SphereLinear(XMVECTOR* out, XMVECTOR* start, XMVECTOR* end, float t)
-{
-	XMVECTOR s, e;
-	s = XMVector3Normalize(*start);
-	e = XMVector3Normalize(*end);
-
-	// 2ベクトル間の角度（鋭角側）
-	float angle = acos(XMVectorGetX(XMVector3Dot(s, e)));
-	// sinθ
-	float SinTh = sin(angle);
-	// 補間係数
-	float Ps = sin(angle * (1 - t));
-	float Pe = sin(angle * t);
-
-	*out = (Ps * s + Pe * e) / SinTh;
-
-	// 一応正規化して球面線形補間に
-	*out = XMVector3Normalize(*out);
-
-	return out;
-}
