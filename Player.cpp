@@ -65,6 +65,8 @@ Player::Player(GameObject* parent)
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
 	deadHeight_(-1.0f),
 	isReturn_(false),
+	operableFrames_(10),
+	onConvFrames_(0),
 
 	playerState_(STATE_IDLE), 
 	prevPlayerState_(STATE_DEAD), 
@@ -555,6 +557,13 @@ void Player::MathTypeEffect()
 	switch (standMath_.mathType_)
 	{
 	case MATH_CONVEYOR:
+		//コンベアに連続して乗っているフレーム数が
+		//コンベアマスに乗った時操作できるフレーム数を
+		//上回らない限りコンベアに乗ってる判定にしない
+		onConvFrames_++;
+		if (onConvFrames_ < operableFrames_) break;
+		onConvFrames_ = 0;
+
 		//立っているコンベアの向いている方向を入れる回転行列
 		XMMATRIX yrot = XMMatrixRotationY(XMConvertToRadians(-standMath_.mathPos_.rotate_.z));
 		//上の回転行列でconveryor_velocityの変える

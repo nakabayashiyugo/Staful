@@ -102,6 +102,10 @@ private:
 	float deadHeight_;
 	//スタートマスに戻っているか
 	bool isReturn_;
+	//コンベアマスに乗った時操作できるフレーム数
+	int operableFrames_;
+	//コンベアマスに何フレーム連続して乗っているか
+	int onConvFrames_;
 
 	//立っているマスの情報
 	MATHDEDAIL standMath_;

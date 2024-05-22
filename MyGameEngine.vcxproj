@@ -182,6 +182,7 @@
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Scene\BetweenScene.cpp" />
+    <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditScene.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
@@ -232,6 +233,7 @@
     <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene\BetweenScene.h" />
+    <ClInclude Include="Scene\ExpantionScene.h" />
     <ClInclude Include="Scene\MapEditScene.h" />
     <ClInclude Include="Scene\PlayScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />
