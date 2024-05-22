@@ -287,7 +287,7 @@ bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 void Player::PlayerOperation(){
 	if (playerState_ != STATE_DEAD){
 		//前後左右移動
-		if (Input::IsKey(DIK_W)){
+		if (Input::IsKeyDown(DIK_W)){
 			//移動距離
 			moveDir_ = moveFront;
 			playerState_ = STATE_WALK;
@@ -295,7 +295,7 @@ void Player::PlayerOperation(){
 				playerState_ = STATE_JAMP;
 			}
 		}
-		if (Input::IsKey(DIK_S)){
+		if (Input::IsKeyDown(DIK_S)){
 			//移動距離
 			moveDir_ = moveBack;
 			playerState_ = STATE_WALK;
@@ -303,7 +303,7 @@ void Player::PlayerOperation(){
 				playerState_ = STATE_JAMP;
 			}
 		}
-		if (Input::IsKey(DIK_A)){
+		if (Input::IsKeyDown(DIK_A)){
 			//移動距離
 			moveDir_ = moveLeft;
 			playerState_ = STATE_WALK;
@@ -311,7 +311,7 @@ void Player::PlayerOperation(){
 				playerState_ = STATE_JAMP;
 			}
 		}
-		if (Input::IsKey(DIK_D)){
+		if (Input::IsKeyDown(DIK_D)){
 			//移動距離
 			moveDir_ = moveRight;
 			playerState_ = STATE_WALK;
@@ -327,13 +327,13 @@ void Player::PlayerMove()
 	//移動先が壁だったら
 	if (WallCheck())
 	{
-		destPos_ = prevPos_;
 		//移動終了
+		destPos_ = prevPos_;
 		moveFinished_ = true;
 		prevPlayerState_ = STATE_IDLE;
 		return;
 	}
-	DestPosMathType();
+
 	//moveCountの毎秒増えていく値
 	const float cntUpdate = 0.03f;
 	moveCount_ += cntUpdate;
@@ -421,6 +421,10 @@ bool Player::WallCheck()
 			ret = true;
 		}
 	}
+	if (DestPosMathType() == MATH_WALL)
+	{
+		ret = true;
+	}
 	return ret;
 }
 
@@ -440,10 +444,10 @@ void Player::IdleUpdate()
 	prevPos_ = transform_.position_;
 	moveFinished_ = false;
 	moveDir_ = moveInit;
-	//playerの操作
-	PlayerOperation();
 	//立っているマスの効果
 	MathTypeEffect();
+	//playerの操作
+	PlayerOperation();
 }
 
 void Player::WalkUpdate()
@@ -557,7 +561,14 @@ void Player::MathTypeEffect()
 		XMVECTOR rotConvVec = XMVector3Transform(converyor_velocity, yrot);
 		//移動方向を上のベクトルにする
 		XMStoreFloat3(&moveDir_, rotConvVec);
-		playerState_ = STATE_CONVMOVE;
+		if (DestPosMathType() != MATH_WALL)
+		{
+			playerState_ = STATE_CONVMOVE;
+		}
+		else
+		{
+			destPos_ = prevPos_;
+		}
 		break;
 	case MATH_GOAL:
 		stageState_ = STATE_GOAL;
