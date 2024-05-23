@@ -4,6 +4,7 @@
 #include "../Scene/PlayScene.h"
 #include "../Scene/MapEditScene.h"
 #include "../Scene/SceneTransition.h"
+#include "../Scene/ExpantionScene.h"
 #include "Model.h"
 
 SceneManager::SceneManager(GameObject* parent)
@@ -48,6 +49,9 @@ void SceneManager::Update()
 			break;
 		case SCENE_ID_TITLE:
 			Instantiate<TitleScene>(this);
+			break;
+		case SCENE_ID_EXPLANATION:
+			Instantiate<ExpantionScene>(this);
 			break;
 		case SCENE_ID_RESULT:
 			Instantiate<ResultScene>(this);

@@ -1,5 +1,5 @@
 #include "TitleScene.h"
-#include "SceneTransition.h"
+#include "ExpantionScene.h"
 
 #include "../Button.h"
 
@@ -45,7 +45,7 @@ void TitleScene::Update()
 	if (pStartButton_->GetIsReleased())
 	{
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
-		pSceneManager->ChangeScene(SCENE_ID_TRANSITION);
+		pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
 	}
 			
 }
