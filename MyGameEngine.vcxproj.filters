@@ -107,6 +107,9 @@
     <ClCompile Include="Scene\ExpantionScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="Engine\Fade.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Simple2D.hlsl">
@@ -210,6 +213,9 @@
     </ClInclude>
     <ClInclude Include="Scene\ExpantionScene.h">
       <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\Fade.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -66,6 +66,8 @@ void TitleScene::Draw()
 	tStaful_.position_ = sPos;
 	tStaful_.scale_ = sScale;
 
+	Image::SetAlpha(hStaful_, );
+
 	Image::SetTransform(hStaful_, tStaful_);
 	Image::Draw(hStaful_);
 }

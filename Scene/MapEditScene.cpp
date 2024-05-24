@@ -13,6 +13,15 @@
 
 //マスの位置の初期値
 const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
+//それぞれのコスト
+const int floorCost = 0;
+const int wallCost = 1;
+const int holeCost = 1;
+const int converyerCost = 1;
+const int togetogeCost = 1;
+const int pitfallCost = 1;
+const int startCost = 0;
+const int goalCost = 0;
 
 MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"),
@@ -55,7 +64,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//それぞれのマスのコスト設定
 	costs_.resize(MATH_MAX);
 
-	costs_ = { 0, 1, 1, 1, 1, 1, 0, 0 };
+	costs_ = { floorCost, wallCost, holeCost, converyerCost, togetogeCost, pitfallCost, startCost, goalCost };
 	//障害物のおける制限調整
 	int costLimitFirst;
 	int costLimitPlus;

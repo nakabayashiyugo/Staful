@@ -161,6 +161,7 @@
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BillBoard.cpp" />
     <ClCompile Include="Engine\Easing.cpp" />
+    <ClCompile Include="Engine\Fade.cpp" />
     <ClCompile Include="Engine\FbxParts.cpp" />
     <ClCompile Include="Engine\Shaker.cpp" />
     <ClCompile Include="Engine\Text.cpp" />
@@ -212,6 +213,7 @@
     <ClInclude Include="Engine\Audio.h" />
     <ClInclude Include="Engine\BillBoard.h" />
     <ClInclude Include="Engine\Easing.h" />
+    <ClInclude Include="Engine\Fade.h" />
     <ClInclude Include="Engine\FbxParts.h" />
     <ClInclude Include="Engine\Shaker.h" />
     <ClInclude Include="Engine\Text.h" />

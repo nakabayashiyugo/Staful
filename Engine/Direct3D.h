@@ -13,6 +13,7 @@
 
 const int WINDOW_WIDTH = 1200;  //ウィンドウの幅
 const int WINDOW_HEIGHT = 800; //ウィンドウの高さ
+const int FPS = 60;				//FPS
 
 namespace Direct3D
 {
