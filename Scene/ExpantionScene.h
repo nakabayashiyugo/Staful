@@ -23,6 +23,13 @@ class ExpantionScene
 
 	//ボタン番号
 	int buttonNum_;
+
+	//現在画面に映し出されているゲームの説明の番号
+	float curExplanNum_;
+	int destPos_, prevPos_;
+
+	//説明画像が移動中か
+	bool isMoving_;
 public:
 	ExpantionScene(GameObject* parent);
 
@@ -41,4 +48,10 @@ public:
 	//ボタンの初期化
 	void ButtonInit();
 	int GetButtonNum() { return buttonNum_; }
+
+	//説明画像の位置決め
+	void ExplanPositioning();
+
+	//説明画像移動
+	void ExplanMove();
 };

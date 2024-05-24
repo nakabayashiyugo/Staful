@@ -1,6 +1,7 @@
 #include "Button.h"
 #include "Scene/SceneTransition.h"
 #include "Scene/MapEditScene.h"
+#include "Scene/ExpantionScene.h"
 
 #include "Engine/Image.h"
 #include "Engine/Input.h"
@@ -8,7 +9,7 @@
 #include "Engine/SceneManager.h"
 
 Button::Button(GameObject* parent)
-	: GameObject(parent, "Button"), isClick_(false),isRelease_(false),
+	: GameObject(parent, "Button"), isClick_(false), isRelease_(false),
 	hPict_(-1), isCanPush_(true), isCursorMatched_(false), isDisp_(true)
 {
 	//親クラスがMapEditSceneなら
@@ -17,6 +18,11 @@ Button::Button(GameObject* parent)
 		//自身のオブジェクトネームに番号を付ける
 		MapEditScene* pMES = (MapEditScene*)FindObject("MapEditScene");
 		this->objectName_ += std::to_string(pMES->GetButtonNum());
+	}
+	if (pParent_->GetObjectName() == "ExpantionScene")
+	{
+		ExpantionScene* pES = (ExpantionScene*)FindObject("ExpantionScene");
+		this->objectName_ += std::to_string(pES->GetButtonNum());
 	}
 }
 
@@ -60,9 +66,12 @@ void Button::Update()
 			{
 				isClick_ = true;
 			}
-			if (Input::IsMuoseButtonUp(0))
+			else
 			{
 				isClick_ = false;
+			}
+			if (Input::IsMuoseButtonUp(0))
+			{
 				isRelease_ = true;
 			}
 		}
