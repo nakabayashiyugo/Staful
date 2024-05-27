@@ -10,6 +10,7 @@
 #include "../Engine/SceneManager.h"
 #include "../Engine/VFX.h"
 #include "../Engine/BillBoard.h"
+#include "../Engine/Fade.h"
 
 TitleScene::TitleScene(GameObject* parent)
 	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1)
@@ -37,6 +38,8 @@ void TitleScene::Initialize()
 	pStartButton_->Instantiate<Button>(this);
 	pStartButton_ = (Button*)FindObject("Button");
 	pStartButton_->SetPictNum(hStartButton_);
+
+
 }
 
 void TitleScene::Update()
@@ -44,14 +47,26 @@ void TitleScene::Update()
 	//スタートボタンを押して離したら
 	if (pStartButton_->GetIsReleased())
 	{
-		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
-		pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
+		fade_ = new Fade(TYPE_FADEOUT);
+	}
+	if (fade_ != nullptr)
+	{
+		fade_->Update();
+		if (fade_->GetIsFinished())
+		{
+			SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
+			pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
+		}
 	}
 			
 }
 
 void TitleScene::Draw()
 {
+	if (fade_ != nullptr)
+	{
+		fade_->Draw();
+	}
 	//スタートボタンのトランスフォーム
 	const XMFLOAT3 sbPos = XMFLOAT3(0.0f, -0.1f, 0.0f);
 	const XMFLOAT3 sbScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
@@ -66,7 +81,6 @@ void TitleScene::Draw()
 	tStaful_.position_ = sPos;
 	tStaful_.scale_ = sScale;
 
-	Image::SetAlpha(hStaful_, );
 
 	Image::SetTransform(hStaful_, tStaful_);
 	Image::Draw(hStaful_);

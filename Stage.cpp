@@ -18,8 +18,6 @@
 
 const int MAKEHOLETIME = 1;
 
-const int FPS = 60;
-
 Stage::Stage(GameObject* parent)
 	: GameObject(parent, "Stage"), isStandPitfall_(false),
 	tgtgGivePos_(0, 0, 0)

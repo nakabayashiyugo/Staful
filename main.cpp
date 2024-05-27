@@ -27,8 +27,6 @@
 const char* WIN_CLASS_NAME = "SampleGame";  //ウィンドウクラス名
 const char* GAME_TITLE = "サンプルゲーム";
 
-const int FPS = 60;
-
 RootJob* pRootJob = nullptr;
 
 HINSTANCE ghInstance;

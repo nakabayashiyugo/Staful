@@ -7,8 +7,7 @@ enum FADETYPE
     TYPE_FADEOUT,       //フェードアウト
 };
 
-class Fade :
-    public GameObject
+class Fade
 {
     //画像番号
     int hFade_;
@@ -27,15 +26,18 @@ class Fade :
     //フェードが終わったか
     bool isFinished_;
 public:
-    Fade(GameObject* parent);
+    Fade(FADETYPE _fadeType);
     ~Fade();
 
-    void Initialize() override;
-    void Update() override;
-    void Draw() override;
-    void Release() override;
+    void Initialize();
+    void Update();
+    void Draw();
+    void Release();
 
     float GetAlpha() { return alpha_; }
     bool GetIsFinished() { return isFinished_; }
+
+    //フェードのタイプのセッター
+    void SetFadeType(FADETYPE _fadeType) { fadeType_ = _fadeType; }
 };
 

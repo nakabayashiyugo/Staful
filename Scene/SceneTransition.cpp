@@ -8,7 +8,6 @@
 #include "../Engine/Image.h"
 #include "../Engine/Input.h"
 
-const int FPS = 60;
 const int saveFileName1 = 1, saveFileName2 = 2;
 
 SceneTransition::SceneTransition(GameObject* parent)

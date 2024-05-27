@@ -1,7 +1,6 @@
 #include <string>
 #include "Engine/GameObject.h"
 
-const int FPS = 60;
 
 class Timer
 {

@@ -8,7 +8,6 @@
 #include "../Engine/Easing.h"
 
 const float PIE = 3.141592;
-const int FPS = 60;
 const int moveUpdate = 5;
 
 BetweenScene::BetweenScene(GameObject* parent)

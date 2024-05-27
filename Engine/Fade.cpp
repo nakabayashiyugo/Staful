@@ -7,9 +7,10 @@
 //^‚ÁˆÃ‚É‚È‚é‚Æ‚«‚Ìalpha’l
 const int alphaMax = 255 * 2;
 
-Fade::Fade(GameObject* parent) 
-	: GameObject(parent, "Fade"), hFade_(-1), fadeSpeed_(1)
+Fade::Fade(FADETYPE _fadeType) :hFade_(-1), fadeSpeed_(0.5f)
 {
+	fadeType_ = _fadeType;
+	Initialize();
 }
 
 Fade::~Fade()
@@ -35,6 +36,7 @@ void Fade::Update()
 	if (alpha_ >= alphaMax)
 	{
 		alpha_ = alphaMax;
+		isFinished_ = true;
 	}
 }
 
