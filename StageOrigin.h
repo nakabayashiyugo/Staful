@@ -46,6 +46,8 @@ protected:
 	std::vector<std::vector<MATHDEDAIL>> math_;
 	//とげとげが移動する範囲
 	std::vector<TOGETOGEROUTE> tTgtgRoute_;
+	//ファイルネームの基本
+	std::vector<std::string> fileNameInit_;
 
 	SceneTransition* pST;
 
@@ -55,8 +57,8 @@ protected:
 
 	//ゲームをプレイ中に保存するファイルの入ってるフォルダ名
 	std::string saveFolderName = "SaveFile\\";
-
 public:
+	StageOrigin();
 	//マスのサイズ変更
 	void Math_Resize(int _xsize, int _zsize, std::vector<std::vector<MATHDEDAIL>> *_math)
 	{

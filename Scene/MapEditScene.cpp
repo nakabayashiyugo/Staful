@@ -468,16 +468,17 @@ void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
 void MapEditScene::ButtonInit()
 {
 	//マス選択ボタンのファイルネーム指定
-	std::string buttonName[MATH_MAX] =
+	std::string buttonName[MATH_MAX];
+	for(int i = 0; i < MATH_MAX; i++)
 	{
-		"Button_Delete.png",
-		"Button_Wall.png",
-		"Button_Hole.png",
-		"Button_Conveyor.png",
-		"Button_Togetoge.png",
-		"Button_PitFall.png",
-		"Button_Start.png",
-		"Button_Goal.png",
+		if (i == (int)MATH_FLOOR)
+		{
+			buttonName[i] = "Button_Delete.png";
+		}
+		else
+		{
+			buttonName[i] = "Button_" + fileNameInit_[i] + ".png";
+		}
 	};
 	//その他のボタン
 	//完了ボタン
@@ -521,6 +522,7 @@ void MapEditScene::ButtonInit()
 	const int buttonInitNum = 1;
 	//ボタンのオブジェクトネーム
 	std::string buttonStr;
+
 	for (buttonNum_ = buttonInitNum; buttonNum_ < MATH_MAX; buttonNum_++)
 	{
 		pMathButton_[buttonNum_]->Instantiate<Button>(this);
@@ -641,16 +643,10 @@ void MapEditScene::ExpantionDraw()
 void MapEditScene::MathInit()
 {
 	//マスの画像ロード
-	std::string filename[MATH_MAX] =
+	std::string filename[MATH_MAX];
+	for(int i = 0; i < MATH_MAX; i++)
 	{
-		"Math_Floor.png",
-		"Math_Wall.png",
-		"MATH_Hole.png",
-		"Math_Conveyor.png",
-		"Math_Togetoge.png",
-		"Math_PitFall.png",
-		"Math_Start.png",
-		"Math_Goal.png",
+		filename[i] = "Math_" + fileNameInit_[i] + ".png";
 	};
 	for (int i = 0; i < MATH_MAX; i++)
 	{

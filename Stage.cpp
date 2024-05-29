@@ -56,18 +56,14 @@ Stage::~Stage()
 
 void Stage::Initialize()
 {
-	std::string modelName[MATH_MAX] =
+	//モデルファイルネーム
+	std::string modelName[MATH_MAX];
+	for (int i = 0; i < MATH_MAX; i++)
 	{
-		"Block_Floor.fbx",
-		"Block_Wall.fbx",
-		"Block_Holl.fbx",
-		"Block_Converyor.fbx",
-		"Block_Floor.fbx",
-		"Block_Crack.fbx",
-		"Block_Start.fbx",
-		"Block_Goal.fbx"
+		modelName[i] = "Block_" + fileNameInit_[i] + ".fbx";
 	};
-	std::string fname_base = "Assets\\";
+
+	std::string fname_base = "Assets\\Block\\";
 	//モデルデータのロード
 	for (int i = 0; i < MATH_MAX; i++)
 	{

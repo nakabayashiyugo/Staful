@@ -3,7 +3,6 @@
 
 class Button;
 class BillBoard;
-class Fade;
 
 class TitleScene
 	:public GameObject
@@ -14,8 +13,6 @@ class TitleScene
 	Transform tStaful_;
 
 	Button* pStartButton_;
-
-	Fade* fade_;
 public:
 	TitleScene(GameObject* parent);
 

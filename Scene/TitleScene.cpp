@@ -47,26 +47,13 @@ void TitleScene::Update()
 	//スタートボタンを押して離したら
 	if (pStartButton_->GetIsReleased())
 	{
-		fade_ = new Fade(TYPE_FADEOUT);
-	}
-	if (fade_ != nullptr)
-	{
-		fade_->Update();
-		if (fade_->GetIsFinished())
-		{
-			SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
-			pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
-		}
-	}
-			
+		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
+		pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
+	}	
 }
 
 void TitleScene::Draw()
 {
-	if (fade_ != nullptr)
-	{
-		fade_->Draw();
-	}
 	//スタートボタンのトランスフォーム
 	const XMFLOAT3 sbPos = XMFLOAT3(0.0f, -0.1f, 0.0f);
 	const XMFLOAT3 sbScale = XMFLOAT3(1.0f, 1.0f, 1.0f);
