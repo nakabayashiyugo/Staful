@@ -15,6 +15,7 @@ enum MATHTYPE
 	MATH_CONVEYOR,	//コンベア
 	MATH_TOGETOGE,	//とげとげのやつ
 	MATH_PITFALL,	//落とし穴
+	MATH_TIMELIMITDEC,	//制限時間減る
 	MATH_START,		//スタートマス
 	MATH_GOAL,		//ゴールマス
 	MATH_MAX,

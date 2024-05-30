@@ -9,6 +9,7 @@ StageOrigin::StageOrigin()
 		"Conveyor",
 		"Togetoge",
 		"PitFall",
+		"TimeLimitDec",
 		"Start",
 		"Goal"
 	};

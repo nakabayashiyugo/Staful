@@ -20,6 +20,7 @@ const int holeCost = 1;
 const int converyerCost = 1;
 const int togetogeCost = 1;
 const int pitfallCost = 1;
+const int timeLimitDecCost = 1;
 const int startCost = 0;
 const int goalCost = 0;
 
@@ -64,7 +65,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//それぞれのマスのコスト設定
 	costs_.resize(MATH_MAX);
 
-	costs_ = { floorCost, wallCost, holeCost, converyerCost, togetogeCost, pitfallCost, startCost, goalCost };
+	costs_ = { floorCost, wallCost, holeCost, converyerCost, togetogeCost, pitfallCost, timeLimitDecCost, startCost, goalCost };
 	//障害物のおける制限調整
 	int costLimitFirst;
 	int costLimitPlus;
@@ -606,16 +607,17 @@ void MapEditScene::ButtonInit()
 void MapEditScene::ExpantionInit()
 {
 	//マスの説明のファイルネーム
-	std::string expantionName[MATH_MAX] =
+	std::string expantionName[MATH_MAX];
+	for(int i = 0; i < MATH_MAX; i++)
 	{
-		"",
-		"Expantion_Wall.png",
-		"Expantion_Hole.png",
-		"Expantion_Conveyor.png",
-		"Expantion_Togetoge.png",
-		"Expantion_PitFall.png",
-		"Expantion_Start.png",
-		"Expantion_Goal.png",
+		if (i == (int)MATH_FLOOR)
+		{
+			expantionName[i] = "";
+		}
+		else
+		{
+			expantionName[i] = "Expantion_" + fileNameInit_[i] + ".png";
+		}
 	};
 	//マスの説明の画像が入ってるフォルダ名
 	std::string folderName = "Assets\\MathExpantion\\";
