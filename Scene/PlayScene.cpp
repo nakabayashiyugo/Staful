@@ -29,10 +29,11 @@ PlayScene::PlayScene(GameObject* parent)
 
 void PlayScene::Initialize()
 {
-	pStage_->Instantiate<Stage>(this);
 	pPlayer_->Instantiate<Player>(this);
-	pStage_ = (Stage*)FindObject("Stage");
+	pStage_->Instantiate<Stage>(this);
 	pPlayer_ = (Player*)FindObject("Player");
+	pStage_ = (Stage*)FindObject("Stage");
+	
 }
 
 void PlayScene::Update()
@@ -147,7 +148,7 @@ MATHDEDAIL PlayScene::GetPlayerStandMath()
 	MATHTYPE retMathInit = MATH_FLOOR;
 	Transform retTransformInit;
 	retMath = { retMathInit, retTransformInit };
-	if (pPlayer_ == nullptr)
+	if (pPlayer_ == nullptr || pPlayer_->GetPlayerState() != STATE_IDLE)
 	{
 		return retMath;
 	}

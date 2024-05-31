@@ -56,4 +56,6 @@ public:
 	//プレイヤーの高さのゲッター
 	int GetPlayerHeight() { return playerHeight_; }
 
+	Stage* GetStagePointer() { return pStage_; }
+
 };

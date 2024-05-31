@@ -3,6 +3,13 @@
 class PlayScene;
 class Togetoge;
 
+struct TimeLimitDecElem
+{
+	int x;
+	int y;
+	bool isStand = false;	//このマスにプレイヤーが立ったことがあるか
+};
+
 class Stage
 	:public GameObject, StageOrigin
 {
@@ -14,7 +21,10 @@ class Stage
 	PlayScene* pPlayScene_;
 
 	std::vector<Togetoge*> pTgtg_;
+	//落とし穴
 	std::vector<std::vector<int>> makeHoleTimes_;
+	//制限時間短くするやつ
+	std::vector<TimeLimitDecElem> timeLimitDecs_;
 
 	XMFLOAT3 tgtgGivePos_;
 public:
@@ -53,6 +63,11 @@ public:
 		}
 		return XMFLOAT3();
 	}
+
+	//引数で指定された位置の制限時間減らすマスにプレイヤーが立ったことがあるか
+	bool IsTimeLimitDecCheck(int _x, int _y);
+	//引数で指定された位置の制限時間減らすマスのisStandのセッター
+	void SetIsStand(int _x, int _y, bool _isStand);
 
 	void Write();
 };

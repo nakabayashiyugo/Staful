@@ -44,6 +44,8 @@ const float fallSpeedInit = 0.0f;
 SHAKETYPE camShakeType;
 //カメラの振動の強さ
 const float camShakePower = 2.0f;
+//制限時間減らすマスの減る時間
+const float decTime = 5.0f;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -146,8 +148,6 @@ void Player::Initialize()
 
 void Player::Update()
 {
-	Stage* pStage = (Stage*)FindObject("Stage");
-	
 	switch (stageState_)
 	{
 	case STATE_START:
@@ -550,6 +550,7 @@ void Player::ReturnToStartMath()
 
 void Player::MathTypeEffect()
 {
+	Stage* pStage = pPlayScene_->GetStagePointer();
 	//コンベアによって移動する方向
 	const XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
 	//自分の立っているマスの情報
@@ -584,6 +585,13 @@ void Player::MathTypeEffect()
 		break;
 	case MATH_HOLE:
 		playerState_ = STATE_FALL;
+		break;
+	case MATH_TIMELIMITDEC:
+		if (!pStage->IsTimeLimitDecCheck(transform_.position_.x, transform_.position_.z))
+		{
+			pTimer_->SetCurTime(pTimer_->GetCurTime() + decTime);
+			pStage->SetIsStand(transform_.position_.x, transform_.position_.z, true);
+		}
 		break;
 	default:break;
 	}

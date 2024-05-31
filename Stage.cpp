@@ -78,6 +78,22 @@ void Stage::Initialize()
 		tgtgGivePos_ = tTgtgRoute_[i].initPos_;
 		pTgtg_[i]->Instantiate<Togetoge>(this);
 	}
+
+	//êßå¿éûä‘å∏ÇÁÇ∑É}ÉXÇ™âΩå¬Ç†ÇÈÇ©
+	for (int i = 0; i < math_.size(); i++)
+	{
+		for (int j = 0; j < math_[i].size(); j++)
+		{
+			if (math_[i][j].mathType_ == MATH_TIMELIMITDEC)
+			{
+				TimeLimitDecElem tlde;
+				tlde.x = i;
+				tlde.y = j;
+				tlde.isStand = false;
+				timeLimitDecs_.push_back(tlde);
+			}
+		}
+	}
 }
 
 
@@ -120,7 +136,7 @@ void Stage::Draw()
 			case MATH_WALL :
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
-				mathTrans.position_.y = 1;
+				mathTrans.position_.y += 1;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
@@ -133,7 +149,7 @@ void Stage::Draw()
 			case MATH_TOGETOGE:
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
-				mathTrans.position_.y = 1;
+				mathTrans.position_.y += 1;
 				break;
 			case MATH_PITFALL:
 				if (makeHoleTimes_[x][z] >= FPS * MAKEHOLETIME / 2)
@@ -146,19 +162,30 @@ void Stage::Draw()
 					Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 					Model::Draw(hModel_[math_[x][z].mathType_]);
 				}
-
+				break;
+			case MATH_TIMELIMITDEC:
+				if (IsTimeLimitDecCheck(x, z))
+				{
+					Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
+					Model::Draw(hModel_[math_[x][z].mathType_]);
+				}
+				else
+				{
+					Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
+					Model::Draw(hModel_[MATH_FLOOR]);
+				}
 				break;
 			case MATH_START:
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
-				mathTrans.position_.y = 1;
+				mathTrans.position_.y += 1;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_GOAL:
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);
-				mathTrans.position_.y = 1;
+				mathTrans.position_.y += 1;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
@@ -176,6 +203,30 @@ void Stage::SetBlock(int x, int z, MATHTYPE _type)
 {
 	math_.at(x).at(z).mathType_ = _type;
 	assert(_type <= MATHTYPE::MATH_MAX);
+}
+
+bool Stage::IsTimeLimitDecCheck(int _x, int _y)
+{
+	bool ret = false;
+	for (int i = 0; i < timeLimitDecs_.size(); i++)
+	{
+		if (timeLimitDecs_[i].x == _x && timeLimitDecs_[i].y == _y)
+		{
+			ret = timeLimitDecs_[i].isStand;
+		}
+	}
+	return ret;
+}
+
+void Stage::SetIsStand(int _x, int _y, bool _isStand)
+{
+	for (int i = 0; i < timeLimitDecs_.size(); i++)
+	{
+		if (timeLimitDecs_[i].x == _x && timeLimitDecs_[i].y == _y)
+		{
+			timeLimitDecs_[i].isStand = _isStand;
+		}
+	}
 }
 
 void Stage::Write()
