@@ -25,6 +25,8 @@ enum STAGE_STATE
 	STATE_FAILURE,
 };
 
+//プレイヤーの可能な移動方向の数
+const int possiMoveDirNum = 4;
 
 class Player
 	:public GameObject, StageOrigin
@@ -84,6 +86,8 @@ private:
 	float moveCntUpdate_;
 	//落ちる速度
 	float fallSpeed_;
+	//移動が可能な方向
+	XMFLOAT3 possiMoveDir_[possiMoveDirNum];
 	//移動方向
 	XMFLOAT3 moveDir_;
 	//移動先の位置
@@ -154,6 +158,8 @@ public:
 	PLAYER_STATE GetPlayerState() { return playerState_; }
 	//ゲームの進行度のステートのゲッター
 	STAGE_STATE GetStageState() { return stageState_; }
+
+	void PossiMoveDirInit();
 	
 
 //影について

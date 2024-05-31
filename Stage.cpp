@@ -175,6 +175,10 @@ void Stage::Draw()
 					Model::Draw(hModel_[MATH_FLOOR]);
 				}
 				break;
+			case MATH_CONFUSION:
+				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
+				Model::Draw(hModel_[math_[x][z].mathType_]);
+				break;
 			case MATH_START:
 				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
 				Model::Draw(hModel_[MATH_FLOOR]);

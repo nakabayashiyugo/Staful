@@ -21,6 +21,7 @@ const int converyerCost = 1;
 const int togetogeCost = 1;
 const int pitfallCost = 1;
 const int timeLimitDecCost = 1;
+const int confusionCost = 1;
 const int startCost = 0;
 const int goalCost = 0;
 
@@ -65,7 +66,16 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//それぞれのマスのコスト設定
 	costs_.resize(MATH_MAX);
 
-	costs_ = { floorCost, wallCost, holeCost, converyerCost, togetogeCost, pitfallCost, timeLimitDecCost, startCost, goalCost };
+	costs_ = { floorCost, 
+		wallCost, 
+		holeCost, 
+		converyerCost, 
+		togetogeCost, 
+		pitfallCost, 
+		timeLimitDecCost,
+		confusionCost,
+		startCost, 
+		goalCost };
 	//障害物のおける制限調整
 	int costLimitFirst;
 	int costLimitPlus;

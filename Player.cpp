@@ -58,10 +58,10 @@ Player::Player(GameObject* parent)
 	moveFinished_(false),
 	moveCount_(moveCountInit),
 	moveCntUpdate_(moveCntUpdateInit),
-	moveDir_(0, 0, 0), 
-	destPos_(0, 0, 0), 
+	moveDir_(0, 0, 0),
+	destPos_(0, 0, 0),
 	prevPos_(0, 0, 0),
-	gravity_(0, -0.0007f, 0), 
+	gravity_(0, -0.0007f, 0),
 	gravityAcce_(gravity_.y),
 	velocity_(XMVectorSet(0, 0, 0, 0)),
 	eyeDirection_(XMVectorSet(0, 0, 1, 0)),
@@ -70,22 +70,22 @@ Player::Player(GameObject* parent)
 	operableFrames_(10),
 	onConvFrames_(0),
 
-	playerState_(STATE_IDLE), 
-	prevPlayerState_(STATE_DEAD), 
+	playerState_(STATE_IDLE),
+	prevPlayerState_(STATE_DEAD),
 	stageState_(STATE_START),
 
 	//影について
 	hShadow_(-1),
 
 	//画像に関する変数の初期化
-	hFrame_(-1), 
-	hFrameOutline_(-1), 
-	hGage_(-1), 
+	hFrame_(-1),
+	hFrameOutline_(-1),
+	hGage_(-1),
 	hTime_(-1),
 	gameTime_(30),
 
 	//ヒットストップに関する変数の初期化
-	hitStopTime_(0.2f), 
+	hitStopTime_(0.2f),
 	isHitStop_(false),
 	pHitStopTimer_(nullptr),
 	isCamShake_(true),
@@ -120,6 +120,7 @@ Player::Player(GameObject* parent)
 			}
 		}
 	}
+	PossiMoveDirInit();
 }
 
 void Player::Initialize()
@@ -286,12 +287,25 @@ bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 		_pos.z  >= 0 && _pos.z < ZSIZE;
 }
 
+void Player::PossiMoveDirInit()
+{
+	possiMoveDir_[0] = moveFront;
+	possiMoveDir_[1] = moveBack;
+	possiMoveDir_[2] = moveRight;
+	possiMoveDir_[3] = moveLeft;
+}
+
 void Player::PlayerOperation(){
+	//possiMoveDir_のそれぞれの方向の要素数
+	const int FRONT = 0;
+	const int BACK = 1;
+	const int RIGHT = 2;
+	const int LEFT = 3;
 	if (playerState_ != STATE_DEAD){
 		//前後左右移動
 		if (Input::IsKeyDown(DIK_W)){
 			//移動距離
-			moveDir_ = moveFront;
+			moveDir_ = possiMoveDir_[FRONT];
 			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
@@ -299,7 +313,7 @@ void Player::PlayerOperation(){
 		}
 		if (Input::IsKeyDown(DIK_S)){
 			//移動距離
-			moveDir_ = moveBack;
+			moveDir_ = possiMoveDir_[BACK];
 			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
@@ -307,7 +321,7 @@ void Player::PlayerOperation(){
 		}
 		if (Input::IsKeyDown(DIK_A)){
 			//移動距離
-			moveDir_ = moveLeft;
+			moveDir_ = possiMoveDir_[LEFT];
 			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
@@ -315,7 +329,7 @@ void Player::PlayerOperation(){
 		}
 		if (Input::IsKeyDown(DIK_D)){
 			//移動距離
-			moveDir_ = moveRight;
+			moveDir_ = possiMoveDir_[RIGHT];
 			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
@@ -550,6 +564,11 @@ void Player::ReturnToStartMath()
 
 void Player::MathTypeEffect()
 {
+	XMFLOAT3 tmp;
+	srand(time(NULL));
+	//移動可能方向の数までの乱数取得
+	int random1 = (rand() % possiMoveDirNum);
+	int random2 = (rand() % possiMoveDirNum);
 	Stage* pStage = pPlayScene_->GetStagePointer();
 	//コンベアによって移動する方向
 	const XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
@@ -592,6 +611,12 @@ void Player::MathTypeEffect()
 			pTimer_->SetCurTime(pTimer_->GetCurTime() + decTime);
 			pStage->SetIsStand(transform_.position_.x, transform_.position_.z, true);
 		}
+		break;
+	case MATH_CONFUSION:
+		//入れ替え
+		tmp = possiMoveDir_[random1];
+		possiMoveDir_[random1] = possiMoveDir_[random2];
+		possiMoveDir_[random2] = tmp;
 		break;
 	default:break;
 	}
