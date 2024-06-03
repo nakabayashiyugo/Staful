@@ -46,6 +46,8 @@ SHAKETYPE camShakeType;
 const float camShakePower = 2.0f;
 //制限時間減らすマスの減る時間
 const float decTime = 5.0f;
+//混乱マス踏んだ時のアニメーションの長さ(秒)
+const float confAnimTime = 1;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -238,6 +240,9 @@ void Player::PlayUpdate()
 		break;
 	case STATE_CONVMOVE:
 		ConvMoveUpdate();
+		break;
+	case STATE_CONF:
+		ConfUpdate();
 		break;
 	case STATE_DEAD:
 		DeadUpdate();
@@ -535,6 +540,31 @@ void Player::ConvMoveUpdate()
 	}
 }
 
+void Player::ConfUpdate()
+{
+	//回転
+	Timer* confTimer = new Timer(confAnimTime);
+	Easing* confEasing = new Easing();
+	//何回転するか
+	const int confRotNum = 2;
+	//rotCntの初期値
+	const float rotCntInit = 0;
+	//rotCntが毎フレーム足される値
+	const float rotCntUpdate = 1 / (confAnimTime * FPS);
+	static float rotCnt = rotCntInit;
+	rotCnt += rotCntUpdate;
+
+	float ease = confEasing->EaseInSine(rotCnt);
+
+	transform_.rotate_.y = 360 * confRotNum * ease;
+	if (confTimer->isTimeUpped())
+	{
+		playerState_ = STATE_IDLE;
+		delete confTimer;
+		delete confEasing;
+	}
+}
+
 void Player::DeadUpdate()
 {
 	HitStopUpdate();
@@ -572,6 +602,7 @@ void Player::MathTypeEffect()
 	Stage* pStage = pPlayScene_->GetStagePointer();
 	//コンベアによって移動する方向
 	const XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
+
 	//自分の立っているマスの情報
 	standMath_ = GetMathType(transform_.position_);
 	switch (standMath_.mathType_)
@@ -613,6 +644,7 @@ void Player::MathTypeEffect()
 		}
 		break;
 	case MATH_CONFUSION:
+		playerState_ = STATE_CONF;
 		//入れ替え
 		tmp = possiMoveDir_[random1];
 		possiMoveDir_[random1] = possiMoveDir_[random2];
@@ -620,6 +652,8 @@ void Player::MathTypeEffect()
 		break;
 	default:break;
 	}
+
+	prevStandMath_ = standMath_;
 }
 
 void Player::ShadowInit()

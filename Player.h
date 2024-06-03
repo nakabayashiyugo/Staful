@@ -14,6 +14,7 @@ enum PLAYER_STATE
 	STATE_JAMP,		//ジャンプしたとき
 	STATE_FALL,		//落下しているとき
 	STATE_CONVMOVE,	//コンベアによって移動しているとき
+	STATE_CONF,		//混乱マスに乗ってくるくるするとき
 	STATE_DEAD,		//死んだとき
 };
 
@@ -113,6 +114,8 @@ private:
 
 	//立っているマスの情報
 	MATHDEDAIL standMath_;
+	//直前までたっていたマスの情報
+	MATHDEDAIL prevStandMath_;
 	//プレイヤーの状態
 	PLAYER_STATE playerState_;
 	//プレイヤーの直前の状態
@@ -141,6 +144,7 @@ public:
 	void JampUpdate();
 	void FallUpdate();
 	void ConvMoveUpdate();
+	void ConfUpdate();
 	void DeadUpdate();
 	//スタートマスに戻す
 	void ReturnToStartMath();
