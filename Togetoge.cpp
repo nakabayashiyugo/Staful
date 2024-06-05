@@ -23,7 +23,7 @@ Togetoge::Togetoge(GameObject* parent) :
 
 void Togetoge::Initialize()
 {
-	hModel_ = Model::Load("Assets\\Block_Togetoge.fbx");
+	hModel_ = Model::Load("Assets\\Block\\Block_Togetoge.fbx");
 	assert(hModel_ >= 0);
 
 	transform_.position_ = initPos_;

@@ -122,6 +122,12 @@ private:
 	PLAYER_STATE prevPlayerState_;
 	//ゲームの進行度の状態
 	STAGE_STATE stageState_;
+
+	//混乱時のエフェクトのエミッター
+	EmitterData confEmitter_;
+	//混乱時のエフェクトのエミッターのハンドル
+	int confEmitterHundle_;
+
 public:
 	void PlayUpdate();
 	//プレイヤーの操作に関する関数
@@ -164,6 +170,9 @@ public:
 	STAGE_STATE GetStageState() { return stageState_; }
 
 	void PossiMoveDirInit();
+
+	//混乱時のエフェクト
+	void ConfusionEffect();
 	
 
 //影について
