@@ -224,6 +224,8 @@ void Player::PlayUpdate()
 
 	ShadowManagement();
 
+
+
 	switch (playerState_)
 	{
 	case STATE_IDLE:
@@ -248,6 +250,7 @@ void Player::PlayUpdate()
 		DeadUpdate();
 		break;
 	}
+	
 	//アニメーションを更新する
 	SetAnimFramerate();
 }
@@ -542,27 +545,7 @@ void Player::ConvMoveUpdate()
 
 void Player::ConfUpdate()
 {
-	//回転
-	Timer* confTimer = new Timer(confAnimTime);
-	Easing* confEasing = new Easing();
-	//何回転するか
-	const int confRotNum = 2;
-	//rotCntの初期値
-	const float rotCntInit = 0;
-	//rotCntが毎フレーム足される値
-	const float rotCntUpdate = 1 / (confAnimTime * FPS);
-	static float rotCnt = rotCntInit;
-	rotCnt += rotCntUpdate;
-
-	float ease = confEasing->EaseInSine(rotCnt);
-
-	transform_.rotate_.y = 360 * confRotNum * ease;
-	if (confTimer->isTimeUpped())
-	{
-		playerState_ = STATE_IDLE;
-		delete confTimer;
-		delete confEasing;
-	}
+	
 }
 
 void Player::DeadUpdate()
