@@ -123,10 +123,11 @@ private:
 	//ゲームの進行度の状態
 	STAGE_STATE stageState_;
 
-	//混乱時のエフェクトのエミッター
-	EmitterData confEmitter_;
-	//混乱時のエフェクトのエミッターのハンドル
-	int confEmitterHundle_;
+	//今立ってるマスで混乱のアニメーションを終えているか
+	bool isConfAnim_;
+	//混乱マスに乗った時の最初のrotateの値
+	XMFLOAT3 prevRot_;
+
 
 public:
 	void PlayUpdate();
@@ -155,6 +156,9 @@ public:
 	//スタートマスに戻す
 	void ReturnToStartMath();
 
+	//移動が終了したときの処理
+	void MoveFinished();
+
 	//自分の立っているマスの効果
 	void MathTypeEffect();
 	//playerがステージ内に入っているか
@@ -170,9 +174,6 @@ public:
 	STAGE_STATE GetStageState() { return stageState_; }
 
 	void PossiMoveDirInit();
-
-	//混乱時のエフェクト
-	void ConfusionEffect();
 	
 
 //影について

@@ -33,3 +33,17 @@ float Easing::EaseOutQuad(float _value)
 {
 	return 1 - (1 - _value) * (1 - _value);;
 }
+
+float Easing::EaseInOutQuint(float _value)
+{
+	float ret;
+	if (_value < 0.5f)
+	{
+		ret = 16 * _value * _value * _value * _value * _value;
+	}
+	else
+	{
+		ret = 1 - pow(-2 * _value + 2, 5) / 2;
+	}
+	return ret;
+}

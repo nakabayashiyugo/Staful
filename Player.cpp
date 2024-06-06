@@ -76,6 +76,8 @@ Player::Player(GameObject* parent)
 	prevPlayerState_(STATE_DEAD),
 	stageState_(STATE_START),
 
+	isConfAnim_(false),
+
 	//影について
 	hShadow_(-1),
 
@@ -250,7 +252,6 @@ void Player::PlayUpdate()
 		DeadUpdate();
 		break;
 	}
-	
 	//アニメーションを更新する
 	SetAnimFramerate();
 }
@@ -354,7 +355,6 @@ void Player::PlayerMove()
 		//移動終了
 		destPos_ = prevPos_;
 		moveFinished_ = true;
-		prevPlayerState_ = STATE_IDLE;
 		return;
 	}
 
@@ -374,9 +374,7 @@ void Player::PlayerMove()
 
 	if (moveCount_ >= moveCountEnd)
 	{
-		moveCount_ = moveCountInit;
-		//移動終了
-		moveFinished_ = true;
+		MoveFinished();
 	}
 	transform_.position_ = prevPos_ + velocity_;
 }
@@ -554,6 +552,31 @@ void Player::ConfUpdate()
 	tmp = possiMoveDir_[random1];
 	possiMoveDir_[random1] = possiMoveDir_[random2];
 	possiMoveDir_[random2] = tmp;
+
+	//混乱のアニメーション
+	//混乱のアニメーションをしていなければ
+	//何回転するか
+	const int confRotNum = 2;
+
+	const float confCntInit = 0.0f;
+	const float confCntUpdate = 1 / (confAnimTime * FPS);
+	static float confCnt = confCntInit;
+	confCnt += confCntUpdate;
+
+	Easing* pEasing = new Easing();
+	float ease = pEasing->EaseInOutQuint(confCnt);
+
+	transform_.rotate_.y = prevRot_.y + 360 * confRotNum * ease;
+
+	delete pEasing;
+
+	if (ease >= 1)
+	{
+		transform_.rotate_ = prevRot_;
+		isConfAnim_ = true;
+		confCnt = confCntInit;
+		playerState_ = STATE_IDLE;
+	}
 }
 
 void Player::DeadUpdate()
@@ -581,6 +604,14 @@ void Player::ReturnToStartMath()
 		isReturn_ = false;
 		stageState_ = STATE_START;
 	}
+}
+
+void Player::MoveFinished()
+{
+	moveCount_ = moveCountInit;
+	//移動終了
+	moveFinished_ = true;
+	isConfAnim_ = false;
 }
 
 void Player::MathTypeEffect()
@@ -631,9 +662,15 @@ void Player::MathTypeEffect()
 		}
 		break;
 	case MATH_CONFUSION:
-		playerState_ = STATE_CONF;
+		if (!isConfAnim_)
+		{
+			prevRot_ = transform_.rotate_;
+			playerState_ = STATE_CONF;
+		}
 		break;
-	default:break;
+	default:
+		playerState_ = STATE_IDLE;
+		break;
 	}
 
 	prevStandMath_ = standMath_;
@@ -685,11 +722,6 @@ void Player::SetAnimFramerate()
 {
 	nowFrame_ = Model::GetAnimFrame(hModel_);
 
-	//移動量がゼロだったら
-	if (XMVectorGetX(XMVector3Length(velocity_)) <= 0)
-	{
-		return;
-	}
 	//それぞれのフレームレート
 	const int IDLE_FIRST = 1;
 	const int IDLE_END = 60;
@@ -772,7 +804,7 @@ void Player::OnCollision(GameObject* pTarget)
 		EmitterDataAssign(pTarget->GetTransform().position_);
 		//ヒットストップ
 		HitStopInit();
-		moveCount_ = moveCountInit;
+		MoveFinished();
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
 	}

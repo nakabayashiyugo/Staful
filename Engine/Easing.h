@@ -10,5 +10,6 @@ public:
 	float EaseOutCirc(float _value);
 	float EaseInOutBack(float _value);
 	float EaseOutQuad(float _value);
+	float EaseInOutQuint(float _value);
 };
 

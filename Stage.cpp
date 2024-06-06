@@ -16,7 +16,7 @@
 
 #include "resource.h"
 
-const int MAKEHOLETIME = 1;
+const float MAKEHOLETIME = 0.5f;
 
 Stage::Stage(GameObject* parent)
 	: GameObject(parent, "Stage"), isStandPitfall_(false),
