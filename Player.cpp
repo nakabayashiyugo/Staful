@@ -545,15 +545,6 @@ void Player::ConvMoveUpdate()
 
 void Player::ConfUpdate()
 {
-	XMFLOAT3 tmp;
-	srand(time(NULL));
-	//0～移動可能方向の数までの乱数取得
-	int random1 = (rand() % possiMoveDirNum);
-	int random2 = (rand() % possiMoveDirNum);
-	//入れ替え
-	tmp = possiMoveDir_[random1];
-	possiMoveDir_[random1] = possiMoveDir_[random2];
-	possiMoveDir_[random2] = tmp;
 }
 
 void Player::DeadUpdate()
@@ -585,6 +576,11 @@ void Player::ReturnToStartMath()
 
 void Player::MathTypeEffect()
 {
+	XMFLOAT3 tmp;
+	srand(time(NULL));
+	//0～移動可能方向の数までの乱数取得
+	int random1 = (rand() % possiMoveDirNum);
+	int random2 = (rand() % possiMoveDirNum);
 	Stage* pStage = pPlayScene_->GetStagePointer();
 	//コンベアによって移動する方向
 	const XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);
@@ -631,7 +627,10 @@ void Player::MathTypeEffect()
 		}
 		break;
 	case MATH_CONFUSION:
-		playerState_ = STATE_CONF;
+		//入れ替え
+		tmp = possiMoveDir_[random1];
+		possiMoveDir_[random1] = possiMoveDir_[random2];
+		possiMoveDir_[random2] = tmp;
 		break;
 	default:break;
 	}
