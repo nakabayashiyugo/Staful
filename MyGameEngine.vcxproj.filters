@@ -110,6 +110,7 @@
     <ClCompile Include="Engine\Fade.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="MathInit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Simple2D.hlsl">
@@ -217,6 +218,7 @@
     <ClInclude Include="Engine\Fade.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="MathInit.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">
