@@ -10,6 +10,7 @@
 #include "../Timer.h"
 #include "../Stage.h"
 #include "../Player.h"
+#include "../Button.h"
 
 PlayScene::PlayScene(GameObject* parent)
 	: GameObject(parent, "PlayScene"), table_Change_(false), saveNum_(2),
@@ -34,6 +35,8 @@ void PlayScene::Initialize()
 	pPlayer_ = (Player*)FindObject("Player");
 	pStage_ = (Stage*)FindObject("Stage");
 	
+	cancelButton_->Instantiate<Button>(this);
+	cancelButton_ = (Button*)FindObject("Button");
 }
 
 void PlayScene::Update()

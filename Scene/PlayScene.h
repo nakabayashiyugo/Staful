@@ -4,6 +4,7 @@
 
 class Stage;
 class Player;
+class Button;
 
 class PlayScene
 	:public GameObject, StageOrigin
@@ -21,6 +22,8 @@ class PlayScene
 	int player_Num_;
 
 	int saveNum_;
+
+	Button* cancelButton_;
 public:
 	PlayScene(GameObject* parent);
 

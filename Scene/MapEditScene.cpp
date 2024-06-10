@@ -66,7 +66,8 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//それぞれのマスのコスト設定
 	costs_.resize(MATH_MAX);
 
-	costs_ = { floorCost, 
+	costs_ = { 
+		floorCost, 
 		wallCost, 
 		holeCost, 
 		converyerCost, 
