@@ -35,6 +35,26 @@ struct TOGETOGEROUTE
 	XMFLOAT3 destPos_;	//とげとげの往復する到達地点
 };
 
+//マスの数
+struct MATHVOLUME
+{
+	int x;
+	int z;
+};
+
+//保存する要素
+struct SAVEELEM
+{
+	//ターン数
+	int turn_;
+	//マスの数
+	MATHVOLUME mathVolue_;
+	//すべてのマスの情報
+	std::vector<std::vector<MATHDEDAIL>> math_;
+	//とげとげが移動する範囲
+	std::vector<TOGETOGEROUTE> tTgtgRoute_;
+};
+
 class StageOrigin
 {
 protected:
@@ -48,6 +68,7 @@ protected:
 	std::vector<std::vector<MATHDEDAIL>> math_;
 	//とげとげが移動する範囲
 	std::vector<TOGETOGEROUTE> tTgtgRoute_;
+
 	//ファイルネームの基本
 	std::vector<std::string> fileNameInit_;
 
@@ -72,17 +93,28 @@ public:
 	void Math_Resize(int _xsize, int _zsize, std::vector<std::vector<bool>>* _math);
 	
 	//自分のクラスにあるmath_のvectorへの代入
-	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
+	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
+	{
+		for (int x = 0; x < XSIZE; x++)
+		{
+			for (int z = 0; z < ZSIZE; z++)
+			{
+				math_.at(x).at(z) = _math.at(x).at(z);
+			}
+		}
+	}
 
-	void SetTogetogeRoute(std::vector<TOGETOGEROUTE> _tgtgRoute);
-	
-	//マス情報書き込み
-	void Write();
-	//マス情報読み込み
-	void Read();
-	//マスの量書き込み
-	void MathVolumeWrite();
-	//マスの量読み込み
-	void MathVolumeRead();
+	void SetTogetogeRoute(std::vector<TOGETOGEROUTE> _tgtgRoute)
+	{
+		for (int i = 0; i < _tgtgRoute.size(); i++)
+		{
+			TOGETOGEROUTE* pTg = new TOGETOGEROUTE();
+			pTg->route_ = _tgtgRoute[i].route_;
+			pTg->initPos_ = _tgtgRoute[i].initPos_;
+			pTg->destPos_ = _tgtgRoute[i].destPos_;
+			tTgtgRoute_.push_back(*pTg);
+			delete pTg;
+		}
+	}
 };
 

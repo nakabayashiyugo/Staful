@@ -2,6 +2,7 @@
 #include "ExpantionScene.h"
 
 #include "../Button.h"
+#include "../MathInit.h"
 
 #include "../Engine/Image.h"
 #include "../Engine/Model.h"
@@ -47,8 +48,10 @@ void TitleScene::Update()
 	//スタートボタンを押して離したら
 	if (pStartButton_->GetIsReleased())
 	{
+		MathInit* mathInit = new MathInit();
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
 		pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
+		delete mathInit;
 	}	
 }
 

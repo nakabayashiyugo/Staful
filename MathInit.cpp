@@ -1,5 +1,6 @@
 #include "MathInit.h"
 
+//•Û‘¶‚·‚éƒtƒ@ƒCƒ‹‚Ì”Ô†
 const int saveFile1 = 1;
 const int saveFile2 = 2;
 
@@ -23,6 +24,7 @@ MathInit::MathInit()
 		}
 	}
 	saveNum_ = saveFile1;
+	//‘‚«‚İ
 	Write();
 	saveNum_ = saveFile2;
 	Write();
