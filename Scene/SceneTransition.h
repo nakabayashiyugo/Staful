@@ -21,7 +21,7 @@ enum SCENESTATE
 const int PLAYERNUMMAX = 2;
 
 class SceneTransition
-	:public GameObject, StageOrigin
+	:public GameObject
 {
 	//playerがクリアしたかどうか
 	bool isClear_Player_[PLAYERNUMMAX];
@@ -56,9 +56,6 @@ public:
 	//現在プレイ中のプレイヤー番号表示
 	void PlayerNumDraw();
 
-	int GetMathSize_x() { return XSIZE; };
-	int GetMathSize_z() { return ZSIZE; };
-
 	int GetSceneState() { return (int)sceneState_; };
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
 
@@ -85,8 +82,6 @@ public:
 		}
 	}
 
-	//コースのファイルへの書き込み
-	void Write();
 	//playerがクリアしたかどうかのファイルへの書き込み
 	void ResultWrite();
 

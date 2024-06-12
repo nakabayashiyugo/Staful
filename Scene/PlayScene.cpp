@@ -86,51 +86,7 @@ void PlayScene::Release()
 
 void PlayScene::Read()
 {
-	std::ifstream read;
-	std::string openfile = saveFolderName + "saveMath";
-
-	openfile += std::to_string(saveNum_);
-	read.open(openfile, std::ios::in);
-	//  ファイルを開く
-	//  ios::in は読み込み専用  ios::binary はバイナリ形式
-
-	if (!read) {
-		std::cout << "ファイルが開けません";
-		return;
-	}
-	//  ファイルが開けなかったときの対策
-
-	//ファイルの最後まで続ける
-	for (int i = 0; i < XSIZE; i++)
-	{
-		for (int j = 0; j < ZSIZE; j++)
-		{
-			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
-			//文字列ではないデータを読みこむ
-
-		}
-	}
-	read.close();  //ファイルを閉じる
-
-	//とげとげルート
-	openfile = saveFolderName + "tgtgRoute";
-	openfile += std::to_string(saveNum_);
-	read.open(openfile, std::ios::in);
-	if (!read) {
-		std::cout << "ファイルが開けません";
-		return;
-	}
 	
-	while (!read.eof())
-	{
-		TOGETOGEROUTE pTg;
-		read.read((char*)&pTg, sizeof(pTg));
-		if (pTg.route_.scale_.x < 1)
-		{
-			tTgtgRoute_.push_back(pTg);
-		}
-	}
-	read.close();  //ファイルを閉じる
 }
 
 XMFLOAT3 PlayScene::GetPlayerPos()

@@ -17,32 +17,10 @@ SceneTransition::SceneTransition(GameObject* parent)
 	isClear_Player_{ false, false },
 	hPlayer1_(-1), hPlayer2_(-1)
 {
-	//ステージの最小サイズ
-	const int stageSizeMin = 5;
-	//ステージの最大サイズ
-	const int stageSizeMax = 18;
-	XSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
-	ZSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
-
-	Math_Resize(XSIZE, ZSIZE, &math_);
-
-	//すべてFloorで初期化
-	for (int x = 0; x < XSIZE; x++)
-	{
-		for (int y = 0; y < ZSIZE; y++)
-		{
-			math_[x][y].mathType_ = MATH_FLOOR;
-		}
-	}
 }
 
 void SceneTransition::Initialize()
 {
-	Write();
-	sceneState_ = SCENE_MAPEDIT2;
-	saveNum_ = saveFileName2;
-	Write();
-
 	sceneState_ = SCENESTATE(0);
 
 	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");
@@ -58,20 +36,17 @@ void SceneTransition::Update()
 	{
 		switch (sceneState_)
 		{
-		case SCENE_BETWEEN1:
+		case SCENE_MAPEDIT1:
 			turnNum_++;
 			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName2;
 			else saveNum_ = saveFileName1;
-			Instantiate<BetweenScene>(this);
+			Instantiate<MapEditScene>(this); 
 			break;
-		case SCENE_MAPEDIT1:Instantiate<MapEditScene>(this); break;
-		case SCENE_BETWEEN2:
+		case SCENE_MAPEDIT2:
 			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName1;
 			else saveNum_ = saveFileName2;
-			Instantiate<BetweenScene>(this);
+			Instantiate<MapEditScene>(this); 
 			break;
-		case SCENE_MAPEDIT2:Instantiate<MapEditScene>(this); break;
-		case SCENE_BETWEEN3:Instantiate<BetweenScene>(this); break;
 		case SCENE_STAGE1:
 			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName1;
 			else saveNum_ = saveFileName2;
@@ -79,7 +54,6 @@ void SceneTransition::Update()
 			pPS_[player_Num_]->Instantiate<PlayScene>(this);
 			pPS_[player_Num_] = (PlayScene*)FindObject("PlayScene");
 			break;
-		case SCENE_BETWEEN4:Instantiate<BetweenScene>(this); break;
 		case SCENE_STAGE2:
 			if (turnNum_ % 2 == 0)	saveNum_ = saveFileName2;
 			else saveNum_ = saveFileName1;
@@ -110,10 +84,9 @@ void SceneTransition::Release()
 
 void SceneTransition::PlayerNumDraw()
 {
-	pST = (SceneTransition*)FindObject("SceneTransition");
 	Transform player;
 	player.position_ = XMFLOAT3(0.7, 0.8, 0);
-	switch (pST->GetSceneState())
+	switch (sceneState_)
 	{
 	case SCENE_MAPEDIT1:
 	case SCENE_STAGE1:
@@ -126,47 +99,6 @@ void SceneTransition::PlayerNumDraw()
 		Image::Draw(hPlayer2_);
 		break;
 	}
-}
-
-
-void SceneTransition::Write()
-{
-	std::ofstream write;
-	std::string savefile = saveFolderName + "saveMath";
-	savefile += std::to_string(saveNum_);
-
-	write.open(savefile, std::ios::out);
-
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile << " が開けません";
-		return;
-	}
-
-	for (int i = 0; i < XSIZE; i++) {
-		for (int j = 0; j < ZSIZE; j++)
-		{
-			write.write((char*)&math_[i][j], sizeof(math_[i][j]));
-			//文字列ではないデータをかきこむ
-		}
-	}
-
-	write.close();  //ファイルを閉じる
-
-	//とげとげルート
-	savefile = saveFolderName + "tgtgRoute";
-	savefile += std::to_string(saveNum_);
-	write.open(savefile, std::ios::out);
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile << " が開けません";
-		return;
-	}
-	for (auto itr = tTgtgRoute_.begin(); itr != tTgtgRoute_.end(); itr++)
-	{
-		write.write((char*)&itr, sizeof(itr));
-	}
-	write.close();  //ファイルを閉じる
 }
 
 void SceneTransition::ResultWrite()
