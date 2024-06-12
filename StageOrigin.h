@@ -116,5 +116,9 @@ public:
 			delete pTg;
 		}
 	}
+	//マスの量書き込み
+	void MathVolumeWrite();
+	//マスの量読み込み
+	void MathVolumeRead();
 };
 
