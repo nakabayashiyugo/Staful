@@ -11,19 +11,27 @@
 #include "../Stage.h"
 #include "../Player.h"
 #include "../Button.h"
+#include "../GamePlayer.h"
 
 PlayScene::PlayScene(GameObject* parent)
-	: GameObject(parent, "PlayScene"), table_Change_(false), saveNum_(2),
-	floorHeight_(0), playerHeight_(floorHeight_ + MODELHEIGHT)
+	: GameObject(parent, "PlayScene"), 
+	table_Change_(false), 
+	floorHeight_(0), 
+	playerHeight_(floorHeight_ + MODELHEIGHT)
 {
-	pST = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pST->GetMathSize_x();
-	ZSIZE = (int)pST->GetMathSize_z();
-
-	player_Num_ = pST->GetPlayerNum();
-	Math_Resize(XSIZE, ZSIZE, &math_);
+	MathVolumeRead();
+	if (pParent_->GetObjectName() == "MapEditScene")
+	{
+		pGP_ = (GamePlayer*)this->pParent_->GetParent();
+	}
+	else
+	{
+		pGP_ = (GamePlayer*)this->pParent_;
+	}
+	playerNum_ = pGP_->GetPlayerNum();
+	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
 	
-	saveNum_ = pST->GetSaveNum();
+	saveNum_ = pGP_->GetSaveNum();
 
 	Read();
 }
@@ -45,14 +53,12 @@ void PlayScene::Update()
 	{
 		if (pPlayer_->GetStageState() == STATE_GOAL)
 		{
-			pST->SetNextScene();
-			pST->SetIsClear(player_Num_, true);
+			pGP_->SetIsClear(true);
 			KillMe();
 		}
 		if (pPlayer_->GetStageState() == STATE_FAILURE)
 		{
-			pST->SetNextScene();
-			pST->SetIsClear(player_Num_, false);
+			pGP_->SetIsClear(false);
 			KillMe();
 		}
 	}
@@ -78,16 +84,14 @@ void PlayScene::Update()
 
 void PlayScene::Draw()
 {
+	//プレイヤー番号表示
+	pGP_->PlayerNumDraw();
 }
 
 void PlayScene::Release()
 {
 }
 
-void PlayScene::Read()
-{
-	
-}
 
 XMFLOAT3 PlayScene::GetPlayerPos()
 {

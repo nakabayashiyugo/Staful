@@ -99,20 +99,18 @@ Player::Player(GameObject* parent)
 	moveFrameNum_(moveCountEnd / moveCntUpdateInit)
 
 {
-	pST = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pST->GetMathSize_x();
-	ZSIZE = (int)pST->GetMathSize_z();
-
-	Math_Resize(XSIZE, ZSIZE, &math_);
+	MathVolumeRead();
+	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
+	Read();
 
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
 	playerHeight_ = pPlayScene_->GetPlayerHeight();
 
 	SetTableMath(pPlayScene_->GetTableMath());
 
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int z = 0; z < ZSIZE; z++)
+		for (int z = 0; z < mathVolume_.z; z++)
 		{
 			if (math_[x][z].mathType_ == MATH_START)
 			{
@@ -186,9 +184,6 @@ void Player::Draw()
 
 	//影表示
 	ShadowDraw();
-
-	//プレイヤー番号表示
-	pST->PlayerNumDraw();
 
 	Image::SetTransform(hGage_, tGage_);
 	Image::SetTransform(hFrame_, tFrame_);
@@ -292,8 +287,8 @@ void Player::CameraShake()
 
 bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 {
-	return _pos.x >= 0 && _pos.x < XSIZE &&
-		_pos.z  >= 0 && _pos.z < ZSIZE;
+	return _pos.x >= 0 && _pos.x < mathVolume_.x &&
+		_pos.z  >= 0 && _pos.z < mathVolume_.z;
 }
 
 void Player::PossiMoveDirInit()

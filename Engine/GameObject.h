@@ -44,6 +44,8 @@ public:
 	//引数：追加するオブジェクト
 	void PushBackChild(GameObject* obj);
 
+	GameObject* GetParent() { return pParent_; }
+
 public:
 	//テンプレートの定義
 	template <class T>

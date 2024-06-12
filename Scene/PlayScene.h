@@ -5,6 +5,7 @@
 class Stage;
 class Player;
 class Button;
+class GamePlayer;
 
 class PlayScene
 	:public GameObject, StageOrigin
@@ -19,11 +20,9 @@ class PlayScene
 	//player‚ÌŠî€‚Ì‚‚³
 	int playerHeight_;
 
-	int player_Num_;
-
-	int saveNum_;
-
 	Button* cancelButton_;
+
+	GamePlayer* pGP_;
 public:
 	PlayScene(GameObject* parent);
 
@@ -39,8 +38,6 @@ public:
 	//ŠJ•ú
 	void Release() override;
 
-	void Read();
-
 	std::vector<std::vector<MATHDEDAIL>> GetTableMath() { return math_; }
 	std::vector<TOGETOGEROUTE> GetTogetogeRoute() { return tTgtgRoute_; }
 
@@ -50,7 +47,7 @@ public:
 	void SetTableChange(bool _table_change) { table_Change_ = _table_change; }
 	bool GetTableChange() { return table_Change_; }
 
-	int GetPlayerNum() { return player_Num_; }
+	int GetPlayerNum() { return playerNum_; }
 
 	int GetSaveNum() { return saveNum_; }
 

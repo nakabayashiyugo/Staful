@@ -26,11 +26,14 @@ Stage::Stage(GameObject* parent)
 	{
 		hModel_[i] = -1;
 	}
-	pST = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE = (int)pST->GetMathSize_x();
-	ZSIZE = (int)pST->GetMathSize_z();
-	Math_Resize(XSIZE, ZSIZE, &math_);
-	Math_Resize(XSIZE, ZSIZE, &makeHoleTimes_);
+	
+	MathVolumeRead();
+
+	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
+	Math_Resize(mathVolume_.x, mathVolume_.z, &makeHoleTimes_);
+
+	Read();
+
 	pPlayScene_ = (PlayScene*)FindObject("PlayScene");
 	SetTableMath(pPlayScene_->GetTableMath());
 	SetTogetogeRoute(pPlayScene_->GetTogetogeRoute());
@@ -108,7 +111,7 @@ void Stage::Update()
 		{
 			math_[(int)playerPos.x][(int)playerPos.z].mathType_ = MATH_HOLE;
 			Write();
-			pPlayScene_->Read();
+			Read();
 			pPlayScene_->SetTableChange(true);
 		}
 	}
@@ -116,9 +119,9 @@ void Stage::Update()
 
 void Stage::Draw()
 {
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int z = 0; z < ZSIZE; z++)
+		for (int z = 0; z < mathVolume_.z; z++)
 		{
 			Transform mathTrans;
 			
@@ -246,8 +249,8 @@ void Stage::Write()
 		return;
 	}
 
-	for (int i = 0; i < XSIZE; i++) {
-		for (int j = 0; j < ZSIZE; j++)
+	for (int i = 0; i < mathVolume_.x; i++) {
+		for (int j = 0; j < mathVolume_.z; j++)
 		{
 			write.write((char*)&math_[i][j], sizeof(math_[i][j]));
 			//•¶Žš—ñ‚Å‚Í‚È‚¢ƒf[ƒ^‚ð‚©‚«‚±‚Þ
@@ -274,9 +277,9 @@ void Stage::Write()
 
 void Stage::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 {
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int z = 0; z < ZSIZE; z++)
+		for (int z = 0; z < mathVolume_.z; z++)
 		{
 			math_.at(x).at(z) = _math.at(x).at(z);
 		}

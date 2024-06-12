@@ -7,6 +7,7 @@
 
 #include "../resource.h"
 #include "../Button.h"
+#include "../GamePlayer.h"
 
 #include "SceneTransition.h"
 #include "PlayScene.h"
@@ -33,8 +34,6 @@ MapEditScene::MapEditScene(GameObject* parent)
 	curCost_(0),
 	//マスの選択について
 	mathtype_(0),
-	//ファイルの書き込み・読み出しについて
-	saveNum_(2),
 	//テストプレイについて
 	isClear_(false),
 	canTest_(false),
@@ -42,26 +41,23 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//とげとげについて
 	tgtgRouteMathDown_(mathInitPos),
 	tgtgRouteMathUp_(mathInitPos),
-	hTgtgRoute_(-1),
-
-	YSIZE(ZSIZE)
+	hTgtgRoute_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
 		hPict_[i] = -1;	
 		hExpantion_[i] = -1;
 	}
-	pST = (SceneTransition*)FindObject("SceneTransition");
-	XSIZE =  (int)pST->GetMathSize_x();
-	YSIZE =  (int)pST->GetMathSize_z();
+	MathVolumeRead();
 
-	Math_Resize(XSIZE, YSIZE, &math_);
-	Math_Resize(XSIZE, YSIZE, &math_origin_);
-	Math_Resize(XSIZE, YSIZE, &isConvRot_);
+	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
+	Math_Resize(mathVolume_.x, mathVolume_.z, &math_origin_);
+	Math_Resize(mathVolume_.x, mathVolume_.z, &isConvRot_);
 
-	Texture* pTexture = (Texture*)FindObject("Texture");
+	pGP_ = (GamePlayer*)this->pParent_;
+	saveNum_ = pGP_->GetSaveNum();
 
-	saveNum_ = pST->GetSaveNum();
+	Read();
 
 	//それぞれのマスのコスト設定
 	costs_.resize(MATH_MAX);
@@ -77,22 +73,22 @@ MapEditScene::MapEditScene(GameObject* parent)
 		confusionCost,
 		startCost, 
 		goalCost };
+
 	//障害物のおける制限調整
 	int costLimitFirst;
 	int costLimitPlus;
-	if (XSIZE >= YSIZE)
+	if (mathVolume_.x >= mathVolume_.z)
 	{
-		costLimitFirst = XSIZE;
-		costLimitPlus = XSIZE / 2;
+		costLimitFirst = mathVolume_.x;
+		costLimitPlus = mathVolume_.x / 2;
 	}
 	else
 	{
-		costLimitFirst = YSIZE;
-		costLimitPlus = YSIZE / 2;
+		costLimitFirst = mathVolume_.z;
+		costLimitPlus = mathVolume_.z / 2;
 	}
-	costLimit_ = costLimitFirst + (pST->GetTurnNum() - 1) * costLimitPlus;
-
-	Read();
+	turn_ = pGP_->GetTurnNum();
+	costLimit_ = costLimitFirst + (turn_ - 1) * costLimitPlus;
 }
 
 void MapEditScene::Initialize()
@@ -119,11 +115,11 @@ void MapEditScene::Update()
 	MousePosSet();
 
 	selectMath.x = (int)(mousePos_.x / MATHSIZE);
-	selectMath.y = YSIZE - 1 - (int)(mousePos_.y / MATHSIZE);
+	selectMath.y = mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE);
 
 	//マウスの位置がマス目から出たら
-	if (selectMath.x < 0 || selectMath.x >= XSIZE ||
-		selectMath.y < 0 || selectMath.y >= YSIZE)
+	if (selectMath.x < 0 || selectMath.x >= mathVolume_.x ||
+		selectMath.y < 0 || selectMath.y >= mathVolume_.z)
 	{
 		selectMath = mathInitPos;
 	}
@@ -140,12 +136,12 @@ void MapEditScene::Update()
 			case MATH_START:
 				if (Input::IsMouseButton(0))
 				{
-					if (pST->GetTurnNum() == 1)
+					if (turn_ == 1)
 					{
 						//スタートマスがすでにあるかどうか探索
-						for (int x = 0; x < XSIZE; x++)
+						for (int x = 0; x < mathVolume_.x; x++)
 						{
-							for (int y = 0; y < YSIZE; y++)
+							for (int y = 0; y < mathVolume_.z; y++)
 							{
 								if (math_[x][y].mathType_ == MATH_START)
 								{
@@ -160,12 +156,12 @@ void MapEditScene::Update()
 			case MATH_GOAL:
 				if (Input::IsMouseButton(0))
 				{
-					if (pST->GetTurnNum() == 1)
+					if (turn_ == 1)
 					{
 						//ゴールマスがすでにあるかどうか探索
-						for (int x = 0; x < XSIZE; x++)
+						for (int x = 0; x < mathVolume_.x; x++)
 						{
-							for (int y = 0; y < YSIZE; y++)
+							for (int y = 0; y < mathVolume_.z; y++)
 							{
 								if (math_[x][y].mathType_ == MATH_GOAL)
 								{
@@ -206,6 +202,17 @@ void MapEditScene::Update()
 					{
 						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
 						ChangeSelectMath(selectMath);
+
+						//tTgtgRouteの中に位置が同じなとげとげが存在してるか
+						auto itr = tTgtgRoute_.begin();
+						while (itr != tTgtgRoute_.end())
+						{
+							if (itr->initPos_.x != tgtgRouteMathDown_.x &&
+								itr->initPos_.y != tgtgRouteMathDown_.y)
+							{
+								break;
+							}
+						}
 
 						//tTgtgRoute_に追加
 						TOGETOGEROUTE* ptg = new TOGETOGEROUTE();
@@ -271,7 +278,7 @@ void MapEditScene::Draw()
 		MathDraw();
 
 		//プレイヤー番号表示
-		pST->PlayerNumDraw();
+		pGP_->PlayerNumDraw();
 	}
 }
 
@@ -302,9 +309,9 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		case IDC_MAPEDIT_START:		mathtype_ = MATH_START; break;
 		case IDC_MAPEDIT_GOAL:		mathtype_ = MATH_GOAL; break;
 		case IDC_MAPEDIT_COMPLETE:	
-			for (int x = 0; x < XSIZE; x++)
+			for (int x = 0; x < mathVolume_.x; x++)
 			{
-				for (int y = 0; y < YSIZE; y++)
+				for (int y = 0; y < mathVolume_.z; y++)
 				{
 					if (math_[x][y].mathType_ == MATH_START)
 					{
@@ -337,90 +344,16 @@ void MapEditScene::MousePosSet()
 	mousePos_.y = Input::GetMousePosition().y;
 
 	mousePos_.x -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
-	mousePos_.y -= ((-(math_[XSIZE - 1][YSIZE - 1].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
-}
-
-void MapEditScene::Write()
-{
-	std::ofstream write;
-	std::string savefile = saveFolderName + "saveMath";
-	savefile += std::to_string(saveNum_);
-	write.open(savefile, std::ios::out);
-
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile << " が開けません";
-		return;
-	}
-	for (int i = 0; i < XSIZE; i++) {
-		for (int j = 0; j < YSIZE; j++)
-		{
-			write.write((char*)&math_[i][j], sizeof(math_[i][j]));
-			//文字列ではないデータをかきこむ
-		}
-	}
-	write.close();  //ファイルを閉じる
-
-	//とげとげルート
-	savefile = saveFolderName + "tgtgRoute";
-	savefile += std::to_string(saveNum_);
-	write.open(savefile, std::ios::out);
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile << " が開けません";
-		return;
-	}
-	for (int i = 0; i < tTgtgRoute_.size(); i++)
-	{
-		write.write((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
-	}
-	write.close();  //ファイルを閉じる
-}
-
-void MapEditScene::Read()
-{
-	std::ifstream read;
-	std::string savefile = saveFolderName + "saveMath";
-	
-	savefile += std::to_string(saveNum_);
-	read.open(savefile, std::ios::in);
-	//  ファイルを開く
-	//  ios::in は読み込み専用  ios::binary はバイナリ形式
-
-	//ファイルの最後まで続ける
-	for (int i = 0; i < XSIZE; i++)
-	{
-		for (int j = 0; j < YSIZE; j++)
-		{
-			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
-			//文字列ではないデータを読みこむ
-
-		}
-	}
-	read.close();  //ファイルを閉じる
-
-	//とげとげルート
-	savefile = saveFolderName + "tgtgRoute";
-	savefile += std::to_string(saveNum_);
-	read.open(savefile, std::ios::in);
-
-	int i = 0;
-	while (!read.eof())
-	{
-		tTgtgRoute_.resize(tTgtgRoute_.size() + 1);
-		read.read((char*)&tTgtgRoute_[i], sizeof(tTgtgRoute_[i]));
-		i++;
-	}
-	read.close();  //ファイルを閉じる
+	mousePos_.y -= ((-(math_[mathVolume_.x - 1][mathVolume_.z - 1].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
 }
 
 bool MapEditScene::CostManagement()
 {
 	//コストの合計
 	int costSum = 0;
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < YSIZE; y++)
+		for (int y = 0; y < mathVolume_.z; y++)
 		{
 			costSum += costs_[(int)math_[x][y].mathType_];
 		}
@@ -670,33 +603,33 @@ void MapEditScene::MathInit()
 	}
 	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
 	//マスのサイズ調整
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < YSIZE; y++)
+		for (int y = 0; y < mathVolume_.z; y++)
 		{
 			math_origin_[x][y] = math_[x][y];
 			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
-			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::bfr_scrWidth) * MATHSIZE + ((float)(x - XSIZE) / Direct3D::bfr_scrWidth) * MATHSIZE;
-			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::bfr_scrHeight) * MATHSIZE + ((float)(y - YSIZE) / Direct3D::bfr_scrHeight) * MATHSIZE;
+			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::bfr_scrWidth) * MATHSIZE + ((float)(x - mathVolume_.x) / Direct3D::bfr_scrWidth) * MATHSIZE;
+			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::bfr_scrHeight) * MATHSIZE + ((float)(y - mathVolume_.z) / Direct3D::bfr_scrHeight) * MATHSIZE;
 		}
 	}
 }
 
 void MapEditScene::MathDraw()
 {
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < YSIZE; y++)
+		for (int y = 0; y < mathVolume_.z; y++)
 		{
 			//コンベアの回転
-			if (isConvRot_[x][YSIZE - 1 - y])
+			if (isConvRot_[x][mathVolume_.z - 1 - y])
 			{
-				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z += 5;
+				math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z += 5;
 			}
-			if ((int)math_[x][YSIZE - 1 - y].mathPos_.rotate_.z % 90 == 0)
+			if ((int)math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z % 90 == 0)
 			{
-				math_[x][YSIZE - 1 - y].mathPos_.rotate_.z = (int)(math_[x][YSIZE - 1 - y].mathPos_.rotate_.z / 90) * 90;
-				isConvRot_[x][YSIZE - 1 - y] = false;
+				math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z = (int)(math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z / 90) * 90;
+				isConvRot_[x][mathVolume_.z - 1 - y] = false;
 			}
 
 			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
@@ -731,7 +664,6 @@ void MapEditScene::SelectMathType()
 	if (pCompleteButton_->GetIsClicked())
 	{
 		Write();
-		pST->SetNextScene();
 		KillMe();
 	}
 }
@@ -753,9 +685,9 @@ void MapEditScene::CheckCanTest()
 {
 	//スタートマスとゴールマスをおいてないとテストプレイをできないようにする
 	bool isStart = false, isGoal = false;
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < YSIZE; y++)
+		for (int y = 0; y < mathVolume_.z; y++)
 		{
 			if (math_[x][y].mathType_ == MATH_START)
 			{
@@ -784,7 +716,7 @@ void MapEditScene::TogetogeRouteSet()
 	{
 		if (tgtgRouteMathDown_.x != -1)
 		{
-			tgtgRouteMathUp_ = XMFLOAT3((int)mousePos_.x / MATHSIZE, YSIZE - 1 - (int)(mousePos_.y / MATHSIZE), 0);
+			tgtgRouteMathUp_ = XMFLOAT3((int)mousePos_.x / MATHSIZE, mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE), 0);
 
 			auto itr = tTgtgRoute_.begin();
 

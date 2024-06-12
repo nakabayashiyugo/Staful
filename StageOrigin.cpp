@@ -49,9 +49,9 @@ void StageOrigin::Math_Resize(int _xsize, int _zsize, std::vector<std::vector<bo
 
 void StageOrigin::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
 {
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int z = 0; z < ZSIZE; z++)
+		for (int z = 0; z < mathVolume_.z; z++)
 		{
 			math_.at(x).at(z) = _math.at(x).at(z);
 		}
@@ -84,8 +84,8 @@ void StageOrigin::Write()
 		return;
 	}
 
-	for (int i = 0; i < XSIZE; i++) {
-		for (int j = 0; j < ZSIZE; j++)
+	for (int i = 0; i < mathVolume_.x; i++) {
+		for (int j = 0; j < mathVolume_.z; j++)
 		{
 			write.write((char*)&math_[i][j], sizeof(math_[i][j]));
 			//文字列ではないデータをかきこむ
@@ -127,9 +127,9 @@ void StageOrigin::Read()
 	//  ファイルが開けなかったときの対策
 
 	//ファイルの最後まで続ける
-	for (int i = 0; i < XSIZE; i++)
+	for (int i = 0; i < mathVolume_.x; i++)
 	{
-		for (int j = 0; j < ZSIZE; j++)
+		for (int j = 0; j < mathVolume_.z; j++)
 		{
 			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
 			//文字列ではないデータを読みこむ
@@ -161,8 +161,59 @@ void StageOrigin::Read()
 
 void StageOrigin::MathVolumeWrite()
 {
+	std::ofstream write;
+	std::string savefile = saveFolderName + "mathVolume";
+
+	write.open(savefile, std::ios::out);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+
+	write.write((char*)&mathVolume_, sizeof(mathVolume_));
+	//文字列ではないデータをかきこむ
+
+	write.close();  //ファイルを閉じる
 }
 
 void StageOrigin::MathVolumeRead()
 {
+	std::ifstream read;
+	std::string openfile = saveFolderName + "mathVolume";
+
+	read.open(openfile, std::ios::in);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+
+	read.read((char*)&mathVolume_, sizeof(mathVolume_));
+			//文字列ではないデータを読みこむ
+	read.close();  //ファイルを閉じる
+}
+
+void StageOrigin::ResultWrite(bool _isClear)
+{
+	std::ofstream write;
+	std::string savefile = saveFolderName + "result";
+	savefile += std::to_string(playerNum_);
+
+	write.open(savefile, std::ios::out);
+
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+
+	write.write((char*)&_isClear, sizeof(_isClear));
+	//文字列ではないデータをかきこむ
+
+	write.close();  //ファイルを閉じる
 }

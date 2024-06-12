@@ -166,6 +166,7 @@
     <ClCompile Include="Engine\Shaker.cpp" />
     <ClCompile Include="Engine\Text.cpp" />
     <ClCompile Include="Engine\VFX.cpp" />
+    <ClCompile Include="GamePlayer.cpp" />
     <ClCompile Include="MathInit.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Engine\Camera.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="Engine\Shaker.h" />
     <ClInclude Include="Engine\Text.h" />
     <ClInclude Include="Engine\VFX.h" />
+    <ClInclude Include="GamePlayer.h" />
     <ClInclude Include="MathInit.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Engine\Camera.h" />

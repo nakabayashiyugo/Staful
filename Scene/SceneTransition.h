@@ -1,17 +1,15 @@
 #pragma once
 #include "../Engine/GameObject.h"
 #include "../StageOrigin.h"
+
 class PlayScene;
+class GamePlayer;
 
 enum SCENESTATE
 {
-	SCENE_BETWEEN1 = 0,
-	SCENE_MAPEDIT1,
-	SCENE_BETWEEN2,
+	SCENE_MAPEDIT1 = 0,
 	SCENE_MAPEDIT2,
-	SCENE_BETWEEN3,
 	SCENE_STAGE1,
-	SCENE_BETWEEN4,
 	SCENE_STAGE2,
 	SCENE_RESULT,
 	SCENE_TURNEND,
@@ -28,11 +26,9 @@ class SceneTransition
 	//現在のターン数
 	int turnNum_;
 	//現在プレイ中のプレイヤーの番号
-	int player_Num_;
-	//コースを保存するファイル番号
-	int saveNum_;
+	int playerNum_;
 	
-	PlayScene* pPS_[PLAYERNUMMAX];
+	GamePlayer* gPlayer_[PLAYERNUMMAX];
 
 	SCENESTATE sceneState_, prevSceneState_;
 
@@ -60,11 +56,9 @@ public:
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
 
 	//現在プレイ中のプレイヤーの番号のゲッター
-	int GetPlayerNum() { return player_Num_; }
+	int GetPlayerNum() { return playerNum_; }
 
 	int GetTurnNum() { return turnNum_; };
-
-	int GetSaveNum() { return saveNum_; };
 
 	bool GetIsClear(int _player_num)
 	{

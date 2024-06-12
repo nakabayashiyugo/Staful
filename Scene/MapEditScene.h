@@ -3,6 +3,7 @@
 
 class Text;
 class Button;
+class GamePlayer;
 
 class MapEditScene
 	:public GameObject, StageOrigin
@@ -11,17 +12,13 @@ class MapEditScene
 	
 	int hTgtgRoute_;
 
-	//マスの縦方向の量
-	int YSIZE;
-
-	
-
-
 	//元々のマスの情報
 	std::vector<std::vector<MATHDEDAIL>> math_origin_;
 	//true : 選択されたコンベアマスが回る
 	//false : コンベアマスは回らない
 	std::vector<std::vector<bool>> isConvRot_;
+
+	GamePlayer* pGP_;
 
 public:
 	MapEditScene(GameObject* parent);
@@ -61,15 +58,6 @@ private:
 public:
 	bool CostManagement();
 	void CostDraw();
-
-
-//ファイルの書き込み・読み出しについて
-private:
-	//書き込む・読みだすファイル
-	int saveNum_;
-public:
-	void Write();
-	void Read();
 
 
 //マスの選択について

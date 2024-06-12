@@ -111,6 +111,7 @@
       <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="MathInit.cpp" />
+    <ClCompile Include="GamePlayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Simple2D.hlsl">
@@ -219,6 +220,7 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="MathInit.h" />
+    <ClInclude Include="GamePlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">

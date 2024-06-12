@@ -10,15 +10,18 @@ MathInit::MathInit()
 	const int stageSizeMin = 5;
 	//ステージの最大サイズ
 	const int stageSizeMax = 18;
-	XSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
-	ZSIZE = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
+	mathVolume_.x = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
+	mathVolume_.z = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
 
-	Math_Resize(XSIZE, ZSIZE, &math_);
+	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
+
+	//マスの量書き込み
+	MathVolumeWrite();
 
 	//すべてFloorで初期化
-	for (int x = 0; x < XSIZE; x++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < ZSIZE; y++)
+		for (int y = 0; y < mathVolume_.z; y++)
 		{
 			math_[x][y].mathType_ = MATH_FLOOR;
 		}
