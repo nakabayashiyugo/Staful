@@ -49,9 +49,6 @@ public:
 	//開放
 	void Release() override;
 
-	//現在プレイ中のプレイヤー番号表示
-	void PlayerNumDraw();
-
 	int GetSceneState() { return (int)sceneState_; };
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
 
@@ -59,6 +56,13 @@ public:
 	int GetPlayerNum() { return playerNum_; }
 
 	int GetTurnNum() { return turnNum_; };
+
+	void SetNextScene() { sceneState_ = (SCENESTATE)((int)sceneState_ + 1); }
+
+	//GamePlayerの関数を呼び出す関数
+	//引数：プレイヤー番号(0からスタート)
+	void CallMapEdit(int _playerNum);
+	void CallChallenge(int _playerNum);
 
 	bool GetIsClear(int _player_num)
 	{
@@ -75,10 +79,4 @@ public:
 			isClear_Player_[_player_num] = _isClear;
 		}
 	}
-
-	//playerがクリアしたかどうかのファイルへの書き込み
-	void ResultWrite();
-
-
-	void SetNextScene() { sceneState_ = (SCENESTATE)((int)sceneState_ + 1); }
 };

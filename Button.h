@@ -23,7 +23,6 @@ class Button
 
 	XMFLOAT3 mousePos_;
 
-
 public:
 	Button(GameObject* parent);
 

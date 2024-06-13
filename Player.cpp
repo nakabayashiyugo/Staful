@@ -612,11 +612,6 @@ void Player::MoveFinished()
 
 void Player::MathTypeEffect()
 {
-	XMFLOAT3 tmp;
-	srand(time(NULL));
-	//0～移動可能方向の数までの乱数取得
-	int random1 = (rand() % possiMoveDirNum);
-	int random2 = (rand() % possiMoveDirNum);
 	Stage* pStage = pPlayScene_->GetStagePointer();
 	//コンベアによって移動する方向
 	const XMVECTOR converyor_velocity = XMVectorSet(-1.0f, 0, 0, 0);

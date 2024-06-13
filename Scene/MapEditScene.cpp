@@ -87,8 +87,8 @@ MapEditScene::MapEditScene(GameObject* parent)
 		costLimitFirst = mathVolume_.z;
 		costLimitPlus = mathVolume_.z / 2;
 	}
-	turn_ = pGP_->GetTurnNum();
-	costLimit_ = costLimitFirst + (turn_ - 1) * costLimitPlus;
+	turnNum_ = pGP_->GetTurnNum();
+	costLimit_ = costLimitFirst + (turnNum_ - 1) * costLimitPlus;
 }
 
 void MapEditScene::Initialize()
@@ -136,7 +136,7 @@ void MapEditScene::Update()
 			case MATH_START:
 				if (Input::IsMouseButton(0))
 				{
-					if (turn_ == 1)
+					if (turnNum_ == 1)
 					{
 						//スタートマスがすでにあるかどうか探索
 						for (int x = 0; x < mathVolume_.x; x++)
@@ -156,7 +156,7 @@ void MapEditScene::Update()
 			case MATH_GOAL:
 				if (Input::IsMouseButton(0))
 				{
-					if (turn_ == 1)
+					if (turnNum_ == 1)
 					{
 						//ゴールマスがすでにあるかどうか探索
 						for (int x = 0; x < mathVolume_.x; x++)
@@ -668,7 +668,7 @@ void MapEditScene::SelectMathType()
 	if (pCompleteButton_->GetIsClicked())
 	{
 		Write();
-		KillMe();
+		pGP_->SetIsSceneFinished(true);
 	}
 }
 

@@ -15,8 +15,6 @@ SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), 
 	sceneState_(SCENE_MAPEDIT1), 
 	prevSceneState_(SCENE_TURNEND),
-	turnNum_(0), 
-	playerNum_(0), 
 	isClear_Player_{ false, false },
 	hPlayer1_(-1), hPlayer2_(-1)
 {
@@ -81,21 +79,12 @@ void SceneTransition::Release()
 {
 }
 
-void SceneTransition::PlayerNumDraw()
+void SceneTransition::CallMapEdit(int _playerNum)
 {
-	Transform player;
-	player.position_ = XMFLOAT3(0.7, 0.8, 0);
-	switch (sceneState_)
-	{
-	case SCENE_MAPEDIT1:
-	case SCENE_STAGE1:
-		Image::SetTransform(hPlayer1_, player);
-		Image::Draw(hPlayer1_);
-		break;
-	case SCENE_MAPEDIT2:
-	case SCENE_STAGE2:
-		Image::SetTransform(hPlayer2_, player);
-		Image::Draw(hPlayer2_);
-		break;
-	}
+	gPlayer_[_playerNum]->MapEdit();
+}
+
+void SceneTransition::CallChallenge(int _playerNum)
+{
+	gPlayer_[_playerNum]->Challenge();
 }

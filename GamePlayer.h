@@ -1,6 +1,7 @@
 #pragma once
 #include "Engine/GameObject.h"
 
+class SceneTransition;
 class MapEditScene;
 class PlayScene;
 
@@ -12,10 +13,13 @@ class GamePlayer : public GameObject
 	int playerNum_;
 	//ファイル番号
 	int saveNum_;
-
 	//コースをクリアしたかどうか
 	bool isClear_;
+	//現在実行中のシーンが終了したかどうか
+	bool isSceneFinished_;
 
+	//シーン遷移担当
+	SceneTransition* pST_;
 	//マップエディット
 	MapEditScene* pMES_;
 	//プレイシーン
@@ -51,12 +55,17 @@ public:
 	int GetIsClear() { return isClear_; }
 	void SetIsClear(int _isClear) { isClear_ = _isClear; }
 
+	//マップエディットを終了したかどうかのゲッター・セッター
+	int GetIsSceneFinished() { return isSceneFinished_; }
+	void SetIsSceneFinished(bool _isFinished) { isSceneFinished_ = _isFinished; }
+
 	//ターン数のゲッター
 	int GetTurnNum();
 
 	//プレイ中のプレイヤー表示
 	void PlayerNumDraw();
 
-
+	//結果書き込み
+	void ResultWrite(bool _isClear);
 };
 

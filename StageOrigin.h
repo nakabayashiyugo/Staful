@@ -68,7 +68,7 @@ protected:
 	//保存するファイル番号
 	int saveNum_;
 	//ターン数
-	int turn_;
+	int turnNum_;
 	//プレイヤーの番号
 	int playerNum_;
 public:
@@ -93,8 +93,7 @@ public:
 	void MathVolumeWrite();
 	//マスの量読み込み
 	void MathVolumeRead();
-	//結果書き込み
-	void ResultWrite(bool _isClear);
+	
 
 };
 

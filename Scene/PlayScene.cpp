@@ -49,19 +49,6 @@ void PlayScene::Initialize()
 
 void PlayScene::Update()
 {
-	if (pParent_->GetObjectName() == "SceneTransition")
-	{
-		if (pPlayer_->GetStageState() == STATE_GOAL)
-		{
-			pGP_->SetIsClear(true);
-			KillMe();
-		}
-		if (pPlayer_->GetStageState() == STATE_FAILURE)
-		{
-			pGP_->SetIsClear(false);
-			KillMe();
-		}
-	}
 	//テストプレイの場合
 	if (pParent_->GetObjectName() == "MapEditScene")
 	{
@@ -77,6 +64,21 @@ void PlayScene::Update()
 		{
 			//マップエディター表示
 			pMES->SetIsDisp(true);
+			KillMe();
+		}
+	}
+	else
+	{
+		if (pPlayer_->GetStageState() == STATE_GOAL)
+		{
+			pGP_->SetIsClear(true);
+			pGP_->SetIsSceneFinished(true);
+			KillMe();
+		}
+		if (pPlayer_->GetStageState() == STATE_FAILURE)
+		{
+			pGP_->SetIsClear(false);
+			pGP_->SetIsSceneFinished(true);
 			KillMe();
 		}
 	}

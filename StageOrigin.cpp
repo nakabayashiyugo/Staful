@@ -220,23 +220,3 @@ void StageOrigin::MathVolumeRead()
 			//文字列ではないデータを読みこむ
 	read.close();  //ファイルを閉じる
 }
-
-void StageOrigin::ResultWrite(bool _isClear)
-{
-	std::ofstream write;
-	std::string savefile = saveFolderName + "result";
-	savefile += std::to_string(playerNum_);
-
-	write.open(savefile, std::ios::out);
-
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile << " が開けません";
-		return;
-	}
-
-	write.write((char*)&_isClear, sizeof(_isClear));
-	//文字列ではないデータをかきこむ
-
-	write.close();  //ファイルを閉じる
-}
