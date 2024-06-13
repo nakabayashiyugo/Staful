@@ -47,16 +47,10 @@ void SceneTransition::Update()
 		{
 		case SCENE_MAPEDIT1:
 			turnNum_++;
-			gPlayer_[0]->MapEdit();
-			break;
 		case SCENE_MAPEDIT2:
-			gPlayer_[1]->MapEdit();
-			break;
 		case SCENE_STAGE1:
-			gPlayer_[0]->Challenge();
-			break;
 		case SCENE_STAGE2:
-			gPlayer_[1]->Challenge();
+			Instantiate<BetweenScene>(this);
 			break;
 		case SCENE_RESULT:
 			Instantiate<ResultScene>(this);
@@ -81,10 +75,12 @@ void SceneTransition::Release()
 
 void SceneTransition::CallMapEdit(int _playerNum)
 {
-	gPlayer_[_playerNum]->MapEdit();
+	playerNum_ = _playerNum;
+	gPlayer_[playerNum_]->MapEdit();
 }
 
 void SceneTransition::CallChallenge(int _playerNum)
 {
-	gPlayer_[_playerNum]->Challenge();
+	playerNum_ = _playerNum;
+	gPlayer_[playerNum_]->Challenge();
 }

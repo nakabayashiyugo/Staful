@@ -37,10 +37,12 @@ void GamePlayer::Update()
 		if (pMES_ != nullptr)
 		{
 			pMES_->KillMe();
+			pMES_ = nullptr;
 		}
 		else if (pPS_ != nullptr)
 		{
 			pPS_->KillMe();
+			pPS_ = nullptr;
 			ResultWrite(isClear_);
 		}
 	}
@@ -60,8 +62,8 @@ void GamePlayer::MapEdit()
 	//読み込むファイル番号
 	if (pST_->GetTurnNum() % 2 != 0 && playerNum_ == 0)	saveNum_ = saveFileName2;
 	else if (pST_->GetTurnNum() % 2 != 0 && playerNum_ == 1) saveNum_ = saveFileName1;
-	else if (pST_->GetTurnNum() % 2 != 1 && playerNum_ == 0)	saveNum_ = saveFileName2;
-	else saveNum_ = saveFileName1;
+	else if (pST_->GetTurnNum() % 2 != 1 && playerNum_ == 0)	saveNum_ = saveFileName1;
+	else saveNum_ = saveFileName2;
 	pMES_->Instantiate<MapEditScene>(this);
 	pMES_ = (MapEditScene*)FindObject("MapEditScene");
 }
@@ -70,7 +72,7 @@ void GamePlayer::Challenge()
 {
 	//読み込むファイル番号入れ替え
 	if (saveNum_ == saveFileName1)	saveNum_ = saveFileName2;
-	if (saveNum_ == saveFileName2)	saveNum_ = saveFileName1;
+	else if (saveNum_ == saveFileName2)	saveNum_ = saveFileName1;
 	pPS_->Instantiate<PlayScene>(this);
 	pPS_ = (PlayScene*)FindObject("PlayScene");
 }

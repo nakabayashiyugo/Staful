@@ -30,9 +30,7 @@ PlayScene::PlayScene(GameObject* parent)
 	}
 	playerNum_ = pGP_->GetPlayerNum();
 	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
-	
 	saveNum_ = pGP_->GetSaveNum();
-
 	Read();
 }
 
@@ -121,7 +119,12 @@ MATHDEDAIL PlayScene::GetPlayerStandMath()
 	return retMath;
 }
 
-void PlayScene::MathRead()
+void PlayScene::CallWrite()
+{
+	this->Write();
+}
+
+void PlayScene::CallRead()
 {
 	this->Read();
 }

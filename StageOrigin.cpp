@@ -75,7 +75,7 @@ void StageOrigin::Write()
 	std::ofstream write;
 	//マス情報書き込み
 	std::string savefile = saveFolderName + "saveMath";
-	savefile += std::to_string(saveNum_);
+	savefile += std::to_string(this->saveNum_);
 	write.open(savefile, std::ios::out);
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {

@@ -17,17 +17,17 @@ ResultScene::ResultScene(GameObject* parent)
 
 void ResultScene::Initialize()
 {
-	isClear_Player_.resize(PLAYERNUMMAX);
+	isClear_.resize(PLAYERNUMMAX);
 	//それぞれのプレイヤーがクリアしたかどうか受取り
 	for (int i = 0; i < PLAYERNUMMAX; i++)
 	{
-		isClear_Player_[i] = pST_->GetIsClear(i);
+		isClear_[i] = pST_->GetIsClear(i);
 	}
 	//ボタンの画像ロード
 	std::string ntFileName = "Button_NextTurn.png";
 	std::string rtFileName = "Button_ReturnTitle.png";
 	//ゲームが終了したら
-	if (isClear_Player_[0] != isClear_Player_[1])
+	if (isClear_[0] != isClear_[1])
 	{
 		ButtonInit(rtFileName);
 	}
@@ -44,7 +44,7 @@ void ResultScene::Update()
 	if (pButton_->GetIsClicked())
 	{
 		//ゲームが終了したら
-		if (isClear_Player_[0] != isClear_Player_[1])
+		if (isClear_[0] != isClear_[1])
 		{
 			SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
 			pSM->ChangeScene(SCENE_ID_TITLE);
@@ -138,7 +138,7 @@ void ResultScene::PictDraw()
 	Image::Draw(hPlayer2_);
 
 	//勝利、敗北、引き分けロゴの設定
-	if (isClear_Player_[0] && !isClear_Player_[1])
+	if (isClear_[0] && !isClear_[1])
 	{
 		tPict.position_ = XMFLOAT3(p1Pos.x, wPos.y, wPos.z);
 		Image::SetTransform(hWin_, tPict);
@@ -147,7 +147,7 @@ void ResultScene::PictDraw()
 		Image::Draw(hWin_);
 		Image::Draw(hLose_);
 	}
-	else if (!isClear_Player_[0] && isClear_Player_[1])
+	else if (!isClear_[0] && isClear_[1])
 	{
 		tPict.position_ = XMFLOAT3(p2Pos.x, wPos.y, wPos.z);
 		Image::SetTransform(hWin_, tPict);
@@ -161,6 +161,33 @@ void ResultScene::PictDraw()
 		tPict.position_ = dPos;
 		Image::SetTransform(hDraw_, tPict);
 		Image::Draw(hDraw_);
+	}
+}
+
+void ResultScene::ResultRead()
+{
+	std::ifstream read;
+	std::string openfile = "SaveFile\\result";
+
+	for (int i = 0; i < PLAYERNUMMAX; i++)
+	{
+		openfile += std::to_string(i);
+
+		read.open(openfile, std::ios::in);
+		//  ファイルを開く
+		//  ios::in は読み込み専用  ios::binary はバイナリ形式
+
+		if (!read) {
+			std::cout << "ファイルが開けません";
+			return;
+		}
+		//  ファイルが開けなかったときの対策
+		bool isClear;
+		read.read((char*)&isClear, sizeof(isClear));
+		isClear_[i] = isClear;
+		//文字列ではないデータを読みこむ
+		read.close();  //ファイルを閉じる
+
 	}
 }
 

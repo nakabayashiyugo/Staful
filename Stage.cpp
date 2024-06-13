@@ -110,8 +110,9 @@ void Stage::Update()
 		if (makeHoleTimes_[(int)playerPos.x][(int)playerPos.z] <= 0)
 		{
 			math_[(int)playerPos.x][(int)playerPos.z].mathType_ = MATH_HOLE;
+			saveNum_ = pPlayScene_->GetSaveNum();
 			Write();
-			pPlayScene_->MathRead();
+			pPlayScene_->CallRead();
 			pPlayScene_->SetTableChange(true);
 		}
 	}

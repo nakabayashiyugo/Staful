@@ -14,7 +14,6 @@ class Stage
 	:public GameObject, StageOrigin
 {
 	int hModel_[MATH_MAX];
-	int saveNum_;
 
 	bool isStandPitfall_;
 

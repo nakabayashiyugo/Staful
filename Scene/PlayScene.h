@@ -58,7 +58,9 @@ public:
 
 	Stage* GetStagePointer() { return pStage_; }
 
+	//Write‚ğŒÄ‚ÔŠÖ”
+	void CallWrite();
 	//Read‚ğŒÄ‚ÔŠÖ”
-	void MathRead();
+	void CallRead();
 
 };

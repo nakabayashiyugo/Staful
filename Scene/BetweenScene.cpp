@@ -13,9 +13,15 @@ const int moveUpdate = 5;
 BetweenScene::BetweenScene(GameObject* parent)
 	: GameObject(parent, "BetweenScene"), 
 	hPlayer1_(-1), hPlayer2_(-1),
-	hLogoEmptyCourse_(-1), hLogoCourse1_(-1), hLogoCourse2_(-1),
-	hLogoMapCreate_(-1), hLogoPlay_(-1),
-	logoPlayerMoveCount_(0), logoCourseMoveCount_(0), logoState_(COURSELOGOSTATE(0)),
+	hLogoEmptyCourse_(-1), 
+	hLogoCourse1_(-1), 
+	hLogoCourse2_(-1),
+	hLogoMapCreate_(-1), 
+	hLogoPlay_(-1),
+
+	logoPlayerMoveCount_(0), 
+	logoCourseMoveCount_(0), 
+	logoState_(COURSELOGOSTATE(0)),
 	curScene_(SCENESTATE(0))
 {
 	pST_ = (SceneTransition*)FindObject("SceneTransition");
@@ -265,7 +271,6 @@ void BetweenScene::NextCallFunction()
 
 void BetweenScene::Finished()
 {
-	pST_->SetNextScene();
 	NextCallFunction();
 	KillMe();
 }

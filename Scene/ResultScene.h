@@ -11,7 +11,7 @@ class ResultScene
 	:public GameObject
 {
 	//playerがクリアしたかどうかの値を受け取る
-	std::vector<bool> isClear_Player_;
+	std::vector<bool> isClear_;
 
 	Button* pButton_;
 	//ボタンの画像番号
@@ -44,4 +44,7 @@ public:
 	void PictInit();
 	//画像の表示
 	void PictDraw();
+
+	//結果読み込み
+	void ResultRead();
 };
