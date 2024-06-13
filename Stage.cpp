@@ -111,7 +111,7 @@ void Stage::Update()
 		{
 			math_[(int)playerPos.x][(int)playerPos.z].mathType_ = MATH_HOLE;
 			Write();
-			Read();
+			pPlayScene_->MathRead();
 			pPlayScene_->SetTableChange(true);
 		}
 	}
@@ -234,45 +234,6 @@ void Stage::SetIsStand(int _x, int _y, bool _isStand)
 			timeLimitDecs_[i].isStand = _isStand;
 		}
 	}
-}
-
-void Stage::Write()
-{
-	std::ofstream write;
-	std::string savefile = saveFolderName + "saveMath";
-	savefile += std::to_string(saveNum_);
-	write.open(savefile, std::ios::out);
-
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile << " が開けません";
-		return;
-	}
-
-	for (int i = 0; i < mathVolume_.x; i++) {
-		for (int j = 0; j < mathVolume_.z; j++)
-		{
-			write.write((char*)&math_[i][j], sizeof(math_[i][j]));
-			//文字列ではないデータをかきこむ
-		}
-	}
-
-	write.close();  //ファイルを閉じる
-
-	//とげとげルート
-	savefile = saveFolderName + "tgtgRoute";
-	savefile += std::to_string(saveNum_);
-	write.open(savefile, std::ios::out);
-	//  ファイルが開けなかったときのエラー表示
-	if (!write) {
-		std::cout << "ファイル " << savefile << " が開けません";
-		return;
-	}
-	for (auto itr = tTgtgRoute_.begin(); itr != tTgtgRoute_.end(); itr++)
-	{
-		write.write((char*)&itr, sizeof(itr));
-	}
-	write.close();  //ファイルを閉じる
 }
 
 void Stage::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)

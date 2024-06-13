@@ -73,17 +73,15 @@ void StageOrigin::SetTogetogeRoute(std::vector<TOGETOGEROUTE> _tgtgRoute)
 void StageOrigin::Write()
 {
 	std::ofstream write;
+	//マス情報書き込み
 	std::string savefile = saveFolderName + "saveMath";
 	savefile += std::to_string(saveNum_);
-
 	write.open(savefile, std::ios::out);
-
 	//  ファイルが開けなかったときのエラー表示
 	if (!write) {
 		std::cout << "ファイル " << savefile << " が開けません";
 		return;
 	}
-
 	for (int i = 0; i < mathVolume_.x; i++) {
 		for (int j = 0; j < mathVolume_.z; j++)
 		{
@@ -91,10 +89,23 @@ void StageOrigin::Write()
 			//文字列ではないデータをかきこむ
 		}
 	}
-
 	write.close();  //ファイルを閉じる
 
-	//とげとげルート
+	//とげとげルートの配列のサイズ書き込み
+	savefile = saveFolderName + "tgtgRouteVolume";
+	savefile += std::to_string(saveNum_);
+	write.open(savefile, std::ios::out);
+	//  ファイルが開けなかったときのエラー表示
+	if (!write) {
+		std::cout << "ファイル " << savefile << " が開けません";
+		return;
+	}
+	int tgtgSize = tTgtgRoute_.size();
+	write.write((char*)&tgtgSize, sizeof(tgtgSize));
+	//文字列ではないデータをかきこむ
+	write.close();  //ファイルを閉じる
+
+	//とげとげルートの書き込み
 	savefile = saveFolderName + "tgtgRoute";
 	savefile += std::to_string(saveNum_);
 	write.open(savefile, std::ios::out);
@@ -103,9 +114,9 @@ void StageOrigin::Write()
 		std::cout << "ファイル " << savefile << " が開けません";
 		return;
 	}
-	for (auto itr = tTgtgRoute_.begin(); itr != tTgtgRoute_.end(); itr++)
+	for (int i = 0; i < tTgtgRoute_.size(); i++)
 	{
-		write.write((char*)&itr, sizeof(itr));
+		write.write((char*)&tTgtgRoute_[i], sizeof(TOGETOGEROUTE));
 	}
 	write.close();  //ファイルを閉じる
 }
@@ -113,19 +124,15 @@ void StageOrigin::Write()
 void StageOrigin::Read()
 {
 	std::ifstream read;
+	//マス情報読み込み
 	std::string openfile = saveFolderName + "saveMath";
-
 	openfile += std::to_string(saveNum_);
 	read.open(openfile, std::ios::in);
-	//  ファイルを開く
-	//  ios::in は読み込み専用  ios::binary はバイナリ形式
-
 	if (!read) {
 		std::cout << "ファイルが開けません";
 		return;
 	}
 	//  ファイルが開けなかったときの対策
-
 	//ファイルの最後まで続ける
 	for (int i = 0; i < mathVolume_.x; i++)
 	{
@@ -133,12 +140,29 @@ void StageOrigin::Read()
 		{
 			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
 			//文字列ではないデータを読みこむ
-
 		}
 	}
 	read.close();  //ファイルを閉じる
 
-	//とげとげルート
+	//とげとげルートの配列のサイズの読み込み
+	openfile = saveFolderName + "tgtgRouteVolume";
+	openfile += std::to_string(saveNum_);
+	read.open(openfile, std::ios::in);
+	//  ファイルを開く
+	//  ios::in は読み込み専用  ios::binary はバイナリ形式
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	//  ファイルが開けなかったときの対策
+	int tgtgSize = 0;
+	read.read((char*)&tgtgSize, sizeof(tgtgSize));
+	//文字列ではないデータを読みこむ
+	tTgtgRoute_.resize(tgtgSize);
+	read.close();  //ファイルを閉じる
+
+
+	//とげとげルートの読み込み
 	openfile = saveFolderName + "tgtgRoute";
 	openfile += std::to_string(saveNum_);
 	read.open(openfile, std::ios::in);
@@ -146,16 +170,15 @@ void StageOrigin::Read()
 		std::cout << "ファイルが開けません";
 		return;
 	}
-
-	while (!read.eof())
+	for (int i = 0; i < tgtgSize; i++)
 	{
 		TOGETOGEROUTE pTg;
-		read.read((char*)&pTg, sizeof(pTg));
-		if (pTg.route_.scale_.x < 1)
-		{
-			tTgtgRoute_.push_back(pTg);
-		}
+		read.read((char*)&pTg, sizeof(TOGETOGEROUTE));
+		tTgtgRoute_[i] = pTg;
+
 	}
+
+
 	read.close();  //ファイルを閉じる
 }
 

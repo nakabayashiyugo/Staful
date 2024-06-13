@@ -118,3 +118,8 @@ MATHDEDAIL PlayScene::GetPlayerStandMath()
 	retMath = pPlayer_->GetStandMath();
 	return retMath;
 }
+
+void PlayScene::MathRead()
+{
+	this->Read();
+}

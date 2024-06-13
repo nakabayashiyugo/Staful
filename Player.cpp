@@ -586,6 +586,7 @@ void Player::DeadUpdate()
 
 void Player::ReturnToStartMath()
 {
+	moveFinished_ = false;
 	isReturn_ = true;
 	moveDir_.x = startPos_.x - prevPos_.x;
 	moveDir_.y = 0;

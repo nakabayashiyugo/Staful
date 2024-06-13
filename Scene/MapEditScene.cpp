@@ -207,19 +207,23 @@ void MapEditScene::Update()
 						auto itr = tTgtgRoute_.begin();
 						while (itr != tTgtgRoute_.end())
 						{
-							if (itr->initPos_.x != tgtgRouteMathDown_.x &&
-								itr->initPos_.y != tgtgRouteMathDown_.y)
+							if (itr->initPos_.x == tgtgRouteMathDown_.x &&
+								itr->initPos_.y == tgtgRouteMathDown_.y)
 							{
 								break;
 							}
+							itr++;
 						}
-
-						//tTgtgRoute_‚É’Ç‰Á
-						TOGETOGEROUTE* ptg = new TOGETOGEROUTE();
-						ptg->initPos_ = ptg->destPos_ = tgtgRouteMathDown_;
-						ptg->route_.scale_ = XMFLOAT3(0, 0, 0);
-						tTgtgRoute_.push_back(*ptg);
-						delete ptg;
+						//‘¶Ý‚µ‚È‚©‚Á‚½‚ç
+						if (itr == tTgtgRoute_.end())
+						{
+							//tTgtgRoute_‚É’Ç‰Á
+							TOGETOGEROUTE* ptg = new TOGETOGEROUTE();
+							ptg->initPos_ = ptg->destPos_ = tgtgRouteMathDown_;
+							ptg->route_.scale_ = XMFLOAT3(0, 0, 0);
+							tTgtgRoute_.push_back(*ptg);
+							delete ptg;
+						}
 					}
 				}
 				if (Input::IsMouseButtonDown(1))
