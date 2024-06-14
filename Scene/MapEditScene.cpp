@@ -4,6 +4,7 @@
 #include "../Engine/Image.h"
 #include "../Engine/Input.h"
 #include "../Engine/Text.h"
+#include "../Engine/Audio.h"
 
 #include "../resource.h"
 #include "../Button.h"
@@ -41,7 +42,9 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//とげとげについて
 	tgtgRouteMathDown_(mathInitPos),
 	tgtgRouteMathUp_(mathInitPos),
-	hTgtgRoute_(-1)
+	hTgtgRoute_(-1),
+	//音楽について
+	hSound_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -253,8 +256,6 @@ void MapEditScene::Update()
 	//とげとげマスがほかのマスに変わった時の要素の削除
 	TogetogeElemDelete();
 }
-
-
 
 void MapEditScene::Draw()
 {
@@ -833,4 +834,18 @@ void MapEditScene::TogetogeElemDelete()
 		}
 		itr++;
 	}
+}
+
+void MapEditScene::AudioInit()
+{
+	//音楽が入ってるフォルダ名
+	const std::string folderName = "Assets\\Audio\\";
+	//音楽
+	const std::string musicFolder = "Music\\";
+	//音楽ロード
+	std::string music = folderName + musicFolder + "Audio_MapEdit.wav";
+	
+
+
+
 }

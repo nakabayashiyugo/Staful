@@ -145,5 +145,13 @@ public:
 	void TogetogeRouteSet();
 	//とげとげマスが別のマスに変わった時の要素の削除
 	void TogetogeElemDelete();
+
+
+private:
+	//音楽のハンドル
+	int hSound_;
+	
+public:
+	void AudioInit();
 };
 

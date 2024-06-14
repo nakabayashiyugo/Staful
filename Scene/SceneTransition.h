@@ -23,6 +23,8 @@ class SceneTransition
 {
 	//playerがクリアしたかどうか
 	bool isClear_Player_[PLAYERNUMMAX];
+	//音楽のハンドル
+	int hMapEdit_, hChallenge_;
 	//現在のターン数
 	int turnNum_;
 	//現在プレイ中のプレイヤーの番号

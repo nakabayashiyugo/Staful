@@ -150,7 +150,7 @@ int Audio::Load(std::string fileName, bool isLoop, int svNum)
 }
 
 //çƒê∂
-void Audio::Play(int ID, int volume)
+void Audio::Play(int ID, float volume)
 {
 	for (int i = 0; i < audioDatas[ID].svNum; i++)
 	{

@@ -7,10 +7,12 @@
 #include "Engine/Input.h"
 #include "Engine/Direct3D.h"
 #include "Engine/SceneManager.h"
+#include "Engine/Audio.h"
 
 Button::Button(GameObject* parent)
 	: GameObject(parent, "Button"), isClick_(false), isRelease_(false),
-	hPict_(-1), isCanPush_(true), isCursorMatched_(false), isDisp_(true)
+	hPict_(-1), isCanPush_(true), isCursorMatched_(false), isDisp_(true),
+	hSE_(-1)
 {
 	//親クラスがMapEditSceneなら
 	if (pParent_->GetObjectName() == "MapEditScene")
@@ -28,6 +30,14 @@ Button::Button(GameObject* parent)
 
 void Button::Initialize()
 {
+	//音楽が入ってるフォルダ名
+	const std::string folderName = "Assets\\Audio\\";
+	//SE
+	const std::string SEFolder = "SE\\";
+	//SEロード
+	std::string SEButton = folderName + SEFolder + "SE_PushButton.wav";
+
+	hSE_ = Audio::Load(SEButton, false);
 }
 
 void Button::Update()
@@ -64,6 +74,7 @@ void Button::Update()
 			isCursorMatched_ = true;
 			if (Input::IsMouseButtonDown(0))
 			{
+				Audio::Play(hSE_, 0.5f);
 				isClick_ = true;
 			}
 			else

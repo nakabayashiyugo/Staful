@@ -108,11 +108,16 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
     }
     Input::Initialize(hWnd);
 
+    //カメラ、起動
+    Camera::Initialize();
+
+    //Audio、起動
+    Audio::Initialize();
+
     pRootJob = new RootJob(nullptr);
     pRootJob->Initialize();
 
-    //カメラ、起動
-    Camera::Initialize();
+    
 
     //Camera::SetPosition(XMFLOAT3(0, 0, -10));
     
@@ -168,8 +173,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
             //入力、更新
             Input::Update();
-
-            Audio::Initialize();
 
             pRootJob->UpdateSub();
 

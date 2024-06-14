@@ -16,6 +16,9 @@ class Button
 	bool isCursorMatched_;
 	//ボタンを表示するかどうか
 	bool isDisp_;
+	
+	//ボタンのSEのハンドル
+	int hSE_;
 
 	int hPict_;
 
