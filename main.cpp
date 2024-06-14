@@ -10,6 +10,7 @@
 #include "Engine/Model.h"
 #include "Engine/SceneManager.h"
 #include "Engine/VFX.h"
+#include "Engine/Audio.h"
 
 #include "DirectXCollision.h"
 #include "resource.h"
@@ -167,6 +168,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, 
 
             //“ü—ÍAXV
             Input::Update();
+
+            Audio::Initialize();
 
             pRootJob->UpdateSub();
 

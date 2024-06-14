@@ -150,12 +150,13 @@ int Audio::Load(std::string fileName, bool isLoop, int svNum)
 }
 
 //çƒê∂
-void Audio::Play(int ID)
+void Audio::Play(int ID, int volume)
 {
 	for (int i = 0; i < audioDatas[ID].svNum; i++)
 	{
 		XAUDIO2_VOICE_STATE state;
 		audioDatas[ID].pSourceVoice[i]->GetState(&state);
+		audioDatas[ID].pSourceVoice[i]->SetVolume(volume);
 
 		if (state.BuffersQueued == 0)
 		{

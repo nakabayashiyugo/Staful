@@ -19,7 +19,7 @@ namespace Audio
 
 	//再生
 	//引数：handle	鳴らしたいサウンドの番号
-	void Play(int ID);
+	void Play(int ID, int volume);
 
 	//停止
 	//引数：handle	止めたいサウンドの番号
