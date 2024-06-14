@@ -84,8 +84,6 @@ void PlayScene::Update()
 
 void PlayScene::Draw()
 {
-	//プレイヤー番号表示
-	pGP_->PlayerNumDraw();
 }
 
 void PlayScene::Release()
@@ -117,6 +115,12 @@ MATHDEDAIL PlayScene::GetPlayerStandMath()
 	}
 	retMath = pPlayer_->GetStandMath();
 	return retMath;
+}
+
+void PlayScene::PlayerNumDraw()
+{
+	//プレイヤー番号表示
+	pGP_->PlayerNumDraw();
 }
 
 void PlayScene::CallWrite()

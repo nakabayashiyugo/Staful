@@ -434,6 +434,8 @@ void MapEditScene::ButtonInit()
 	std::string buttonComplete = "Button_Complete.png";
 	//テストプレイボタン
 	std::string buttonTestplay = "Button_TestPlay.png";
+	//中止ボタン
+	std::string buttonCancel = "Button_Cancel.png";
 	//上のファイルが入ってるフォルダー
 	std::string folderName = "Assets\\Button\\MathSelect\\";
 	//マス選択ボタンの画像番号
@@ -441,6 +443,7 @@ void MapEditScene::ButtonInit()
 	//その他のボタンの画像番号
 	int completeNum = -1;
 	int testplayNum = -1;
+	int cancelNum = -1;
 	//マス選択ボタンのロード
 	for (int i = 0; i < MATH_MAX; i++)
 	{
@@ -461,6 +464,11 @@ void MapEditScene::ButtonInit()
 	buttonTestplay = folderName + buttonTestplay;
 	testplayNum = Image::Load(buttonTestplay);
 	assert(testplayNum >= 0);
+	//中止ボタンのロード
+	folderName = "Assets\\Button\\";
+	buttonCancel = folderName + buttonCancel;
+	cancelNum = Image::Load(buttonCancel);
+	assert(cancelNum >= 0);
 
 	//ボタンの普通のマスとの倍率
 	const float normalMathtoMult = 2.0f;
@@ -550,6 +558,22 @@ void MapEditScene::ButtonInit()
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;
 	pTestplayButton_->SetTransform(tbTransform);
+
+	//中止ボタン
+	buttonNum_++;
+	pCancelButton_->Instantiate<Button>(this);
+	//中止ボタンのオブジェクトネーム
+	buttonStr = "Button";
+	buttonStr += std::to_string(buttonNum_);
+	pCancelButton_ = (Button*)FindObject(buttonStr);
+	pCancelButton_->SetPictNum(cancelNum);
+
+	const XMFLOAT3 ccbPos = tbPos;
+	Transform ccbTransform;
+	ccbTransform.position_ = ccbPos;
+	ccbTransform.scale_ = obScale;
+	pCancelButton_->SetTransform(ccbTransform);
+
 }
 
 void MapEditScene::ExpantionInit()
@@ -652,6 +676,8 @@ void MapEditScene::SelectMathType()
 			mathtype_ = i;
 		}
 	}
+	static PlayScene* pTestplay = nullptr;
+
 	pTestplayButton_->SetIsCanPush(canTest_ * isDisp_);
 	//テストプレイボタンが押されたら
 	if (pTestplayButton_->GetIsClicked())
@@ -660,7 +686,8 @@ void MapEditScene::SelectMathType()
 		//マップエディター非表示
 		isDisp_ = false;
 		Write();
-		Instantiate<PlayScene>(this);
+		pTestplay->Instantiate<PlayScene>(this);
+		pTestplay = (PlayScene*)FindObject("PlayScene");
 	}
 	//テストプレイクリアできないと押せないようにする
 	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
@@ -670,6 +697,21 @@ void MapEditScene::SelectMathType()
 		Write();
 		pGP_->SetIsSceneFinished(true);
 	}
+	//中止ボタン
+	//テストプレイしてる時だけ押せるようにする
+	pCancelButton_->SetIsCanPush(!isDisp_);
+	//テストプレイしているとき
+	if (pTestplay != nullptr)
+	{
+		if (pCancelButton_->GetIsClicked())
+		{
+			pTestplay->KillMe();
+			pTestplay = nullptr;
+			//マップエディター表示
+			isDisp_ = true;
+		}
+	}
+
 }
 
 void MapEditScene::IsDisplay(bool _isDisp)
@@ -683,6 +725,8 @@ void MapEditScene::IsDisplay(bool _isDisp)
 	pCompleteButton_->SetIsDisplay(_isDisp);
 	//テストプレイボタン表示非表示切り替え
 	pTestplayButton_->SetIsDisplay(_isDisp);
+	//中止ボタン表示日表示切替
+	pCancelButton_->SetIsDisplay(!_isDisp);
 }
 
 void MapEditScene::CheckCanTest()

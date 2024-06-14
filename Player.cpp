@@ -198,6 +198,8 @@ void Player::Draw()
 	tTime_.scale_ = tScale;
 	Image::SetTransform(hTime_, tTime_);
 	Image::Draw(hTime_);
+
+	pPlayScene_->PlayerNumDraw();
 }
 
 void Player::Release()
@@ -220,8 +222,6 @@ void Player::PlayUpdate()
 	}
 
 	ShadowManagement();
-
-
 
 	switch (playerState_)
 	{
@@ -344,6 +344,8 @@ void Player::PlayerOperation(){
 
 void Player::PlayerMove()
 {
+	isConfAnim_ = false;
+	prevRot_ = transform_.rotate_;
 	//à⁄ìÆêÊÇ™ï«ÇæÇ¡ÇΩÇÁ
 	if (WallCheck())
 	{
@@ -658,7 +660,7 @@ void Player::MathTypeEffect()
 		}
 		break;
 	case MATH_CONFUSION:
-		playerState_ = STATE_CONF;
+		if(!isConfAnim_)		playerState_ = STATE_CONF;
 		break;
 	}
 

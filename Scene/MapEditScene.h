@@ -79,8 +79,12 @@ public:
 private:
 	//画面上のマスの種類を選択するボタン
 	Button* pMathButton_[MATH_MAX];
+	//完了ボタン
 	Button* pCompleteButton_;
+	//テストプレイボタン
 	Button* pTestplayButton_;
+	//中止ボタン
+	Button* pCancelButton_;
 	//ボタンの番号
 	int buttonNum_;
 	//テクスチャのサイズ

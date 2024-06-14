@@ -44,6 +44,9 @@ public:
 	XMFLOAT3 GetPlayerPos();
 	MATHDEDAIL GetPlayerStandMath();
 
+	//プレイ中のプレイヤー表示
+	void PlayerNumDraw();
+
 	void SetTableChange(bool _table_change) { table_Change_ = _table_change; }
 	bool GetTableChange() { return table_Change_; }
 
