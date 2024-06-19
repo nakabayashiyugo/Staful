@@ -39,24 +39,10 @@ SceneTransition::SceneTransition(GameObject* parent)
 void SceneTransition::Initialize()
 {
 	sceneState_ = SCENESTATE(0);
-
-	//音楽ロード
-	//音楽が入ってるフォルダ名
-	const std::string folderName = "Music\\Assets\\Audio\\";
-	//音楽のファイル名
-	const std::string fileNameBase = "Audio_";
-	std::string mapEditName = folderName + fileNameBase + "MapEdit.wav";
-	std::string challengeName = folderName + fileNameBase + "Challenge.wav";
-	
-	hMapEdit_ = Audio::Load(mapEditName, true);
-	assert(hMapEdit_ >= 0);
-	hChallenge_ = Audio::Load(challengeName, true);
-	assert(hChallenge_ >= 0);
 }
 
 void SceneTransition::Update()
 {
-	Audio::Play(hChallenge_, 0.5f);
 	if (sceneState_ != prevSceneState_)
 	{
 		switch (sceneState_)

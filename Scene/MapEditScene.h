@@ -149,7 +149,9 @@ public:
 
 private:
 	//音楽のハンドル
-	int hSound_;
+	int hAudio_Music_;
+	//マスを置いたときになるSEのハンドル
+	int hSE_PutMath_;
 	
 public:
 	void AudioInit();

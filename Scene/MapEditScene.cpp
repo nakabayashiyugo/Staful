@@ -15,6 +15,8 @@
 
 //マスの位置の初期値
 const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
+//音楽の大きさ
+const float soundVolume = 0.2f;
 //それぞれのコスト
 const int floorCost = 0;
 const int wallCost = 1;
@@ -44,7 +46,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	tgtgRouteMathUp_(mathInitPos),
 	hTgtgRoute_(-1),
 	//音楽について
-	hSound_(-1)
+	hAudio_Music_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -102,6 +104,8 @@ void MapEditScene::Initialize()
 	ButtonInit();
 	//マスの説明の初期化
 	ExpantionInit();
+	//音楽の初期化
+	AudioInit();
 
 	hTgtgRoute_ = Image::Load("Assets\\Togetoge_Route.png");
 	assert(hTgtgRoute_ >= 0);
@@ -112,6 +116,7 @@ void MapEditScene::Initialize()
 
 void MapEditScene::Update()
 {
+	Audio::Play(hAudio_Music_, soundVolume);
 	//カーソルが置かれてるマスの位置
 	static XMFLOAT3 selectMath;
 	
@@ -411,6 +416,8 @@ void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
 	math_[(int)_selectMath.x][(int)_selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 	isClear_ = false;
 
+	Audio::Play(hSE_PutMath_, 1);
+
 	//テストプレイできるかどうかチェック
 	CheckCanTest();
 }
@@ -690,6 +697,7 @@ void MapEditScene::SelectMathType()
 		pTestplay->Instantiate<PlayScene>(this);
 		pTestplay = (PlayScene*)FindObject("PlayScene");
 	}
+
 	//テストプレイクリアできないと押せないようにする
 	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
 	//完了ボタンが押されたら
@@ -697,7 +705,9 @@ void MapEditScene::SelectMathType()
 	{
 		Write();
 		pGP_->SetIsSceneFinished(true);
+		Audio::Stop(hAudio_Music_);
 	}
+
 	//中止ボタン
 	//テストプレイしてる時だけ押せるようにする
 	pCancelButton_->SetIsCanPush(!isDisp_);
@@ -844,8 +854,11 @@ void MapEditScene::AudioInit()
 	const std::string musicFolder = "Music\\";
 	//音楽ロード
 	std::string music = folderName + musicFolder + "Audio_MapEdit.wav";
-	
+	hAudio_Music_ = Audio::Load(music, true);
 
-
-
+	//SE
+	const std::string SEFolder = "SE\\";
+	//SEロード
+	std::string se = folderName + SEFolder + "SE_PutMath.wav";
+	hSE_PutMath_ = Audio::Load(se, false);
 }
