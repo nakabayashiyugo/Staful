@@ -416,10 +416,18 @@ void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
 	math_[(int)_selectMath.x][(int)_selectMath.y].mathType_ = (MATHTYPE)mathtype_;
 	isClear_ = false;
 
-	Audio::Play(hSE_PutMath_, 1);
-
 	//テストプレイできるかどうかチェック
 	CheckCanTest();
+
+	//マスを置いた時のSE
+	//直前までカーソルの置かれていたマス
+	static XMFLOAT3 prevMath = mathInitPos;
+	if (prevMath.x != _selectMath.x || prevMath.y != _selectMath.y)
+	{
+		Audio::Stop(hSE_PutMath_);
+	}
+	Audio::Play(hSE_PutMath_, 1);
+	prevMath = _selectMath;
 }
 
 void MapEditScene::ButtonInit()
@@ -661,11 +669,13 @@ void MapEditScene::MathDraw()
 			if (isConvRot_[x][mathVolume_.z - 1 - y])
 			{
 				math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z += 5;
-			}
-			if ((int)math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z % 90 == 0)
-			{
-				math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z = (int)(math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z / 90) * 90;
-				isConvRot_[x][mathVolume_.z - 1 - y] = false;
+				Audio::Play(hSE_ConvRot_, 1);
+				if ((int)math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z % 90 == 0)
+				{
+					math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z = (int)(math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z / 90) * 90;
+					isConvRot_[x][mathVolume_.z - 1 - y] = false;
+					Audio::Stop(hSE_ConvRot_);
+				}
 			}
 
 			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
@@ -861,4 +871,7 @@ void MapEditScene::AudioInit()
 	//SEロード
 	std::string se = folderName + SEFolder + "SE_PutMath.wav";
 	hSE_PutMath_ = Audio::Load(se, false);
+	//コンベアを回転させたときのSE
+	std::string convSe = folderName + SEFolder + "SE_Rotate.wav";
+	hSE_ConvRot_ = Audio::Load(convSe, false);
 }

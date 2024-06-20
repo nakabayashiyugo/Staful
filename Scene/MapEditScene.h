@@ -152,6 +152,8 @@ private:
 	int hAudio_Music_;
 	//マスを置いたときになるSEのハンドル
 	int hSE_PutMath_;
+	//コンベアを回転させたときのSEのハンドル
+	int hSE_ConvRot_;
 	
 public:
 	void AudioInit();
