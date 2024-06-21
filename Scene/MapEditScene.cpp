@@ -15,6 +15,8 @@
 
 //マスの位置の初期値
 const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
+//音楽の大きさ
+const float soundVolume = 0.2f;
 //それぞれのコスト
 const int floorCost = 0;
 const int wallCost = 1;
@@ -44,7 +46,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	tgtgRouteMathUp_(mathInitPos),
 	hTgtgRoute_(-1),
 	//音楽について
-	hSound_(-1)
+	hAudio_Music_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -102,6 +104,8 @@ void MapEditScene::Initialize()
 	ButtonInit();
 	//マスの説明の初期化
 	ExpantionInit();
+	//音楽の初期化
+	AudioInit();
 
 	hTgtgRoute_ = Image::Load("Assets\\Togetoge_Route.png");
 	assert(hTgtgRoute_ >= 0);
@@ -112,6 +116,7 @@ void MapEditScene::Initialize()
 
 void MapEditScene::Update()
 {
+	Audio::Play(hAudio_Music_, soundVolume);
 	//カーソルが置かれてるマスの位置
 	static XMFLOAT3 selectMath;
 	
@@ -413,6 +418,16 @@ void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
 
 	//テストプレイできるかどうかチェック
 	CheckCanTest();
+
+	//マスを置いた時のSE
+	//直前までカーソルの置かれていたマス
+	static XMFLOAT3 prevMath = mathInitPos;
+	if (prevMath.x != _selectMath.x || prevMath.y != _selectMath.y)
+	{
+		Audio::Stop(hSE_PutMath_);
+	}
+	Audio::Play(hSE_PutMath_, 1);
+	prevMath = _selectMath;
 }
 
 void MapEditScene::ButtonInit()
@@ -654,11 +669,13 @@ void MapEditScene::MathDraw()
 			if (isConvRot_[x][mathVolume_.z - 1 - y])
 			{
 				math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z += 5;
-			}
-			if ((int)math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z % 90 == 0)
-			{
-				math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z = (int)(math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z / 90) * 90;
-				isConvRot_[x][mathVolume_.z - 1 - y] = false;
+				Audio::Play(hSE_ConvRot_, 1);
+				if ((int)math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z % 90 == 0)
+				{
+					math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z = (int)(math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z / 90) * 90;
+					isConvRot_[x][mathVolume_.z - 1 - y] = false;
+					Audio::Stop(hSE_ConvRot_);
+				}
 			}
 
 			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
@@ -690,6 +707,7 @@ void MapEditScene::SelectMathType()
 		pTestplay->Instantiate<PlayScene>(this);
 		pTestplay = (PlayScene*)FindObject("PlayScene");
 	}
+
 	//テストプレイクリアできないと押せないようにする
 	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
 	//完了ボタンが押されたら
@@ -698,6 +716,7 @@ void MapEditScene::SelectMathType()
 		Write();
 		pGP_->MapEditFinished();
 	}
+
 	//中止ボタン
 	//テストプレイしてる時だけ押せるようにする
 	pCancelButton_->SetIsCanPush(!isDisp_);
@@ -844,8 +863,14 @@ void MapEditScene::AudioInit()
 	const std::string musicFolder = "Music\\";
 	//音楽ロード
 	std::string music = folderName + musicFolder + "Audio_MapEdit.wav";
-	
+	hAudio_Music_ = Audio::Load(music, true);
 
-
-
+	//SE
+	const std::string SEFolder = "SE\\";
+	//SEロード
+	std::string se = folderName + SEFolder + "SE_PutMath.wav";
+	hSE_PutMath_ = Audio::Load(se, false);
+	//コンベアを回転させたときのSE
+	std::string convSe = folderName + SEFolder + "SE_Rotate.wav";
+	hSE_ConvRot_ = Audio::Load(convSe, false);
 }

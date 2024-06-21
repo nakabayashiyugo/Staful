@@ -77,18 +77,17 @@ void Button::Update()
 				Audio::Play(hSE_, 0.5f);
 				isClick_ = true;
 			}
-			else
-			{
-				isClick_ = false;
-			}
 			if (Input::IsMuoseButtonUp(0))
 			{
+				Audio::Stop(hSE_);
+				isClick_ = false;
 				isRelease_ = true;
 			}
 		}
 		else
 		{
 			isCursorMatched_ = false;
+			isClick_ = false;
 		}
 	}
 }
