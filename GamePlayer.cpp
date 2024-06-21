@@ -9,8 +9,7 @@
 const int saveFileName1 = 1, saveFileName2 = 2;
 
 GamePlayer::GamePlayer(GameObject* parent)
-	:GameObject(parent, "GamePlayer"),
-	isSceneFinished_(false)
+	:GameObject(parent, "GamePlayer")
 {
 	pST_ = (SceneTransition*)this->pParent_;
 	playerNum_ = pST_->GetPlayerNum();
@@ -30,23 +29,6 @@ void GamePlayer::Initialize()
 
 void GamePlayer::Update()
 {
-	if (isSceneFinished_)
-	{
-		isSceneFinished_ = false;
-		pST_->SetNextScene();
-		if (pMES_ != nullptr)
-		{
-			pMES_->KillMe();
-			pMES_ = nullptr;
-		}
-		else if (pPS_ != nullptr)
-		{
-			pPS_->KillMe();
-			pPS_ = nullptr;
-			ResultWrite(isClear_);
-		}
-	}
-	
 }
 
 void GamePlayer::Draw()
@@ -75,6 +57,19 @@ void GamePlayer::Challenge()
 	else if (saveNum_ == saveFileName2)	saveNum_ = saveFileName1;
 	pPS_->Instantiate<PlayScene>(this);
 	pPS_ = (PlayScene*)FindObject("PlayScene");
+}
+
+void GamePlayer::MapEditFinished()
+{
+	pST_->SetNextScene();
+	pMES_->KillMe();
+}
+
+void GamePlayer::ChallengeFinished()
+{
+	pST_->SetNextScene();
+	pPS_->KillMe();
+	ResultWrite(isClear_);
 }
 
 int GamePlayer::GetTurnNum()

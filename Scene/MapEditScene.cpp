@@ -696,7 +696,7 @@ void MapEditScene::SelectMathType()
 	if (pCompleteButton_->GetIsClicked())
 	{
 		Write();
-		pGP_->SetIsSceneFinished(true);
+		pGP_->MapEditFinished();
 	}
 	//中止ボタン
 	//テストプレイしてる時だけ押せるようにする

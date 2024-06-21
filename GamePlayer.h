@@ -15,8 +15,6 @@ class GamePlayer : public GameObject
 	int saveNum_;
 	//コースをクリアしたかどうか
 	bool isClear_;
-	//現在実行中のシーンが終了したかどうか
-	bool isSceneFinished_;
 
 	//シーン遷移担当
 	SceneTransition* pST_;
@@ -39,6 +37,11 @@ public:
 	//コース挑戦
 	void Challenge();
 
+	//マップエディットが終了したとき
+	void MapEditFinished();
+	//コース挑戦し終わったとき
+	void ChallengeFinished();
+
 	//プレイ中のプレイヤーの画像番号のゲッター・セッター
 	int GetPlayerPictNum() { return hPlayer_; }
 	void SetPlayerPictNum(int _hPlayer) { hPlayer_ = _hPlayer; }
@@ -54,10 +57,6 @@ public:
 	//クリアしたかどうかのフラグのゲッター・セッター
 	int GetIsClear() { return isClear_; }
 	void SetIsClear(int _isClear) { isClear_ = _isClear; }
-
-	//マップエディットを終了したかどうかのゲッター・セッター
-	int GetIsSceneFinished() { return isSceneFinished_; }
-	void SetIsSceneFinished(bool _isFinished) { isSceneFinished_ = _isFinished; }
 
 	//ターン数のゲッター
 	int GetTurnNum();

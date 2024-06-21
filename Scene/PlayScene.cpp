@@ -70,13 +70,13 @@ void PlayScene::Update()
 		if (pPlayer_->GetStageState() == STATE_GOAL)
 		{
 			pGP_->SetIsClear(true);
-			pGP_->SetIsSceneFinished(true);
+			pGP_->ChallengeFinished();
 			KillMe();
 		}
 		if (pPlayer_->GetStageState() == STATE_FAILURE)
 		{
 			pGP_->SetIsClear(false);
-			pGP_->SetIsSceneFinished(true);
+			pGP_->ChallengeFinished();
 			KillMe();
 		}
 	}
