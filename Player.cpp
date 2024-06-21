@@ -367,6 +367,8 @@ void Player::PlayerMove()
 	vec.y = moveDir_.y * pEasing->EaseOutCirc(moveCount_ * normalMoveVectoMult);
 	vec.z = moveDir_.z * pEasing->EaseOutQuad(moveCount_);
 
+	delete pEasing;
+
 	velocity_ = XMLoadFloat3(&vec);
 
 	if (moveCount_ >= moveCountEnd)
