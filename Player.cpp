@@ -10,6 +10,7 @@
 #include "Engine/SphereCollider.h"
 #include "Engine/Easing.h"
 #include "Engine/Shaker.h"
+#include "Engine/Audio.h"
 
 #include "Scene/PlayScene.h"
 #include "Scene/SceneTransition.h"
@@ -144,6 +145,8 @@ void Player::Initialize()
 	pTimer_ = new Timer(gameTime_);
 
 	ShadowInit();
+	//音楽初期化
+	AudioInit();
 
 	//カメラの振動　初期化
 	pCamShaker_ = new Shaker();
@@ -533,7 +536,6 @@ void Player::FallUpdate()
 void Player::ConvMoveUpdate()
 {
 	PlayerMove();
-
 	if (moveFinished_)
 	{
 		playerState_ = STATE_IDLE;
@@ -580,9 +582,11 @@ void Player::ConfUpdate()
 
 void Player::DeadUpdate()
 {
+	Audio::Play(hSE_Damage_, 1);
 	HitStopUpdate();
 	if (!isHitStop_)
 	{
+		Audio::Stop(hSE_Damage_);
 		VFX::End(deadEmitHandle_);
 		ReturnToStartMath();
 	}
@@ -891,4 +895,15 @@ void Player::EmitterDataAssign(XMFLOAT3 _hitTgtgPos)
 
 
 	deadEmitHandle_ = VFX::Start(deadEmitData_);
+}
+
+void Player::AudioInit()
+{
+	//音楽が入ってるフォルダ名
+	const std::string folderName = "Assets\\Audio\\";
+	//SEのフォルダ
+	const std::string SEFolder = "SE\\";
+	//SEロード
+	std::string se = folderName + SEFolder + "SE_Damage.wav";
+	hSE_Damage_ = Audio::Load(se, false);
 }

@@ -245,4 +245,13 @@ public:
 	//とげとげと当たった時に出るエフェクトの代入
 	//引数 : 当たったとげとげの位置
 	void EmitterDataAssign(XMFLOAT3 _hitTgtgPos);
+
+
+//音楽について
+private:
+	//とげとげと当たった時のSEのハンドル
+	int hSE_Damage_;
+public:
+	//音の初期化
+	void AudioInit();
 };

@@ -19,10 +19,7 @@ void ResultScene::Initialize()
 {
 	isClear_.resize(PLAYERNUMMAX);
 	//それぞれのプレイヤーがクリアしたかどうか受取り
-	for (int i = 0; i < PLAYERNUMMAX; i++)
-	{
-		isClear_[i] = pST_->GetIsClear(i);
-	}
+	ResultRead();
 	//ボタンの画像ロード
 	std::string ntFileName = "Button_NextTurn.png";
 	std::string rtFileName = "Button_ReturnTitle.png";
@@ -166,11 +163,10 @@ void ResultScene::PictDraw()
 
 void ResultScene::ResultRead()
 {
-	std::ifstream read;
-	std::string openfile = "SaveFile\\result";
-
 	for (int i = 0; i < PLAYERNUMMAX; i++)
 	{
+		std::ifstream read;
+		std::string openfile = "SaveFile\\result";
 		openfile += std::to_string(i);
 
 		read.open(openfile, std::ios::in);

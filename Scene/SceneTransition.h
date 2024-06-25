@@ -21,10 +21,6 @@ const int PLAYERNUMMAX = 2;
 class SceneTransition
 	:public GameObject
 {
-	//playerがクリアしたかどうか
-	bool isClear_Player_[PLAYERNUMMAX];
-	//音楽のハンドル
-	int hMapEdit_, hChallenge_;
 	//現在のターン数
 	int turnNum_;
 	//現在プレイ中のプレイヤーの番号
@@ -65,20 +61,4 @@ public:
 	//引数：プレイヤー番号(0からスタート)
 	void CallMapEdit(int _playerNum);
 	void CallChallenge(int _playerNum);
-
-	bool GetIsClear(int _player_num)
-	{
-		if (_player_num < PLAYERNUMMAX && _player_num >= 0)
-		{
-			return isClear_Player_[_player_num];
-		}
-		return 0;
-	}
-	void SetIsClear(int _player_num, bool _isClear)
-	{
-		if (_player_num < PLAYERNUMMAX && _player_num >= 0)
-		{
-			isClear_Player_[_player_num] = _isClear;
-		}
-	}
 };

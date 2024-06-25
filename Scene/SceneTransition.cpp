@@ -16,9 +16,7 @@ SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), 
 	sceneState_(SCENE_MAPEDIT1), 
 	prevSceneState_(SCENE_TURNEND),
-	isClear_Player_{ false, false },
-	hPlayer1_(-1), hPlayer2_(-1),
-	hMapEdit_(-1), hChallenge_(-1)
+	hPlayer1_(-1), hPlayer2_(-1)
 {
 
 	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");

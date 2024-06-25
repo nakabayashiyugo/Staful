@@ -713,6 +713,9 @@ void MapEditScene::SelectMathType()
 	//完了ボタンが押されたら
 	if (pCompleteButton_->GetIsClicked())
 	{
+		//音楽停止
+		Audio::Stop(hAudio_Music_);
+		//ファイルに書き込み
 		Write();
 		pGP_->MapEditFinished();
 	}
@@ -725,6 +728,7 @@ void MapEditScene::SelectMathType()
 	{
 		if (pCancelButton_->GetIsClicked())
 		{
+			pCancelButton_->SetIsClicked(false);
 			pTestplay->KillMe();
 			pTestplay = nullptr;
 			//マップエディター表示

@@ -23,6 +23,9 @@ class PlayScene
 	Button* cancelButton_;
 
 	GamePlayer* pGP_;
+
+	//音楽のハンドル
+	int hAudio_Music_;
 public:
 	PlayScene(GameObject* parent);
 
@@ -66,4 +69,6 @@ public:
 	//Readを呼ぶ関数
 	void CallRead();
 
+	//音楽の初期化
+	void AudioInit();
 };
