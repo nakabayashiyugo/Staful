@@ -785,6 +785,23 @@ void MapEditScene::TogetogeRouteSet()
 		if (tgtgRouteMathDown_.x != -1)
 		{
 			tgtgRouteMathUp_ = XMFLOAT3((int)mousePos_.x / MATHSIZE, mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE), 0);
+			//tgtgRouteMathUp‚ªƒ}ƒX‚Ì”ÍˆÍŠO‚¾‚Á‚½Žž
+			if (tgtgRouteMathUp_.x < 0)
+			{
+				tgtgRouteMathUp_.x = 0;
+			}
+			else if (tgtgRouteMathUp_.x >= mathVolume_.x)
+			{
+				tgtgRouteMathUp_.x = mathVolume_.x - 1;
+			}
+			if (tgtgRouteMathUp_.y < 0)
+			{
+				tgtgRouteMathUp_.y = 0;
+			}
+			else if (tgtgRouteMathUp_.y >= mathVolume_.x)
+			{
+				tgtgRouteMathUp_.y = mathVolume_.z - 1;
+			}
 
 			auto itr = tTgtgRoute_.begin();
 
