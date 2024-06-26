@@ -713,6 +713,9 @@ void MapEditScene::SelectMathType()
 	//完了ボタンが押されたら
 	if (pCompleteButton_->GetIsClicked())
 	{
+		//音楽停止
+		Audio::Stop(hAudio_Music_);
+		//ファイルに書き込み
 		Write();
 		pGP_->MapEditFinished();
 	}
@@ -725,6 +728,7 @@ void MapEditScene::SelectMathType()
 	{
 		if (pCancelButton_->GetIsClicked())
 		{
+			pCancelButton_->SetIsClicked(false);
 			pTestplay->KillMe();
 			pTestplay = nullptr;
 			//マップエディター表示
@@ -785,6 +789,23 @@ void MapEditScene::TogetogeRouteSet()
 		if (tgtgRouteMathDown_.x != -1)
 		{
 			tgtgRouteMathUp_ = XMFLOAT3((int)mousePos_.x / MATHSIZE, mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE), 0);
+			//tgtgRouteMathUpがマスの範囲外だった時
+			if (tgtgRouteMathUp_.x < 0)
+			{
+				tgtgRouteMathUp_.x = 0;
+			}
+			else if (tgtgRouteMathUp_.x >= mathVolume_.x)
+			{
+				tgtgRouteMathUp_.x = mathVolume_.x - 1;
+			}
+			if (tgtgRouteMathUp_.y < 0)
+			{
+				tgtgRouteMathUp_.y = 0;
+			}
+			else if (tgtgRouteMathUp_.y >= mathVolume_.x)
+			{
+				tgtgRouteMathUp_.y = mathVolume_.z - 1;
+			}
 
 			auto itr = tTgtgRoute_.begin();
 
