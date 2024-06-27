@@ -90,6 +90,11 @@ void Button::Update()
 			isClick_ = false;
 		}
 	}
+	else
+	{
+		isCursorMatched_ = false;
+		isClick_ = false;
+	}
 }
 
 void Button::Draw()

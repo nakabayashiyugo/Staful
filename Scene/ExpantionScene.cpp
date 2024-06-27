@@ -66,23 +66,17 @@ void ExpantionScene::Update()
 	}
 	if (pExplanNextButton_->GetIsClicked())
 	{
+		pExplanNextButton_->SetIsClicked(false);
 		prevPos_ = (int)curExplanNum_;
 		destPos_ = curExplanNum_ + 1;
 		isMoving_ = true;
 	}
 	if (pExplanReturnButton_->GetIsClicked())
 	{
+		pExplanReturnButton_->SetIsClicked(false);
 		prevPos_ = (int)curExplanNum_;
 		destPos_ = curExplanNum_ - 1;
 		isMoving_ = true;
-	}
-	if (curExplanNum_ <= 0)
-	{
-		pExplanReturnButton_->SetIsCanPush(false);
-	}
-	else
-	{
-		pExplanReturnButton_->SetIsCanPush(true);
 	}
 	if (curExplanNum_ >= explanationNum - 1)
 	{
@@ -91,6 +85,14 @@ void ExpantionScene::Update()
 	else
 	{
 		pExplanNextButton_->SetIsCanPush(true);
+	}
+	if (curExplanNum_ <= 0)
+	{
+		pExplanReturnButton_->SetIsCanPush(false);
+	}
+	else
+	{
+		pExplanReturnButton_->SetIsCanPush(true);
 	}
 	if (isMoving_)
 	{
