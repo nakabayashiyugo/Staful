@@ -161,6 +161,15 @@ void ExpantionScene::ButtonInit()
 
 void ExpantionScene::ExplanPositioning()
 {
+	//curExplanNum_が範囲外の時のエラー処理
+	if (curExplanNum_ < 0)
+	{
+		curExplanNum_ = 0;
+	}
+	else if (curExplanNum_ >= explanationNum)
+	{
+		curExplanNum_ = explanationNum - 1;
+	}
 	//ゲームの説明画像の間隔
 	const float exSpace = 2.0f;
 	for (int i = 0; i < explanationNum; i++)

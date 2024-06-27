@@ -82,16 +82,9 @@ MapEditScene::MapEditScene(GameObject* parent)
 	//áŠQ•¨‚Ì‚¨‚¯‚é§ŒÀ’²®
 	int costLimitFirst;
 	int costLimitPlus;
-	if (mathVolume_.x >= mathVolume_.z)
-	{
-		costLimitFirst = mathVolume_.x;
-		costLimitPlus = mathVolume_.x / 2;
-	}
-	else
-	{
-		costLimitFirst = mathVolume_.z;
-		costLimitPlus = mathVolume_.z / 2;
-	}
+
+	costLimitFirst = mathVolume_.x + mathVolume_.z;
+	costLimitPlus = costLimitFirst / 2;
 	turnNum_ = pGP_->GetTurnNum();
 	costLimit_ = costLimitFirst + (turnNum_ - 1) * costLimitPlus;
 }
