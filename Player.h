@@ -1,11 +1,16 @@
 #pragma once
 #include "Engine/GameObject.h"
+
 #include "StageOrigin.h"
+
 #include "Engine/VFX.h"
+
+
 
 class PlayScene;
 class Timer;
 class Shaker;
+class Text;
 
 enum PLAYER_STATE
 {
@@ -26,8 +31,14 @@ enum STAGE_STATE
 	STATE_FAILURE,
 };
 
-//プレイヤーの可能な移動方向の数
-const int possiMoveDirNum = 4;
+enum PLAYER_MOVEDIR
+{
+	DIR_W = 0,
+	DIR_S,
+	DIR_D,
+	DIR_A,
+	DIR_MAX,
+};
 
 class Player
 	:public GameObject, StageOrigin
@@ -87,8 +98,10 @@ private:
 	float moveCntUpdate_;
 	//落ちる速度
 	float fallSpeed_;
+	//wasdを押したときの移動方向
+	PLAYER_MOVEDIR pushButtonMoveDir_[DIR_MAX];
 	//移動が可能な方向
-	XMFLOAT3 possiMoveDir_[possiMoveDirNum];
+	XMFLOAT3 possiMoveDir_[DIR_MAX];
 	//移動方向
 	XMFLOAT3 moveDir_;
 	//移動先の位置
@@ -175,6 +188,21 @@ public:
 
 	void PossiMoveDirInit();
 	
+
+//操作説明について
+private:
+	//移動方向を文字として入れた配列
+	std::string moveDirStr_[DIR_MAX];
+
+	//操作説明を表示されている場所の背景
+	int hOpeExplanBackGround_;
+
+	Text* pText_;
+
+public:
+	//操作説明の描画
+	void OperateExplanDraw();
+
 
 //影について
 private:

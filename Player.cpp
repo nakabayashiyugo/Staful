@@ -11,6 +11,7 @@
 #include "Engine/Easing.h"
 #include "Engine/Shaker.h"
 #include "Engine/Audio.h"
+#include "Engine/Text.h"
 
 #include "Scene/PlayScene.h"
 #include "Scene/SceneTransition.h"
@@ -48,7 +49,7 @@ const float camShakePower = 2.0f;
 //制限時間減らすマスの減る時間
 const float decTime = 5.0f;
 //混乱マス踏んだ時のアニメーションの長さ(秒)
-const float confAnimTime = 1;
+const float confAnimTime = 2;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -78,6 +79,9 @@ Player::Player(GameObject* parent)
 	stageState_(STATE_START),
 
 	isConfAnim_(false),
+
+	//操作説明について
+	hOpeExplanBackGround_(-1),
 
 	//影について
 	hShadow_(-1),
@@ -124,6 +128,9 @@ Player::Player(GameObject* parent)
 		}
 	}
 	PossiMoveDirInit();
+
+	pText_ = new Text();
+	pText_->Initialize("Assets\\opeChar.png", 16, 32, 16);
 }
 
 void Player::Initialize()
@@ -141,6 +148,10 @@ void Player::Initialize()
 	assert(hGage_ >= 0);
 	hTime_ = Image::Load("Assets\\Logo_TIME.png");
 	assert(hTime_ >= 0);
+
+	//操作説明の背景ロード
+	hOpeExplanBackGround_ = Image::Load("Assets\\opeBackGround.png");
+	assert(hOpeExplanBackGround_ >= 0);
 	
 	pTimer_ = new Timer(gameTime_);
 
@@ -195,14 +206,17 @@ void Player::Draw()
 	Image::Draw(hFrame_);
 	Image::Draw(hFrameOutline_);
 
-	const XMFLOAT3 tPos = XMFLOAT3(-0.1f, 0.8f, 0);
-	const XMFLOAT3 tScale = XMFLOAT3(0.5f, 0.5f, 1);
-	tTime_.position_ = tPos;
+	//時間ゲージとの距離
+	const XMFLOAT3 tDis = XMFLOAT3(-0.1f, 0.1f, 0);
+	const XMFLOAT3 tScale = XMFLOAT3(0.25f, 0.25f, 1);
+	tTime_.position_ = XMFLOAT3(tFrame_.position_.x + tDis.x, tFrame_.position_.y + tDis.y, tDis.z);
 	tTime_.scale_ = tScale;
 	Image::SetTransform(hTime_, tTime_);
 	Image::Draw(hTime_);
 
 	pPlayScene_->PlayerNumDraw();
+
+	OperateExplanDraw();
 }
 
 void Player::Release()
@@ -296,23 +310,76 @@ bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 
 void Player::PossiMoveDirInit()
 {
-	possiMoveDir_[0] = moveFront;
-	possiMoveDir_[1] = moveBack;
-	possiMoveDir_[2] = moveRight;
-	possiMoveDir_[3] = moveLeft;
+	for (int i = 0; i < DIR_MAX; i++)
+	{
+		pushButtonMoveDir_[i] = (PLAYER_MOVEDIR)i;
+	}
+
+	possiMoveDir_[pushButtonMoveDir_[DIR_W]] = moveFront;
+	possiMoveDir_[pushButtonMoveDir_[DIR_S]] = moveBack;
+	possiMoveDir_[pushButtonMoveDir_[DIR_D]] = moveRight;
+	possiMoveDir_[pushButtonMoveDir_[DIR_A]] = moveLeft;
 }
 
-void Player::PlayerOperation(){
-	//possiMoveDir_のそれぞれの方向の要素数
-	const int FRONT = 0;
-	const int BACK = 1;
-	const int RIGHT = 2;
-	const int LEFT = 3;
+void Player::OperateExplanDraw()
+{
+	//操作説明を表示する基準の位置
+	const XMFLOAT2 opePos = XMFLOAT2(50, 200);
+
+	//一行の縦の長さ
+	const float lineHeight = 30;
+
+	if (playerState_ == STATE_CONF)
+	{
+		for (int i = 0; i < DIR_MAX; i++)
+		{
+			moveDirStr_[i] = "?";
+		}
+	}
+	else
+	{
+		for (int i = 0; i < DIR_MAX; i++)
+		{
+			switch (pushButtonMoveDir_[i])
+			{
+			case DIR_W:
+				moveDirStr_[i] = "FRONT";
+				break;
+			case DIR_S:
+				moveDirStr_[i] = "BACK";
+				break;
+			case DIR_D:
+				moveDirStr_[i] = "RIGHT";
+				break;
+			case DIR_A:
+				moveDirStr_[i] = "LEFT";
+			}
+		}
+	}
+
+	//移動方向表示
+	//Wを押したときの移動方向
+	moveDirStr_[DIR_W] = "W - " + moveDirStr_[DIR_W];
+	//Sを押したときの移動方向
+	moveDirStr_[DIR_S] = "S - " + moveDirStr_[DIR_S];
+	//Aを押したときの移動方向
+	moveDirStr_[DIR_A] = "A - " + moveDirStr_[DIR_A];
+	//Wを押したときの移動方向
+	moveDirStr_[DIR_D] = "D - " + moveDirStr_[DIR_D];
+
+	for (int i = 0; i < DIR_MAX; i++)
+	{
+		pText_->Draw(opePos.x, opePos.y + lineHeight * i, moveDirStr_[i].c_str());
+	}
+}
+
+void Player::PlayerOperation()
+{
 	if (playerState_ != STATE_DEAD){
 		//前後左右移動
 		if (Input::IsKeyDown(DIK_W)){
 			//移動距離
-			moveDir_ = possiMoveDir_[FRONT];
+			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_W]];
 			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
@@ -320,23 +387,23 @@ void Player::PlayerOperation(){
 		}
 		if (Input::IsKeyDown(DIK_S)){
 			//移動距離
-			moveDir_ = possiMoveDir_[BACK];
+			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_S]];
 			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE)){
+				playerState_ = STATE_JAMP;
+			}
+		}
+		if (Input::IsKeyDown(DIK_D)) {
+			//移動距離
+			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_D]];
+			playerState_ = STATE_WALK;
+			if (Input::IsKey(DIK_SPACE)) {
 				playerState_ = STATE_JAMP;
 			}
 		}
 		if (Input::IsKeyDown(DIK_A)){
 			//移動距離
-			moveDir_ = possiMoveDir_[LEFT];
-			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE)){
-				playerState_ = STATE_JAMP;
-			}
-		}
-		if (Input::IsKeyDown(DIK_D)){
-			//移動距離
-			moveDir_ = possiMoveDir_[RIGHT];
+			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_A]];
 			playerState_ = STATE_WALK;
 			if (Input::IsKey(DIK_SPACE)){
 				playerState_ = STATE_JAMP;
@@ -544,15 +611,15 @@ void Player::ConvMoveUpdate()
 
 void Player::ConfUpdate()
 {
-	XMFLOAT3 tmp;
+	PLAYER_MOVEDIR tmp;
 	srand(time(NULL));
 	//0～移動可能方向の数までの乱数取得
-	int random1 = (rand() % possiMoveDirNum);
-	int random2 = (rand() % possiMoveDirNum);
+	int random1 = (rand() % (int)DIR_MAX);
+	int random2 = (rand() % (int)DIR_MAX);
 	//入れ替え
-	tmp = possiMoveDir_[random1];
-	possiMoveDir_[random1] = possiMoveDir_[random2];
-	possiMoveDir_[random2] = tmp;
+	tmp = pushButtonMoveDir_[random1];
+	pushButtonMoveDir_[random1] = pushButtonMoveDir_[random2];
+	pushButtonMoveDir_[random2] = tmp;
 
 	//混乱のアニメーション
 	//混乱のアニメーションをしていなければ
@@ -827,8 +894,8 @@ void Player::DamageDir(XMFLOAT3 _hitTgtgPos)
 void Player::TimeGageManagement()
 {
 	//時間ゲージ
-	const XMFLOAT3 timerPos = XMFLOAT3(-0.6f, 0.8f, 0);
-	const XMFLOAT3 timerScale = XMFLOAT3(2.0f, 0.5f, 1);
+	const XMFLOAT3 timerPos = XMFLOAT3(-0.8f, 0.8f, 0);
+	const XMFLOAT3 timerScale = XMFLOAT3(1.0f, 0.25f, 1);
 
 	//時間ゲージの白いところのトランスフォーム
 	tFrame_.position_ =
@@ -843,8 +910,11 @@ void Player::TimeGageManagement()
 	tFrameOutline_.scale_ = XMFLOAT3(timerScale.x + outlineThick, timerScale.y + outlineThick, timerScale.z);
 
 	//時間ゲージの緑のところのトランスフォーム
+	//時間ゲージのxサイズの基準値
+	const float scaleBasex = 4.0f;
+	const float posBasex = -0.6f;
 	tGage_.position_ =
-		XMFLOAT3((((timerPos.x / 2) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
+		XMFLOAT3((((posBasex / (scaleBasex / timerScale.x)) / pTimer_->GetLimitTime()) * pTimer_->GetCurTime()) + timerPos.x,
 			timerPos.y, timerPos.z);
 	tGage_.scale_ = XMFLOAT3(float(pTimer_->GetLimitTime() - pTimer_->GetCurTime())
 		 * (timerScale.x / (float(pTimer_->GetLimitTime())))

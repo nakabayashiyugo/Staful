@@ -22,10 +22,10 @@ const int floorCost = 0;
 const int wallCost = 1;
 const int holeCost = 1;
 const int converyerCost = 1;
-const int togetogeCost = 1;
-const int pitfallCost = 1;
-const int timeLimitDecCost = 1;
-const int confusionCost = 1;
+const int togetogeCost = 5;
+const int pitfallCost = 3;
+const int timeLimitDecCost = 10;
+const int confusionCost = 8;
 const int startCost = 0;
 const int goalCost = 0;
 
@@ -500,9 +500,11 @@ void MapEditScene::ButtonInit()
 
 		
 		//マス選択ボタンの基準の位置
-		const XMFLOAT3 mbInitPos = XMFLOAT3(-0.9f, 0.6f, 0);
+		const XMFLOAT3 mbInitPos = XMFLOAT3(-0.9f, 0.9f, 0);
 		//マス選択ボタンが何個ごとに改行されるか
 		const int mbNewLineNum = 4;
+		//マス選択ボタンの間隔
+		const XMFLOAT3 mbInterval = XMFLOAT3(0.1f, 0.1f, 0);
 		//マス選択ボタンの位置
 		XMFLOAT3 mbPos;
 		mbPos.x = (float)((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbScale.x + mbInitPos.x;
@@ -639,6 +641,8 @@ void MapEditScene::MathInit()
 		assert(hPict_[i] >= 0);
 	}
 	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
+	//マスを置く基準の位置（中央のマスの位置)
+	const XMFLOAT3 mathInitPos = XMFLOAT3(0.25f, 0, 0);
 	//マスのサイズ調整
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
@@ -646,8 +650,15 @@ void MapEditScene::MathInit()
 		{
 			math_origin_[x][y] = math_[x][y];
 			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
-			math_[x][y].mathPos_.position_.x = ((float)x / Direct3D::bfr_scrWidth) * MATHSIZE + ((float)(x - mathVolume_.x) / Direct3D::bfr_scrWidth) * MATHSIZE;
-			math_[x][y].mathPos_.position_.y = ((float)y / Direct3D::bfr_scrHeight) * MATHSIZE + ((float)(y - mathVolume_.z) / Direct3D::bfr_scrHeight) * MATHSIZE;
+			//1マスの大きさ
+			const XMFLOAT2 mathSize = XMFLOAT2(((float)x / Direct3D::bfr_scrWidth) * MATHSIZE * 2,
+				((float)y / Direct3D::bfr_scrHeight) * MATHSIZE * 2);
+			//マスを置く位置
+			const XMFLOAT2 mathPos = XMFLOAT2(mathInitPos.x - ((float)mathVolume_.x / Direct3D::bfr_scrWidth) * MATHSIZE,
+				mathInitPos.y - ((float)mathVolume_.z / Direct3D::bfr_scrHeight) * MATHSIZE);
+
+			math_[x][y].mathPos_.position_.x = mathSize.x + mathPos.x;
+			math_[x][y].mathPos_.position_.y = mathSize.y + mathPos.y;
 		}
 	}
 }
