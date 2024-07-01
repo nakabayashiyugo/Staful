@@ -502,13 +502,18 @@ void MapEditScene::ButtonInit()
 		//マス選択ボタンの基準の位置
 		const XMFLOAT3 mbInitPos = XMFLOAT3(-0.9f, 0.9f, 0);
 		//マス選択ボタンが何個ごとに改行されるか
-		const int mbNewLineNum = 4;
-		//マス選択ボタンの間隔
-		const XMFLOAT3 mbInterval = XMFLOAT3(0.1f, 0.1f, 0);
+		const int mbNewLineNum = 5;
 		//マス選択ボタンの位置
 		XMFLOAT3 mbPos;
-		mbPos.x = (float)((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbScale.x + mbInitPos.x;
-		mbPos.y = -(((float)((buttonNum_ - buttonInitNum) / mbNewLineNum * mbNewLineNum) / Direct3D::bfr_scrHeight) * mathButtonSize) + mbInitPos.y;
+		//ボタンの大きさ
+		const XMFLOAT3 mbSize = XMFLOAT3((1.0f / Direct3D::bfr_scrWidth) * mathButtonSize * 2,
+			(1.0f / Direct3D::bfr_scrHeight) * mathButtonSize * 2, 0);
+		//マス選択ボタンの間隔
+		const XMFLOAT3 mbIntervalBase = XMFLOAT3(0, 0, 0);
+		const XMFLOAT3 mbInterval = XMFLOAT3(((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbIntervalBase.x,
+			-((buttonNum_ - buttonInitNum) / mbNewLineNum) * mbIntervalBase.y, 0);
+		mbPos.x =  (float)((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbSize.x + mbInitPos.x + mbInterval.x;
+		mbPos.y = -(float)((buttonNum_ - buttonInitNum) / mbNewLineNum) * mbSize.y + mbInitPos.y + mbInterval.y;
 		mbPos.z = mbInitPos.z;
 
 		Transform mbTransform;
@@ -616,9 +621,15 @@ void MapEditScene::ExpantionInit()
 
 void MapEditScene::ExpantionDraw()
 {
-	const XMFLOAT3 exPos = XMFLOAT3(0.7f, 0.1f, 0);
+	//画像の大きさ
+	XMFLOAT3 exTexSize = Image::GetTextureSize(hExpantion_[mathtype_]);
+	//画像の上の位置
+	const XMFLOAT3 exPos = XMFLOAT3(-0.7f, 0.4f, 0);
+	//画像の大きさ
 	const XMFLOAT3 exScale = XMFLOAT3(0.7f, 0.7f, 1);
-	tExpantion_.position_ = exPos;
+	tExpantion_.position_ = XMFLOAT3(exPos.x, 
+		exPos.y - ((exTexSize.y) / Direct3D::bfr_scrHeight * exScale.y), 
+		exPos.z);
 	tExpantion_.scale_ = exScale;
 
 	Image::SetTransform(hExpantion_[mathtype_], tExpantion_);
