@@ -3,7 +3,6 @@ StageOrigin::StageOrigin()
 {
 	fileNameInit_.resize(MATH_MAX);
 	fileNameInit_ = {
-		"Floor",
 		"Wall",
 		"Hole",
 		"Conveyor",
@@ -12,7 +11,8 @@ StageOrigin::StageOrigin()
 		"TimeLimitDec",
 		"Confusion",
 		"Start",
-		"Goal"
+		"Goal",
+		"Floor",
 	};
 }
 

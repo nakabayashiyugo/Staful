@@ -112,7 +112,7 @@ MATHDEDAIL PlayScene::GetPlayerStandMath()
 {
 	MATHDEDAIL retMath;
 	//•Ô‚·MATHDEDAIL‚Ì‰Šú’l
-	MATHTYPE retMathInit = MATH_FLOOR;
+	MATHTYPE retMathInit = MATH_DELETE;
 	Transform retTransformInit;
 	retMath = { retMathInit, retTransformInit };
 	if (pPlayer_ == nullptr || pPlayer_->GetPlayerState() != STATE_IDLE)

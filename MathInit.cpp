@@ -23,7 +23,7 @@ MathInit::MathInit()
 	{
 		for (int y = 0; y < mathVolume_.z; y++)
 		{
-			math_[x][y].mathType_ = MATH_FLOOR;
+			math_[x][y].mathType_ = MATH_DELETE;
 		}
 	}
 	saveNum_ = saveFile1;

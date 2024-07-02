@@ -46,7 +46,9 @@ MapEditScene::MapEditScene(GameObject* parent)
 	tgtgRouteMathUp_(mathInitPos),
 	hTgtgRoute_(-1),
 	//音楽について
-	hAudio_Music_(-1)
+	hAudio_Music_(-1),
+	//Redo・Undo
+	historyIndex_(0)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -130,7 +132,7 @@ void MapEditScene::Update()
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
-		if (math_origin_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATH_FLOOR)
+		if (math_origin_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATH_DELETE)
 		{
 			switch ((MATHTYPE)mathtype_)
 			{
@@ -146,7 +148,7 @@ void MapEditScene::Update()
 							{
 								if (math_[x][y].mathType_ == MATH_START)
 								{
-									math_[x][y].mathType_ = MATH_FLOOR;
+									math_[x][y].mathType_ = MATH_DELETE;
 								}
 							}
 						}
@@ -166,7 +168,7 @@ void MapEditScene::Update()
 							{
 								if (math_[x][y].mathType_ == MATH_GOAL)
 								{
-									math_[x][y].mathType_ = MATH_FLOOR;
+									math_[x][y].mathType_ = MATH_DELETE;
 								}
 							}
 						}
@@ -174,15 +176,15 @@ void MapEditScene::Update()
 					}
 				}
 				break;
-			case MATH_FLOOR:
+			case MATH_DELETE:
 				if (Input::IsMouseButton(0))
 				{
 					ChangeSelectMath(selectMath);
 				}
 			case MATH_CONVEYOR:
-				if (!CostManagement())
+				if (Input::IsMouseButton(0))
 				{
-					if (Input::IsMouseButton(0))
+					if (CostManagement())
 					{
 						ChangeSelectMath(selectMath);
 					}
@@ -199,7 +201,7 @@ void MapEditScene::Update()
 			case MATH_TOGETOGE:
 				if (Input::IsMouseButton(0))
 				{
-					if (!CostManagement())
+					if (CostManagement())
 					{
 						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
 						ChangeSelectMath(selectMath);
@@ -237,9 +239,9 @@ void MapEditScene::Update()
 				}
 				break;
 			default:
-				if (!CostManagement())
+				if (Input::IsMouseButton(0))
 				{
-					if (Input::IsMouseButton(0))
+					if (CostManagement())
 					{
 						ChangeSelectMath(selectMath);
 					}
@@ -303,7 +305,7 @@ BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
 		bool startFlg = false, goalFlg = false;
 		switch (LOWORD(wp))
 		{
-		case IDC_MAPEDIT_FLOOR:		mathtype_ = MATH_FLOOR; break;
+		case IDC_MAPEDIT_FLOOR:		mathtype_ = MATH_DELETE; break;
 		case IDC_MAPEDIT_WALL:		mathtype_ = MATH_WALL; break;
 		case IDC_MAPEDIT_HOLL:		mathtype_ = MATH_HOLE; break;
 		case IDC_MAPEDIT_CONVEYOR:	mathtype_ = MATH_CONVEYOR; break;
@@ -358,18 +360,16 @@ bool MapEditScene::CostManagement()
 	{
 		for (int y = 0; y < mathVolume_.z; y++)
 		{
+			
 			costSum += costs_[(int)math_[x][y].mathType_];
+			if (costSum > costLimit_)
+			{
+				return false;
+			}
 		}
 	}
 	curCost_ = costSum;
-	if (costLimit_ > curCost_)
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
+	return true;
 }
 
 void MapEditScene::CostDraw()
@@ -427,17 +427,10 @@ void MapEditScene::ButtonInit()
 {
 	//マス選択ボタンのファイルネーム指定
 	std::string buttonName[MATH_MAX];
-	for(int i = 0; i < MATH_MAX; i++)
+	for (int i = 0; i < MATH_MAX; i++)
 	{
-		if (i == (int)MATH_FLOOR)
-		{
-			buttonName[i] = "Button_Delete.png";
-		}
-		else
-		{
-			buttonName[i] = "Button_" + fileNameInit_[i] + ".png";
-		}
-	};
+		buttonName[i] = "Button_" + fileNameInit_[i] + ".png";
+	}
 	//その他のボタン
 	//完了ボタン
 	std::string buttonComplete = "Button_Complete.png";
@@ -445,14 +438,17 @@ void MapEditScene::ButtonInit()
 	std::string buttonTestplay = "Button_TestPlay.png";
 	//中止ボタン
 	std::string buttonCancel = "Button_Cancel.png";
+
 	//上のファイルが入ってるフォルダー
 	std::string folderName = "Assets\\Button\\MathSelect\\";
+
 	//マス選択ボタンの画像番号
 	int mathButtonNum[MATH_MAX];
 	//その他のボタンの画像番号
 	int completeNum = -1;
 	int testplayNum = -1;
 	int cancelNum = -1;
+
 	//マス選択ボタンのロード
 	for (int i = 0; i < MATH_MAX; i++)
 	{
@@ -461,18 +457,23 @@ void MapEditScene::ButtonInit()
 		mathButtonNum[i] = Image::Load(buttonName[i]);
 		assert(mathButtonNum[i] >= 0);
 	}
+
 	//ボタンのテクスチャサイズ
 	XMFLOAT3 imageSize = Image::GetTextureSize(mathButtonNum[0]);
+
 	//その他のボタンが入ってるフォルダ名
 	folderName = "Assets\\Button\\SceneTrans\\";
+
 	//完了ボタンのロード
 	buttonComplete = folderName + buttonComplete;
 	completeNum = Image::Load(buttonComplete);
 	assert(completeNum >= 0);
+
 	//テストプレイボタンのロード
 	buttonTestplay = folderName + buttonTestplay;
 	testplayNum = Image::Load(buttonTestplay);
 	assert(testplayNum >= 0);
+
 	//中止ボタンのロード
 	folderName = "Assets\\Button\\";
 	buttonCancel = folderName + buttonCancel;
@@ -485,7 +486,7 @@ void MapEditScene::ButtonInit()
 	const float mathButtonSize = MATHSIZE * normalMathtoMult;
 	//ボタンの大きさ設定
 	const XMFLOAT3 mbScale = XMFLOAT3(1.0f / imageSize.x * mathButtonSize, 1.0f / imageSize.y * mathButtonSize, 1);
-	const int buttonInitNum = 1;
+	const int buttonInitNum = 0;
 	//ボタンのオブジェクトネーム
 	std::string buttonStr;
 
@@ -521,25 +522,6 @@ void MapEditScene::ButtonInit()
 		mbTransform.scale_ = mbScale;
 		pMathButton_[buttonNum_]->SetTransform(mbTransform);
 	}
-
-	//Deleteボタン
-	//Deleteボタンの番号
-	buttonNum_ = (int)MATH_FLOOR;
-
-	pMathButton_[buttonNum_]->Instantiate<Button>(this);
-	//Deleteボタンのオブジェクトネーム
-	buttonStr = "Button";
-	buttonStr += std::to_string(buttonNum_);
-	pMathButton_[buttonNum_] = (Button*)FindObject(buttonStr);
-	pMathButton_[buttonNum_]->SetPictNum(mathButtonNum[buttonNum_]);
-
-	//マス選択ボタンの基準の位置
-	const XMFLOAT3 dbPos = XMFLOAT3(-0.9f, -0.3f, 0);
-	
-	Transform dbTransform;
-	dbTransform.position_ = dbPos;
-	dbTransform.scale_ = mbScale;
-	pMathButton_[buttonNum_]->SetTransform(dbTransform);
 
 	//その他のボタンの大きさ
 	const XMFLOAT3 obScale = XMFLOAT3(0.3f, 0.3f, 1);
@@ -598,24 +580,20 @@ void MapEditScene::ExpantionInit()
 	std::string expantionName[MATH_MAX];
 	for(int i = 0; i < MATH_MAX; i++)
 	{
-		if (i == (int)MATH_FLOOR)
-		{
-			expantionName[i] = "";
-		}
-		else
-		{
-			expantionName[i] = "Expantion_" + fileNameInit_[i] + ".png";
-		}
+		expantionName[i] = "Expantion_" + fileNameInit_[i] + ".png";
 	};
 	//マスの説明の画像が入ってるフォルダ名
 	std::string folderName = "Assets\\MathExpantion\\";
 	//マスの説明画像ロード
-	for (int i = 1; i < MATH_MAX; i++)
+	for (int i = 0; i < MATH_MAX; i++)
 	{
-		expantionName[i] = folderName + expantionName[i];
+		if (i != (int)MATH_DELETE)
+		{
+			expantionName[i] = folderName + expantionName[i];
 
-		hExpantion_[i] = Image::Load(expantionName[i]);
-		assert(hExpantion_[i] >= 0);
+			hExpantion_[i] = Image::Load(expantionName[i]);
+			assert(hExpantion_[i] >= 0);
+		}
 	}
 }
 
@@ -624,7 +602,7 @@ void MapEditScene::ExpantionDraw()
 	//画像の大きさ
 	XMFLOAT3 exTexSize = Image::GetTextureSize(hExpantion_[mathtype_]);
 	//画像の上の位置
-	const XMFLOAT3 exPos = XMFLOAT3(-0.7f, 0.4f, 0);
+	const XMFLOAT3 exPos = XMFLOAT3(-0.7f, 0.5f, 0);
 	//画像の大きさ
 	const XMFLOAT3 exScale = XMFLOAT3(0.7f, 0.7f, 1);
 	tExpantion_.position_ = XMFLOAT3(exPos.x, 
@@ -909,4 +887,43 @@ void MapEditScene::AudioInit()
 	//コンベアを回転させたときのSE
 	std::string convSe = folderName + SEFolder + "SE_Rotate.wav";
 	hSE_ConvRot_ = Audio::Load(convSe, false);
+}
+
+void MapEditScene::PutDataAssign(XMFLOAT3 _selectMath)
+{
+	//historyIndex_以上の要素を消す
+	for (int i = historyIndex_ + 1; i < putData_.size() - 1; i++)
+	{
+		putData_.erase(putData_.begin() + i);
+	}
+
+	//putData_に値入れる
+	PUTDATA put;
+	put.x = _selectMath.x;
+	put.y = _selectMath.y;
+
+	put.prevMathType = math_[put.x][put.y].mathType_;
+	put.mathType = (MATHTYPE)mathtype_;
+
+	putData_.push_back(put);
+	historyIndex_ = putData_.size() - 1;
+}
+
+void MapEditScene::Redo()
+{
+	//巻き戻すから-1
+	historyIndex_ -= 1;
+	if (historyIndex_ < 0)
+	{
+		historyIndex_ = 0;
+	}
+	//変更するマス
+	XMFLOAT3 redoMath = XMFLOAT3(putData_[historyIndex_].x, putData_[historyIndex_].y, 0);
+	math_[redoMath.x][redoMath.y];
+
+
+}
+
+void MapEditScene::Undo()
+{
 }

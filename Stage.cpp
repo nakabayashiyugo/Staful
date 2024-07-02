@@ -133,13 +133,13 @@ void Stage::Draw()
 
 			switch (math_[x][z].mathType_)
 			{
-			case MATH_FLOOR:
+			case MATH_DELETE:
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_WALL :
-				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
-				Model::Draw(hModel_[MATH_FLOOR]);
+				Model::SetTransform(hModel_[MATH_DELETE], mathTrans);
+				Model::Draw(hModel_[MATH_DELETE]);
 				mathTrans.position_.y += 1;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
@@ -151,15 +151,15 @@ void Stage::Draw()
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_TOGETOGE:
-				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
-				Model::Draw(hModel_[MATH_FLOOR]);
+				Model::SetTransform(hModel_[MATH_DELETE], mathTrans);
+				Model::Draw(hModel_[MATH_DELETE]);
 				mathTrans.position_.y += 1;
 				break;
 			case MATH_PITFALL:
 				if (makeHoleTimes_[x][z] >= FPS * MAKEHOLETIME / 2)
 				{
-					Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
-					Model::Draw(hModel_[MATH_FLOOR]);
+					Model::SetTransform(hModel_[MATH_DELETE], mathTrans);
+					Model::Draw(hModel_[MATH_DELETE]);
 				}
 				else
 				{
@@ -175,8 +175,8 @@ void Stage::Draw()
 				}
 				else
 				{
-					Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
-					Model::Draw(hModel_[MATH_FLOOR]);
+					Model::SetTransform(hModel_[MATH_DELETE], mathTrans);
+					Model::Draw(hModel_[MATH_DELETE]);
 				}
 				break;
 			case MATH_CONFUSION:
@@ -184,15 +184,15 @@ void Stage::Draw()
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_START:
-				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
-				Model::Draw(hModel_[MATH_FLOOR]);
+				Model::SetTransform(hModel_[MATH_DELETE], mathTrans);
+				Model::Draw(hModel_[MATH_DELETE]);
 				mathTrans.position_.y += 1;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);
 				break;
 			case MATH_GOAL:
-				Model::SetTransform(hModel_[MATH_FLOOR], mathTrans);
-				Model::Draw(hModel_[MATH_FLOOR]);
+				Model::SetTransform(hModel_[MATH_DELETE], mathTrans);
+				Model::Draw(hModel_[MATH_DELETE]);
 				mathTrans.position_.y += 1;
 				Model::SetTransform(hModel_[math_[x][z].mathType_], mathTrans);
 				Model::Draw(hModel_[math_[x][z].mathType_]);

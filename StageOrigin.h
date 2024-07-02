@@ -9,8 +9,7 @@ class SceneTransition;
 
 enum MATHTYPE
 {
-	MATH_FLOOR,		//床
-	MATH_WALL,		//壁
+	MATH_WALL = 0,		//壁
 	MATH_HOLE,		//穴
 	MATH_CONVEYOR,	//コンベア
 	MATH_TOGETOGE,	//とげとげのやつ
@@ -19,6 +18,7 @@ enum MATHTYPE
 	MATH_CONFUSION,	//混乱
 	MATH_START,		//スタートマス
 	MATH_GOAL,		//ゴールマス
+	MATH_DELETE,		//床
 	MATH_MAX,
 };
 
