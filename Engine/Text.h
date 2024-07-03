@@ -38,4 +38,9 @@ public:
 
 	//解放
 	void Release();
+
+	//一文字の幅のゲッター
+	int GetWidth() { return width_; }
+	//一文字の高さのゲッター
+	int GetHeight() { return height_; }
 };

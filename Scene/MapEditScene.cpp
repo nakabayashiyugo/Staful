@@ -388,7 +388,7 @@ void MapEditScene::CostDraw()
 	//コストの表示位置
 	XMFLOAT3 curCostPos;
 	//コスト表示の基準の位置
-	const XMFLOAT3 costPosBase(900, 600, 0);
+	const XMFLOAT3 costPosBase(300, 650, 0);
 	//上の3つの位置のそれぞれの差
 	const XMFLOAT3 posDiff = XMFLOAT3(50, 30, 0);
 
@@ -614,6 +614,20 @@ void MapEditScene::ExpantionDraw()
 		exPos.y - ((exTexSize.y) / Direct3D::bfr_scrHeight * exScale.y), 
 		exPos.z);
 	tExpantion_.scale_ = exScale;
+	//そのマスの種類のコスト表示
+	// 画面の中央から左上までの距離
+	const XMFLOAT2 upperLeftDir = XMFLOAT2(1.0f, 1.0f);
+	//画面全体の大きさ
+	const XMFLOAT2 scrSize = XMFLOAT2(2.0f, 2.0f);
+	//位置
+	XMFLOAT2 mathCostPos = XMFLOAT2((exPos.x + upperLeftDir.x) * Direct3D::bfr_scrWidth / scrSize.x,
+		abs(exPos.y - upperLeftDir.y) * Direct3D::bfr_scrHeight / scrSize.y + (exTexSize.y * exScale.y) + pText_->GetHeight());
+	//表示する文字
+	std::string str = "cost : ";
+	str += std::to_string(costs_[mathtype_]);
+
+	//コスト表示
+	pText_->Draw(mathCostPos.x, mathCostPos.y, str.c_str());
 
 	Image::SetTransform(hExpantion_[mathtype_], tExpantion_);
 	Image::Draw(hExpantion_[mathtype_]);
