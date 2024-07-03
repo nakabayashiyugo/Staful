@@ -51,7 +51,7 @@ const float decTime = 5.0f;
 //混乱マス踏んだ時のアニメーションの長さ(秒)
 const float confAnimTime = 2;
 //同時押しの許可フレーム
-const int simulPressFrame = 10;
+const int simulPressFrame = 5;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -64,6 +64,7 @@ Player::Player(GameObject* parent)
 	moveFinished_(false),
 	moveCount_(moveCountInit),
 	moveCntUpdate_(moveCntUpdateInit),
+	pushButton_(DIR_MAX),
 	moveDir_(0, 0, 0),
 	destPos_(0, 0, 0),
 	prevPos_(0, 0, 0),
@@ -383,55 +384,47 @@ void Player::PlayerOperation()
 		//前後左右移動
 		if (Input::IsKeyDown(DIK_W)){
 			//移動距離
-			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_W]];
+			pushButton_ = DIR_W;
 			pushButtonFrame = 0;
-			isPushW_ = true;
 		}
 		if (Input::IsKeyDown(DIK_S)){
 			//移動距離
-			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_S]];
+			pushButton_ = DIR_S;
 			pushButtonFrame = 0;
-			isPushS_ = true;
 		}
 		if (Input::IsKeyDown(DIK_D)) {
 			//移動距離
-			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_D]];
+			pushButton_ = DIR_D;
 			pushButtonFrame = 0;
-			isPushD_ = true;
 		}
 		if (Input::IsKeyDown(DIK_A)){
 			//移動距離
-			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_A]];
+			pushButton_ = DIR_A;
 			pushButtonFrame = 0;
-			isPushA_ = true;
 		}	
-		if (Input::IsKeyDown(DIK_SPACE)) {
-			isPushSpace_;
+		if (Input::IsKey(DIK_SPACE)) {
+			isPushSpace_ = true;
 		}
 
 		//同時押しされたか判定
-		if (isPushW_ || isPushS_ || isPushA_ || isPushD_)
+		if (pushButton_ != DIR_MAX)
 		{
 			if (isPushSpace_)
 			{
 				playerState_ = STATE_JUMP;
-				isPushW_ = false;
-				isPushS_ = false;
-				isPushA_ = false;
-				isPushD_ = false;
 				isPushSpace_ = false;
 				pushButtonFrame = 0;
+				moveDir_ = possiMoveDir_[pushButtonMoveDir_[pushButton_]];
+				pushButton_ = DIR_MAX;
 			}
 			pushButtonFrame++;
 			if (pushButtonFrame > simulPressFrame)
 			{
 				playerState_ = STATE_WALK;
-				isPushW_ = false;
-				isPushS_ = false;
-				isPushA_ = false;
-				isPushD_ = false;
 				isPushSpace_ = false;
 				pushButtonFrame = 0;
+				moveDir_ = possiMoveDir_[pushButtonMoveDir_[pushButton_]];
+				pushButton_ = DIR_MAX;
 			}
 		}
 	}

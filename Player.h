@@ -96,16 +96,14 @@ private:
 	float moveCntUpdate_;
 	//落ちる速度
 	float fallSpeed_;
-	//それぞれのボタンが押されたか
-	bool isPushW_;
-	bool isPushS_;
-	bool isPushA_;
-	bool isPushD_;
+	//スペースボタンが押されたか
 	bool isPushSpace_;
 	//wasdを押したときの移動方向
 	PLAYER_MOVEDIR pushButtonMoveDir_[DIR_MAX];
 	//移動が可能な方向
-	XMFLOAT3 possiMoveDir_[DIR_MAX];
+	XMFLOAT3 possiMoveDir_[DIR_MAX]; 
+	//何ボタン押されたか
+	PLAYER_MOVEDIR pushButton_;
 	//移動方向
 	XMFLOAT3 moveDir_;
 	//移動先の位置
