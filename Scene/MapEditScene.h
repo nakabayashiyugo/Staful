@@ -5,13 +5,6 @@ class Text;
 class Button;
 class GamePlayer;
 
-//Undo
-struct PUTDATA
-{
-	int x, y;
-	MATHTYPE prevMathType, mathType;	//新たなマスが置かれる前のマスと、置いた後のマス
-};
-
 class MapEditScene
 	:public GameObject, StageOrigin
 {
@@ -66,7 +59,7 @@ public:
 	//戻り値
 	//true : まだ置ける
 	//false : これ以上置けない
-	bool CostManagement();
+	bool CostManagement(XMFLOAT3 _selectMath);
 	void CostDraw();
 
 
@@ -167,20 +160,4 @@ private:
 	
 public:
 	void AudioInit();
-
-
-//Redo・Undo
-private:
-	//巻き戻し・元に戻す際putData_を参照する要素数
-	int historyIndex_;
-
-	std::vector<PUTDATA> putData_;
-
-public:
-	//putData_に値を入れる関数
-	void PutDataAssign(XMFLOAT3 _selectMath);
-	//巻き戻し
-	void Redo();
-	//元に戻す
-	void Undo();
 };

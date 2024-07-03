@@ -46,9 +46,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	tgtgRouteMathUp_(mathInitPos),
 	hTgtgRoute_(-1),
 	//音楽について
-	hAudio_Music_(-1),
-	//Redo・Undo
-	historyIndex_(0)
+	hAudio_Music_(-1)
 {
 	for (int i = 0; i < MATHTYPE::MATH_MAX; i++)
 	{
@@ -70,7 +68,6 @@ MapEditScene::MapEditScene(GameObject* parent)
 	costs_.resize(MATH_MAX);
 
 	costs_ = { 
-		floorCost, 
 		wallCost, 
 		holeCost, 
 		converyerCost, 
@@ -79,7 +76,8 @@ MapEditScene::MapEditScene(GameObject* parent)
 		timeLimitDecCost,
 		confusionCost,
 		startCost, 
-		goalCost };
+		goalCost,
+		floorCost};
 
 	//障害物のおける制限調整
 	int costLimitFirst;
@@ -184,7 +182,7 @@ void MapEditScene::Update()
 			case MATH_CONVEYOR:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement())
+					if (CostManagement(selectMath))
 					{
 						ChangeSelectMath(selectMath);
 					}
@@ -201,7 +199,7 @@ void MapEditScene::Update()
 			case MATH_TOGETOGE:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement())
+					if (CostManagement(selectMath))
 					{
 						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
 						ChangeSelectMath(selectMath);
@@ -241,7 +239,7 @@ void MapEditScene::Update()
 			default:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement())
+					if (CostManagement(selectMath))
 					{
 						ChangeSelectMath(selectMath);
 					}
@@ -352,20 +350,27 @@ void MapEditScene::MousePosSet()
 	mousePos_.y -= ((-(math_[mathVolume_.x - 1][mathVolume_.z - 1].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
 }
 
-bool MapEditScene::CostManagement()
+bool MapEditScene::CostManagement(XMFLOAT3 _selectMath)
 {
-	//コストの合計
 	int costSum = 0;
-	for (int x = 0; x < mathVolume_.x; x++)
+	//変更前のコスト計算
+	for (int x = 0; x < math_.size(); x++)
 	{
-		for (int y = 0; y < mathVolume_.z; y++)
+		for (int y = 0; y < math_[x].size(); y++)
 		{
-			
-			costSum += costs_[(int)math_[x][y].mathType_];
-			if (costSum > costLimit_)
-			{
-				return false;
-			}
+			costSum += costs_[math_[x][y].mathType_];
+		}
+	}
+	//変更後のコストたす
+	if (math_[_selectMath.x][_selectMath.y].mathType_ != mathtype_)
+	{
+		costSum += costs_[mathtype_];
+		//コストの制限を超えていたら
+		if (costSum > costLimit_)
+		{
+			costSum -= costs_[mathtype_];
+			curCost_ = costSum;
+			return false;
 		}
 	}
 	curCost_ = costSum;
@@ -887,43 +892,4 @@ void MapEditScene::AudioInit()
 	//コンベアを回転させたときのSE
 	std::string convSe = folderName + SEFolder + "SE_Rotate.wav";
 	hSE_ConvRot_ = Audio::Load(convSe, false);
-}
-
-void MapEditScene::PutDataAssign(XMFLOAT3 _selectMath)
-{
-	//historyIndex_以上の要素を消す
-	for (int i = historyIndex_ + 1; i < putData_.size() - 1; i++)
-	{
-		putData_.erase(putData_.begin() + i);
-	}
-
-	//putData_に値入れる
-	PUTDATA put;
-	put.x = _selectMath.x;
-	put.y = _selectMath.y;
-
-	put.prevMathType = math_[put.x][put.y].mathType_;
-	put.mathType = (MATHTYPE)mathtype_;
-
-	putData_.push_back(put);
-	historyIndex_ = putData_.size() - 1;
-}
-
-void MapEditScene::Redo()
-{
-	//巻き戻すから-1
-	historyIndex_ -= 1;
-	if (historyIndex_ < 0)
-	{
-		historyIndex_ = 0;
-	}
-	//変更するマス
-	XMFLOAT3 redoMath = XMFLOAT3(putData_[historyIndex_].x, putData_[historyIndex_].y, 0);
-	math_[redoMath.x][redoMath.y];
-
-
-}
-
-void MapEditScene::Undo()
-{
 }
