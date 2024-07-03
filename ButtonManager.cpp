@@ -5,6 +5,8 @@
 namespace ButtonManager
 {
 	std::vector<Button*> buttons_;
+	//ボタンのタイプ
+	BUTTONTYPE btnType_;
 }
 int ButtonManager::AddButton(std::string _btnName, GameObject* _parent)
 {

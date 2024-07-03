@@ -1,8 +1,6 @@
 #pragma once
 #include "../Engine/GameObject.h"
 
-class Button;
-
 //ゲームの説明の画像の数
 const int explanationNum = 3;
 
@@ -10,16 +8,16 @@ class ExpantionScene
 	:public GameObject
 {
 	//それぞれの画像番号
-	int hNext_, hExplanNextButton_, hExplanReturnButton_;
+	int hNext_, hExplanNextButton_, hExplanBackButton_;
 	int hExplan_[explanationNum];
 	int hOverview_;
 	//画像の位置
-	Transform tNext_, tExplanNextButton_, tExplanReturnButton_;
+	Transform tNext_, tExplanNextButton_, tExplanBackButton_;
 	Transform tExplan_[explanationNum];
 	Transform tOverview_;
 
-	//ボタン
-	Button* pNext_, *pExplanNextButton_, *pExplanReturnButton_;
+	//ボタンのハンドル
+	int nextBtnHandle_, explanNextBtnHandle_, explanBackBtnHandle_;
 
 	//ボタン番号
 	int buttonNum_;

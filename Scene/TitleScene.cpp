@@ -16,7 +16,8 @@
 #include "../Engine/Fade.h"
 
 TitleScene::TitleScene(GameObject* parent)
-	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1)
+	: GameObject(parent, "TitleScene"), hStartButton_(-1), hStaful_(-1),
+	startBtnHandle_(-1)
 {
 	
 	
@@ -38,14 +39,14 @@ void TitleScene::Initialize()
 	hStaful_ = Image::Load("Assets\\Logo_Staful.png");
 	assert(hStaful_ >= 0);
 
-	pStartButton_ = ButtonManager::GetButton(ButtonManager::AddButton("startButton", this));
-	pStartButton_->SetPictNum(hStartButton_);
+	startBtnHandle_ = ButtonManager::AddButton("startButton", this);
+	ButtonManager::SetPict(startBtnHandle_, hStartButton_);
 }
 
 void TitleScene::Update()
 {
 	//スタートボタンを押して離したら
-	if (pStartButton_->GetIsReleased())
+	if (ButtonManager::GetButton(startBtnHandle_)->GetIsReleased())
 	{
 		MathInit* mathInit = new MathInit();
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
@@ -65,7 +66,7 @@ void TitleScene::Draw()
 
 	tStartButton_.position_ = sbPos;
 	tStartButton_.scale_ = sbScale;
-	pStartButton_->SetTransform(tStartButton_);
+	ButtonManager::SetTransform(startBtnHandle_, tStartButton_);
 
 	tStaful_.position_ = sPos;
 	tStaful_.scale_ = sScale;

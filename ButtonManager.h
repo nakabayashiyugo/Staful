@@ -1,6 +1,12 @@
 #include "Engine/GameObject.h"
 #include <vector>
 
+enum BUTTONTYPE
+{
+	TYPE_NORMAL = 0,
+	TYPE_RADIO,
+};
+
 class Button;
 
 #pragma once

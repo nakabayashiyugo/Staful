@@ -2,6 +2,7 @@
 
 #include "SceneTransition.h"
 
+#include "../ButtonManager.h"
 #include "../Button.h"
 
 #include "../Engine/Easing.h"
@@ -15,7 +16,7 @@ const int exReturnButtonNum = 1;
 const int nextButtonNum = 2;
 
 ExpantionScene::ExpantionScene(GameObject* parent)
-	: GameObject(parent, "ExpantionScene"), hNext_(-1), hExplanNextButton_(-1), hExplanReturnButton_(-1),
+	: GameObject(parent, "ExpantionScene"), hNext_(-1), hExplanNextButton_(-1), hExplanBackButton_(-1),
 	curExplanNum_(0), isMoving_(false), destPos_(0), prevPos_(0)
 {
 	for (int i = 0; i < explanationNum; i++)
@@ -36,7 +37,7 @@ void ExpantionScene::Initialize()
 
 	hNext_ = Image::Load(next);
 	hExplanNextButton_ = Image::Load(exNext);
-	hExplanReturnButton_ = Image::Load(exNext);
+	hExplanBackButton_ = Image::Load(exNext);
 	hOverview_ = Image::Load(overview);
 	assert(hNext_ >= 0);
 	assert(hExplanNextButton_ >= 0);
@@ -59,40 +60,43 @@ void ExpantionScene::Initialize()
 
 void ExpantionScene::Update()
 {
-	if (pNext_->GetIsClicked())
+	//了解ボタンが押されたら
+	if (ButtonManager::GetButton(nextBtnHandle_)->GetIsClicked())
 	{
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
 		pSceneManager->ChangeScene(SCENE_ID_TRANSITION);
 	}
-	if (pExplanNextButton_->GetIsClicked())
+	//右のボタンが押されたら
+	if (ButtonManager::GetButton(explanNextBtnHandle_)->GetIsClicked())
 	{
-		pExplanNextButton_->SetIsClicked(false);
+		ButtonManager::GetButton(explanNextBtnHandle_)->SetIsClicked(false);
 		prevPos_ = (int)curExplanNum_;
 		destPos_ = curExplanNum_ + 1;
 		isMoving_ = true;
 	}
-	if (pExplanReturnButton_->GetIsClicked())
+	//左のボタンが押されたら
+	if (ButtonManager::GetButton(explanBackBtnHandle_)->GetIsClicked())
 	{
-		pExplanReturnButton_->SetIsClicked(false);
+		ButtonManager::GetButton(explanBackBtnHandle_)->SetIsClicked(false);
 		prevPos_ = (int)curExplanNum_;
 		destPos_ = curExplanNum_ - 1;
 		isMoving_ = true;
 	}
 	if (curExplanNum_ >= explanationNum - 1)
 	{
-		pExplanNextButton_->SetIsCanPush(false);
+		ButtonManager::GetButton(explanNextBtnHandle_)->SetIsCanPush(false);
 	}
 	else
 	{
-		pExplanNextButton_->SetIsCanPush(true);
+		ButtonManager::GetButton(explanNextBtnHandle_)->SetIsCanPush(true);
 	}
 	if (curExplanNum_ <= 0)
 	{
-		pExplanReturnButton_->SetIsCanPush(false);
+		ButtonManager::GetButton(explanBackBtnHandle_)->SetIsCanPush(false);
 	}
 	else
 	{
-		pExplanReturnButton_->SetIsCanPush(true);
+		ButtonManager::GetButton(explanBackBtnHandle_)->SetIsCanPush(true);
 	}
 	if (isMoving_)
 	{
@@ -119,15 +123,13 @@ void ExpantionScene::Release()
 void ExpantionScene::ButtonInit()
 {
 	//了解ボタン
-	buttonNum_ = nextButtonNum;
-	pNext_->Instantiate<Button>(this);
-	pNext_ = (Button*)FindObject("Button" + std::to_string(buttonNum_));
+	nextBtnHandle_ = ButtonManager::AddButton("nextButton", (GameObject*)this);
 	//position
 	tNext_.position_ = XMFLOAT3(0.7f, -0.75f, 0);
 	//scale
 	tNext_.scale_ = XMFLOAT3(0.5f, 0.5f, 0);
-	pNext_->SetTransform(tNext_);
-	pNext_->SetPictNum(hNext_);
+	ButtonManager::SetTransform(nextBtnHandle_, tNext_);
+	ButtonManager::SetPict(nextBtnHandle_, hNext_);
 
 	//基準位置
 	const XMFLOAT3 exButtonPosInit = XMFLOAT3(0.9f, 0, 0);
@@ -135,28 +137,24 @@ void ExpantionScene::ButtonInit()
 	const XMFLOAT3 exButtonScaleInit = XMFLOAT3(0.2f, 0.2f, 0);
 
 	//次ボタン
-	buttonNum_ = exNextButtonNum;
-	pExplanNextButton_->Instantiate<Button>(this);
-	pExplanNextButton_ = (Button*)FindObject("Button" + std::to_string(buttonNum_));
+	explanNextBtnHandle_ = ButtonManager::AddButton("explanNextButton", (GameObject*)this);
 	//position
-	tExplanNextButton_.position_ = XMFLOAT3(exButtonPosInit);
+	tExplanNextButton_.position_ = exButtonPosInit;
 	//scale
-	tExplanNextButton_.scale_ = XMFLOAT3(exButtonScaleInit);
-	pExplanNextButton_->SetTransform(tExplanNextButton_);
-	pExplanNextButton_->SetPictNum(hExplanNextButton_);
+	tExplanNextButton_.scale_ = exButtonScaleInit;
+	ButtonManager::SetTransform(explanNextBtnHandle_, tExplanNextButton_);
+	ButtonManager::SetPict(explanNextBtnHandle_, hExplanNextButton_);
 
 	//戻るボタン
-	buttonNum_ = exReturnButtonNum;
-	pExplanReturnButton_->Instantiate<Button>(this);
-	pExplanReturnButton_ = (Button*)FindObject("Button" + std::to_string(buttonNum_));
+	explanBackBtnHandle_ = ButtonManager::AddButton("explanBackButton", (GameObject*)this);
 	//position
-	tExplanReturnButton_.position_ = XMFLOAT3(-exButtonPosInit.x, exButtonPosInit.y, exButtonPosInit.z);
+	tExplanBackButton_.position_ = XMFLOAT3(-exButtonPosInit.x, exButtonPosInit.y, exButtonPosInit.z);
 	//rotate
-	tExplanReturnButton_.rotate_.z = 180.0f;
+	tExplanBackButton_.rotate_.z = 180.0f;
 	//scale
-	tExplanReturnButton_.scale_ = XMFLOAT3(exButtonScaleInit);
-	pExplanReturnButton_->SetTransform(tExplanReturnButton_);
-	pExplanReturnButton_->SetPictNum(hExplanReturnButton_);
+	tExplanBackButton_.scale_ = XMFLOAT3(exButtonScaleInit);
+	ButtonManager::SetTransform(explanBackBtnHandle_, tExplanBackButton_);
+	ButtonManager::SetPict(explanBackBtnHandle_, hExplanBackButton_);
 }
 
 void ExpantionScene::ExplanPositioning()

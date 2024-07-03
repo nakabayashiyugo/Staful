@@ -42,7 +42,10 @@ public:
 	//開放
 	void Release() override;
 
+//セッターゲッター類
+public:
 	void SetPictNum(int _pict);
+
 	void SetTransform(Transform _transform) { tPict_ = _transform; }
 	Transform GetTransform() { return tPict_; }
 

@@ -12,7 +12,8 @@ class TitleScene
 	Transform tStartButton_;
 	Transform tStaful_;
 
-	Button* pStartButton_;
+	//ボタンのハンドル
+	int startBtnHandle_;
 	
 public:
 	TitleScene(GameObject* parent);

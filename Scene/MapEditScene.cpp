@@ -7,6 +7,7 @@
 #include "../Engine/Audio.h"
 
 #include "../resource.h"
+#include "../ButtonManager.h"
 #include "../Button.h"
 #include "../GamePlayer.h"
 
@@ -531,52 +532,35 @@ void MapEditScene::ButtonInit()
 	//その他のボタンの大きさ
 	const XMFLOAT3 obScale = XMFLOAT3(0.3f, 0.3f, 1);
 	//完了ボタン
-	//完了ボタンの番号
-	buttonNum_ = (int)MATH_MAX;
-	pCompleteButton_->Instantiate<Button>(this);
-	//完了ボタンのオブジェクトネーム
-	buttonStr = "Button";
-	buttonStr += std::to_string(buttonNum_);
-	pCompleteButton_ = (Button*)FindObject(buttonStr);
-	pCompleteButton_->SetPictNum(completeNum);
+	pCompleteButton_ = ButtonManager::GetButton(ButtonManager::AddButton("compButton", (GameObject*)this));
 
 	const XMFLOAT3 cbPos = XMFLOAT3(-0.8f, -0.7f, 0);
 	Transform cbTransform;
 	cbTransform.position_ = cbPos;
 	cbTransform.scale_ = obScale;
 	pCompleteButton_->SetTransform(cbTransform);
+	pCompleteButton_->SetPictNum(completeNum);
 
 	//テストプレイボタン
 	//テストプレイボタンの番号
-	buttonNum_++;
-	pTestplayButton_->Instantiate<Button>(this);
-	//テストプレイボタンのオブジェクトネーム
-	buttonStr = "Button";
-	buttonStr += std::to_string(buttonNum_);
-	pTestplayButton_ = (Button*)FindObject(buttonStr);
-	pTestplayButton_->SetPictNum(testplayNum);
+	pTestplayButton_ = ButtonManager::GetButton(ButtonManager::AddButton("testButton", (GameObject*)this));
 
 	const XMFLOAT3 tbPos = XMFLOAT3(-0.8f, -0.6f, 0);
 	Transform tbTransform;
 	tbTransform.position_ = tbPos;
 	tbTransform.scale_ = obScale;
 	pTestplayButton_->SetTransform(tbTransform);
+	pTestplayButton_->SetPictNum(testplayNum);
 
 	//中止ボタン
-	buttonNum_++;
-	pCancelButton_->Instantiate<Button>(this);
-	//中止ボタンのオブジェクトネーム
-	buttonStr = "Button";
-	buttonStr += std::to_string(buttonNum_);
-	pCancelButton_ = (Button*)FindObject(buttonStr);
-	pCancelButton_->SetPictNum(cancelNum);
+	pCancelButton_ = ButtonManager::GetButton(ButtonManager::AddButton("cancelButton", (GameObject*)this));
 
 	const XMFLOAT3 ccbPos = tbPos;
 	Transform ccbTransform;
 	ccbTransform.position_ = ccbPos;
 	ccbTransform.scale_ = obScale;
 	pCancelButton_->SetTransform(ccbTransform);
-
+	pCancelButton_->SetPictNum(cancelNum);
 }
 
 void MapEditScene::ExpantionInit()
