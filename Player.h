@@ -5,8 +5,6 @@
 
 #include "Engine/VFX.h"
 
-
-
 class PlayScene;
 class Timer;
 class Shaker;
@@ -16,7 +14,7 @@ enum PLAYER_STATE
 {
 	STATE_IDLE = 0,	//止まってるとき
 	STATE_WALK,		//歩いているとき
-	STATE_JAMP,		//ジャンプしたとき
+	STATE_JUMP,		//ジャンプしたとき
 	STATE_FALL,		//落下しているとき
 	STATE_CONVMOVE,	//コンベアによって移動しているとき
 	STATE_CONF,		//混乱マスに乗ってくるくるするとき
@@ -98,6 +96,12 @@ private:
 	float moveCntUpdate_;
 	//落ちる速度
 	float fallSpeed_;
+	//それぞれのボタンが押されたか
+	bool isPushW_;
+	bool isPushS_;
+	bool isPushA_;
+	bool isPushD_;
+	bool isPushSpace_;
 	//wasdを押したときの移動方向
 	PLAYER_MOVEDIR pushButtonMoveDir_[DIR_MAX];
 	//移動が可能な方向
@@ -161,7 +165,7 @@ public:
 	//それぞれの状態のUpdate
 	void IdleUpdate();
 	void WalkUpdate();
-	void JampUpdate();
+	void JumpUpdate();
 	void FallUpdate();
 	void ConvMoveUpdate();
 	void ConfUpdate();

@@ -50,6 +50,8 @@ const float camShakePower = 2.0f;
 const float decTime = 5.0f;
 //混乱マス踏んだ時のアニメーションの長さ(秒)
 const float confAnimTime = 2;
+//同時押しの許可フレーム
+const int simulPressFrame = 10;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -248,8 +250,8 @@ void Player::PlayUpdate()
 	case STATE_WALK:
 		WalkUpdate();
 		break;
-	case STATE_JAMP:
-		JampUpdate();
+	case STATE_JUMP:
+		JumpUpdate();
 		break;
 	case STATE_FALL:
 		FallUpdate();
@@ -376,37 +378,60 @@ void Player::OperateExplanDraw()
 void Player::PlayerOperation()
 {
 	if (playerState_ != STATE_DEAD){
+		//ボタンが押されてからのフレーム数
+		static int pushButtonFrame = 0;
 		//前後左右移動
 		if (Input::IsKeyDown(DIK_W)){
 			//移動距離
 			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_W]];
-			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE)){
-				playerState_ = STATE_JAMP;
-			}
+			pushButtonFrame = 0;
+			isPushW_ = true;
 		}
 		if (Input::IsKeyDown(DIK_S)){
 			//移動距離
 			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_S]];
-			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE)){
-				playerState_ = STATE_JAMP;
-			}
+			pushButtonFrame = 0;
+			isPushS_ = true;
 		}
 		if (Input::IsKeyDown(DIK_D)) {
 			//移動距離
 			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_D]];
-			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE)) {
-				playerState_ = STATE_JAMP;
-			}
+			pushButtonFrame = 0;
+			isPushD_ = true;
 		}
 		if (Input::IsKeyDown(DIK_A)){
 			//移動距離
 			moveDir_ = possiMoveDir_[pushButtonMoveDir_[DIR_A]];
-			playerState_ = STATE_WALK;
-			if (Input::IsKey(DIK_SPACE)){
-				playerState_ = STATE_JAMP;
+			pushButtonFrame = 0;
+			isPushA_ = true;
+		}	
+		if (Input::IsKeyDown(DIK_SPACE)) {
+			isPushSpace_;
+		}
+
+		//同時押しされたか判定
+		if (isPushW_ || isPushS_ || isPushA_ || isPushD_)
+		{
+			if (isPushSpace_)
+			{
+				playerState_ = STATE_JUMP;
+				isPushW_ = false;
+				isPushS_ = false;
+				isPushA_ = false;
+				isPushD_ = false;
+				isPushSpace_ = false;
+				pushButtonFrame = 0;
+			}
+			pushButtonFrame++;
+			if (pushButtonFrame > simulPressFrame)
+			{
+				playerState_ = STATE_WALK;
+				isPushW_ = false;
+				isPushS_ = false;
+				isPushA_ = false;
+				isPushD_ = false;
+				isPushSpace_ = false;
+				pushButtonFrame = 0;
 			}
 		}
 	}
@@ -551,7 +576,7 @@ void Player::WalkUpdate()
 	}
 }
 
-void Player::JampUpdate()
+void Player::JumpUpdate()
 {
 	ChangePlayerDir(moveDir_);
 	
@@ -814,7 +839,7 @@ void Player::SetAnimFramerate()
 			endFrame_ = WALK_END;
 			animSpeed = moveAnimSpeed;
 			break;
-		case STATE_JAMP:
+		case STATE_JUMP:
 			startFrame_ = JAMP_FIRST;
 			endFrame_ = JAMP_END;
 			break;
