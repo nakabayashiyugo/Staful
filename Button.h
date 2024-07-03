@@ -28,6 +28,7 @@ class Button
 
 public:
 	Button(GameObject* parent);
+	Button(std::string _btnName, GameObject* parent);
 
 	//‰Šú‰»
 	void Initialize() override;

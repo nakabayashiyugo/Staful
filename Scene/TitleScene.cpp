@@ -1,8 +1,10 @@
 #include "TitleScene.h"
 #include "ExpantionScene.h"
 
-#include "../Button.h"
+#include "../ButtonManager.h"
 #include "../MathInit.h"
+#include "../Button.h"
+
 
 #include "../Engine/Image.h"
 #include "../Engine/Model.h"
@@ -36,11 +38,8 @@ void TitleScene::Initialize()
 	hStaful_ = Image::Load("Assets\\Logo_Staful.png");
 	assert(hStaful_ >= 0);
 
-	pStartButton_->Instantiate<Button>(this);
-	pStartButton_ = (Button*)FindObject("Button");
+	pStartButton_ = ButtonManager::GetButton(ButtonManager::AddButton("startButton", this));
 	pStartButton_->SetPictNum(hStartButton_);
-
-
 }
 
 void TitleScene::Update()

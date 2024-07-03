@@ -112,6 +112,7 @@
     </ClCompile>
     <ClCompile Include="MathInit.cpp" />
     <ClCompile Include="GamePlayer.cpp" />
+    <ClCompile Include="ButtonManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Simple2D.hlsl">
@@ -221,6 +222,7 @@
     </ClInclude>
     <ClInclude Include="MathInit.h" />
     <ClInclude Include="GamePlayer.h" />
+    <ClInclude Include="ButtonManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="MapEditor.rc">

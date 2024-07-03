@@ -28,6 +28,14 @@ Button::Button(GameObject* parent)
 	}
 }
 
+Button::Button(std::string _btnName, GameObject* parent)
+	: GameObject(parent, "Button"), isClick_(false), isRelease_(false),
+	hPict_(-1), isCanPush_(true), isCursorMatched_(false), isDisp_(true),
+	hSE_(-1)
+{
+	this->objectName_ = _btnName;
+}
+
 void Button::Initialize()
 {
 	//音楽が入ってるフォルダ名

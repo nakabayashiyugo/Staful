@@ -13,6 +13,7 @@ class TitleScene
 	Transform tStaful_;
 
 	Button* pStartButton_;
+	
 public:
 	TitleScene(GameObject* parent);
 
