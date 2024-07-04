@@ -15,7 +15,7 @@
 #include "DirectXCollision.h"
 #include "resource.h"
 #include "Stage.h"
-#include "Player.h"
+#include "Player/Player.h"
 
 #include "Scene/MapEditScene.h"
 #include "Scene/SceneTransition.h"

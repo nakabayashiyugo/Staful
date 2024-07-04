@@ -1,6 +1,7 @@
 #include "PlayerState.h"
 
-#include "Player.h"
+#include "../Player.h"
+
 #include "StateManager.h"
 
 PlayerIdleState::PlayerIdleState(StateManager* _pStateManager)
@@ -15,28 +16,28 @@ void PlayerIdleState::EnterState()
 
 void PlayerIdleState::UpdateState()
 {
-	pPlayer_->IdleUpdate();
 	switch (pPlayer_->GetPlayerState())
 	{
 	case STATE_WALK:
 		pStateManager_->ChangeState("STATE_WALK");
-		break;
+		return;
 	case STATE_JUMP:
 		pStateManager_->ChangeState("STATE_JUMP");
-		break;
+		return;
 	case STATE_FALL:
 		pStateManager_->ChangeState("STATE_FALL");
-		break;
+		return;
 	case STATE_CONVMOVE:
 		pStateManager_->ChangeState("STATE_CONVMOVE");
-		break;
+		return;
 	case STATE_CONF:
 		pStateManager_->ChangeState("STATE_CONF");
-		break;
+		return;
 	case STATE_DEAD:
 		pStateManager_->ChangeState("STATE_DEAD");
-		break;
+		return;
 	}
+	pPlayer_->IdleUpdate();
 }
 
 void PlayerIdleState::ExitState()
@@ -55,16 +56,16 @@ void PlayerWalkState::EnterState()
 
 void PlayerWalkState::UpdateState()
 {
-	pPlayer_->WalkUpdate();
 	switch (pPlayer_->GetPlayerState())
 	{
 	case STATE_IDLE:
 		pStateManager_->ChangeState("STATE_IDLE");
-		break;
+		return;
 	case STATE_DEAD:
 		pStateManager_->ChangeState("STATE_DEAD");
-		break;
+		return;
 	}
+	pPlayer_->WalkUpdate();
 }
 
 void PlayerWalkState::ExitState()
@@ -83,16 +84,16 @@ void PlayerJumpState::EnterState()
 
 void PlayerJumpState::UpdateState()
 {
-	pPlayer_->JumpUpdate();
 	switch (pPlayer_->GetPlayerState())
 	{
 	case STATE_IDLE:
 		pStateManager_->ChangeState("STATE_IDLE");
-		break;
+		return;
 	case STATE_DEAD:
 		pStateManager_->ChangeState("STATE_DEAD");
-		break;
+		return;
 	}
+	pPlayer_->JumpUpdate();
 }
 
 void PlayerJumpState::ExitState()
@@ -111,16 +112,16 @@ void PlayerFallState::EnterState()
 
 void PlayerFallState::UpdateState()
 {
-	pPlayer_->FallUpdate();
 	switch (pPlayer_->GetPlayerState())
 	{
 	case STATE_IDLE:
 		pStateManager_->ChangeState("STATE_IDLE");
-		break;
+		return;
 	case STATE_DEAD:
 		pStateManager_->ChangeState("STATE_DEAD");
-		break;
+		return;
 	}
+	pPlayer_->FallUpdate();
 }
 
 void PlayerFallState::ExitState()
@@ -139,16 +140,16 @@ void PlayerConvMoveState::EnterState()
 
 void PlayerConvMoveState::UpdateState()
 {
-	pPlayer_->ConvMoveUpdate();
 	switch (pPlayer_->GetPlayerState())
 	{
 	case STATE_IDLE:
 		pStateManager_->ChangeState("STATE_IDLE");
-		break;
+		return;
 	case STATE_DEAD:
 		pStateManager_->ChangeState("STATE_DEAD");
-		break;
+		return;
 	}
+	pPlayer_->ConvMoveUpdate();
 }
 
 void PlayerConvMoveState::ExitState()
@@ -167,16 +168,16 @@ void PlayerConfState::EnterState()
 
 void PlayerConfState::UpdateState()
 {
-	pPlayer_->ConfUpdate();
 	switch (pPlayer_->GetPlayerState())
 	{
 	case STATE_IDLE:
 		pStateManager_->ChangeState("STATE_IDLE");
-		break;
+		return;
 	case STATE_DEAD:
 		pStateManager_->ChangeState("STATE_DEAD");
-		break;
+		return;
 	}
+	pPlayer_->ConfUpdate();
 }
 
 void PlayerConfState::ExitState()
@@ -195,13 +196,13 @@ void PlayerDeadState::EnterState()
 
 void PlayerDeadState::UpdateState()
 {
-	pPlayer_->DeadUpdate();
 	switch (pPlayer_->GetPlayerState())
 	{
 	case STATE_IDLE:
 		pStateManager_->ChangeState("STATE_IDLE");
-		break;
+		return;
 	}
+	pPlayer_->DeadUpdate();
 }
 
 void PlayerDeadState::ExitState()

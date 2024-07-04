@@ -169,7 +169,6 @@
     <ClCompile Include="Engine\VFX.cpp" />
     <ClCompile Include="GamePlayer.cpp" />
     <ClCompile Include="MathInit.cpp" />
-    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Engine\Camera.cpp" />
     <ClCompile Include="Engine\Direct3D.cpp" />
     <ClCompile Include="Engine\Fbx.cpp" />
@@ -185,7 +184,9 @@
     <ClCompile Include="Engine\Texture.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="PlayerState.cpp" />
+    <ClCompile Include="Player\Player.cpp" />
+    <ClCompile Include="Player\State\PlayerState.cpp" />
+    <ClCompile Include="Player\State\StateManager.cpp" />
     <ClCompile Include="Scene\BetweenScene.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditScene.cpp" />
@@ -195,7 +196,6 @@
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="StageOrigin.cpp" />
-    <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Togetoge.cpp" />
   </ItemGroup>
@@ -226,7 +226,6 @@
     <ClInclude Include="Engine\VFX.h" />
     <ClInclude Include="GamePlayer.h" />
     <ClInclude Include="MathInit.h" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="Engine\Camera.h" />
     <ClInclude Include="Engine\Direct3D.h" />
     <ClInclude Include="Engine\Fbx.h" />
@@ -241,7 +240,10 @@
     <ClInclude Include="Engine\Sprite.h" />
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
-    <ClInclude Include="PlayerState.h" />
+    <ClInclude Include="Player\Player.h" />
+    <ClInclude Include="Player\State\PlayerState.h" />
+    <ClInclude Include="Player\State\StateBase.h" />
+    <ClInclude Include="Player\State\StateManager.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene\BetweenScene.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
@@ -252,8 +254,6 @@
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="StageOrigin.h" />
-    <ClInclude Include="StateBase.h" />
-    <ClInclude Include="StateManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Togetoge.h" />
   </ItemGroup>

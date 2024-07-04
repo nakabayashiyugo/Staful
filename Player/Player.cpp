@@ -2,25 +2,25 @@
 
 #include <map>
 
-#include "Engine/Input.h"
-#include "Engine/Camera.h"
-#include "Engine/Model.h"
-#include "Engine/Image.h"
-#include "Engine/Fbx.h"
-#include "Engine/SphereCollider.h"
-#include "Engine/Easing.h"
-#include "Engine/Shaker.h"
-#include "Engine/Audio.h"
-#include "Engine/Text.h"
+#include "../Engine/Input.h"
+#include "../Engine/Camera.h"
+#include "../Engine/Model.h"
+#include "../Engine/Image.h"
+#include "../Engine/Fbx.h"
+#include "../Engine/SphereCollider.h"
+#include "../Engine/Easing.h"
+#include "../Engine/Shaker.h"
+#include "../Engine/Audio.h"
+#include "../Engine/Text.h"
 
-#include "Scene/PlayScene.h"
-#include "Scene/SceneTransition.h"
+#include "../Scene/PlayScene.h"
+#include "../Scene/SceneTransition.h"
 
-#include "Stage.h"
-#include "Timer.h"
-#include "StageOrigin.h"
-#include "StateManager.h"
-#include "PlayerState.h"
+#include "../Stage.h"
+#include "../Timer.h"
+#include "../StageOrigin.h"
+#include "State/StateManager.h"
+#include "State/PlayerState.h"
 
 const int MODELSIZE = 0.8f;
 //ジャンプ時の最高到達点
@@ -606,11 +606,7 @@ void Player::FallUpdate()
 	{
 		fallSpeed_ = fallSpeedInit;
 		gravity_.y = gravityAcce_;
-		playerState_ = STATE_IDLE;
-		if (DestPosMathType() == MATH_HOLE && transform_.position_.y <= deadHeight_)
-		{
-			playerState_ = STATE_DEAD;
-		}
+		playerState_ = STATE_DEAD;
 		moveFinished_ = false;
 	}
 }
@@ -886,6 +882,7 @@ void Player::OnCollision(GameObject* pTarget)
 		MoveFinished();
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
+		pStateManager_->ChangeState("STATE_DEAD");
 	}
 }
 

@@ -10,9 +10,10 @@
 
 #include "../Timer.h"
 #include "../Stage.h"
-#include "../Player.h"
 #include "../Button.h"
 #include "../GamePlayer.h"
+
+#include "../Player/Player.h"
 
 PlayScene::PlayScene(GameObject* parent)
 	: GameObject(parent, "PlayScene"),

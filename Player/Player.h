@@ -1,9 +1,9 @@
 #pragma once
-#include "Engine/GameObject.h"
+#include "../Engine/GameObject.h"
 
-#include "StageOrigin.h"
+#include "../StageOrigin.h"
 
-#include "Engine/VFX.h"
+#include "../Engine/VFX.h"
 
 class PlayScene;
 class Timer;
