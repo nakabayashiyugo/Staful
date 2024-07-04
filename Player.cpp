@@ -15,9 +15,12 @@
 
 #include "Scene/PlayScene.h"
 #include "Scene/SceneTransition.h"
+
 #include "Stage.h"
 #include "Timer.h"
 #include "StageOrigin.h"
+#include "StateManager.h"
+#include "PlayerState.h"
 
 const int MODELSIZE = 0.8f;
 //ジャンプ時の最高到達点
@@ -161,6 +164,8 @@ void Player::Initialize()
 	ShadowInit();
 	//音楽初期化
 	AudioInit();
+	//ステート初期化
+	StateInit();
 
 	//カメラの振動　初期化
 	pCamShaker_ = new Shaker();
@@ -243,35 +248,10 @@ void Player::PlayUpdate()
 
 	ShadowManagement();
 
-	switch (playerState_)
-	{
-	case STATE_IDLE:
-		IdleUpdate();
-		break;
-	case STATE_WALK:
-		WalkUpdate();
-		break;
-	case STATE_JUMP:
-		JumpUpdate();
-		break;
-	case STATE_FALL:
-		FallUpdate();
-		break;
-	case STATE_CONVMOVE:
-		ConvMoveUpdate();
-		break;
-	case STATE_CONF:
-		ConfUpdate();
-		break;
-	case STATE_DEAD:
-		DeadUpdate();
-		break;
-	}
+	pStateManager_->Update();
 	//アニメーションを更新する
 	SetAnimFramerate();
 }
-
-
 
 void Player::CameraPosSet()
 {
@@ -309,6 +289,23 @@ bool Player::Is_InSide_Table(XMFLOAT3 _pos)
 {
 	return _pos.x >= 0 && _pos.x < mathVolume_.x &&
 		_pos.z  >= 0 && _pos.z < mathVolume_.z;
+}
+
+void Player::StateInit()
+{
+	//ステートマネージャーにステート追加
+	pStateManager_ = new StateManager(this);
+
+	pStateManager_->AddState("STATE_IDLE", new PlayerIdleState(pStateManager_));
+	pStateManager_->AddState("STATE_WALK", new PlayerWalkState(pStateManager_));
+	pStateManager_->AddState("STATE_JUMP", new PlayerJumpState(pStateManager_));
+	pStateManager_->AddState("STATE_FALL", new PlayerFallState(pStateManager_));
+	pStateManager_->AddState("STATE_CONVMOVE", new PlayerConvMoveState(pStateManager_));
+	pStateManager_->AddState("STATE_CONF", new PlayerConfState(pStateManager_));
+	pStateManager_->AddState("STATE_DEAD", new PlayerDeadState(pStateManager_));
+
+	//最初のステート決める
+	pStateManager_->ChangeState("STATE_IDLE");
 }
 
 void Player::PossiMoveDirInit()

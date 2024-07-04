@@ -185,6 +185,7 @@
     <ClCompile Include="Engine\Texture.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PlayerState.cpp" />
     <ClCompile Include="Scene\BetweenScene.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditScene.cpp" />
@@ -194,6 +195,7 @@
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Stage.cpp" />
     <ClCompile Include="StageOrigin.cpp" />
+    <ClCompile Include="StateManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Togetoge.cpp" />
   </ItemGroup>
@@ -239,6 +241,7 @@
     <ClInclude Include="Engine\Sprite.h" />
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
+    <ClInclude Include="PlayerState.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene\BetweenScene.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
@@ -249,6 +252,8 @@
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="StageOrigin.h" />
+    <ClInclude Include="StateBase.h" />
+    <ClInclude Include="StateManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Togetoge.h" />
   </ItemGroup>

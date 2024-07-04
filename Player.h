@@ -9,6 +9,7 @@ class PlayScene;
 class Timer;
 class Shaker;
 class Text;
+class StateManager;
 
 enum PLAYER_STATE
 {
@@ -131,10 +132,13 @@ private:
 	MATHDEDAIL standMath_;
 	//直前までたっていたマスの情報
 	MATHDEDAIL prevStandMath_;
+
+	StateManager* pStateManager_;
 	//プレイヤーの状態
 	PLAYER_STATE playerState_;
 	//プレイヤーの直前の状態
 	PLAYER_STATE prevPlayerState_;
+
 	//ゲームの進行度の状態
 	STAGE_STATE stageState_;
 
@@ -178,6 +182,8 @@ public:
 	void MathTypeEffect();
 	//playerがステージ内に入っているか
 	bool Is_InSide_Table(XMFLOAT3 _pos);
+	//ステート初期化
+	void StateInit();
 
 	//プレイヤーのポジションのゲッター
 	XMFLOAT3 GetPosition() { return transform_.position_; }
