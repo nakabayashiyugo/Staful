@@ -882,7 +882,6 @@ void Player::OnCollision(GameObject* pTarget)
 		MoveFinished();
 		prevPos_ = transform_.position_;
 		playerState_ = STATE_DEAD;
-		pStateManager_->ChangeState("STATE_DEAD");
 	}
 }
 

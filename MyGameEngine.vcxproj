@@ -164,6 +164,7 @@
     <ClCompile Include="Engine\Easing.cpp" />
     <ClCompile Include="Engine\Fade.cpp" />
     <ClCompile Include="Engine\FbxParts.cpp" />
+    <ClCompile Include="Engine\Node.cpp" />
     <ClCompile Include="Engine\Shaker.cpp" />
     <ClCompile Include="Engine\Text.cpp" />
     <ClCompile Include="Engine\VFX.cpp" />
@@ -184,9 +185,12 @@
     <ClCompile Include="Engine\Texture.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Player\AIWork.cpp" />
+    <ClCompile Include="Player\EnemyAI.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\State\PlayerState.cpp" />
     <ClCompile Include="Player\State\StateManager.cpp" />
+    <ClCompile Include="RadioButton.cpp" />
     <ClCompile Include="Scene\BetweenScene.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditScene.cpp" />
@@ -221,9 +225,11 @@
     <ClInclude Include="Engine\Easing.h" />
     <ClInclude Include="Engine\Fade.h" />
     <ClInclude Include="Engine\FbxParts.h" />
+    <ClInclude Include="Engine\Node.h" />
     <ClInclude Include="Engine\Shaker.h" />
     <ClInclude Include="Engine\Text.h" />
     <ClInclude Include="Engine\VFX.h" />
+    <ClInclude Include="Engine\Work.h" />
     <ClInclude Include="GamePlayer.h" />
     <ClInclude Include="MathInit.h" />
     <ClInclude Include="Engine\Camera.h" />
@@ -240,10 +246,14 @@
     <ClInclude Include="Engine\Sprite.h" />
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="Player\AIWork.h" />
+    <ClInclude Include="Player\EnemyAI.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Player\State\PlayerState.h" />
     <ClInclude Include="Player\State\StateBase.h" />
     <ClInclude Include="Player\State\StateManager.h" />
+    <ClInclude Include="RadioButton.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene\BetweenScene.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
