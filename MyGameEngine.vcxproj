@@ -165,6 +165,7 @@
     <ClCompile Include="Engine\Fade.cpp" />
     <ClCompile Include="Engine\FbxParts.cpp" />
     <ClCompile Include="Engine\Node.cpp" />
+    <ClCompile Include="Engine\RootNode.cpp" />
     <ClCompile Include="Engine\Shaker.cpp" />
     <ClCompile Include="Engine\Text.cpp" />
     <ClCompile Include="Engine\VFX.cpp" />
@@ -185,8 +186,8 @@
     <ClCompile Include="Engine\Texture.cpp" />
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Player\AIWork.cpp" />
-    <ClCompile Include="Player\EnemyAI.cpp" />
+    <ClCompile Include="Player\AI\AIWork.cpp" />
+    <ClCompile Include="Player\AI\EnemyAI.cpp" />
     <ClCompile Include="Player\Player.cpp" />
     <ClCompile Include="Player\State\PlayerState.cpp" />
     <ClCompile Include="Player\State\StateManager.cpp" />
@@ -226,6 +227,7 @@
     <ClInclude Include="Engine\Fade.h" />
     <ClInclude Include="Engine\FbxParts.h" />
     <ClInclude Include="Engine\Node.h" />
+    <ClInclude Include="Engine\RootNode.h" />
     <ClInclude Include="Engine\Shaker.h" />
     <ClInclude Include="Engine\Text.h" />
     <ClInclude Include="Engine\VFX.h" />
@@ -246,9 +248,8 @@
     <ClInclude Include="Engine\Sprite.h" />
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="Player\AIWork.h" />
-    <ClInclude Include="Player\EnemyAI.h" />
+    <ClInclude Include="Player\AI\AIWork.h" />
+    <ClInclude Include="Player\AI\EnemyAI.h" />
     <ClInclude Include="Player\Player.h" />
     <ClInclude Include="Player\State\PlayerState.h" />
     <ClInclude Include="Player\State\StateBase.h" />

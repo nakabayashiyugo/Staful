@@ -17,6 +17,15 @@
     <Filter Include="Engine\AI">
       <UniqueIdentifier>{5a2013c0-81b8-4240-af78-b0e6801fbf1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{2b46f8bd-e661-46f9-8873-98cb2c29e39b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\State">
+      <UniqueIdentifier>{d5443585-6575-4e38-a2e9-31195d871022}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\AI">
+      <UniqueIdentifier>{19c13d23-e592-4a89-bddb-902d58aff88c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Camera.cpp">
@@ -115,13 +124,26 @@
     <ClCompile Include="MathInit.cpp" />
     <ClCompile Include="GamePlayer.cpp" />
     <ClCompile Include="ButtonManager.cpp" />
-    <ClCompile Include="Player\AIWork.cpp" />
-    <ClCompile Include="Player\EnemyAI.cpp" />
-    <ClCompile Include="Player\Player.cpp" />
-    <ClCompile Include="Player\State\PlayerState.cpp" />
-    <ClCompile Include="Player\State\StateManager.cpp" />
     <ClCompile Include="RadioButton.cpp" />
     <ClCompile Include="Engine\Node.cpp">
+      <Filter>Engine\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\State\PlayerState.cpp">
+      <Filter>Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\State\StateManager.cpp">
+      <Filter>Player\State</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\Player.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\AI\AIWork.cpp">
+      <Filter>Player\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\AI\EnemyAI.cpp">
+      <Filter>Player\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Engine\RootNode.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -189,7 +211,6 @@
       <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="Button.h" />
-    <ClInclude Include="Player.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Stage.h" />
     <ClInclude Include="StageOrigin.h" />
@@ -234,17 +255,32 @@
     <ClInclude Include="MathInit.h" />
     <ClInclude Include="GamePlayer.h" />
     <ClInclude Include="ButtonManager.h" />
-    <ClInclude Include="Player\AIWork.h" />
-    <ClInclude Include="Player\EnemyAI.h" />
-    <ClInclude Include="Player\Player.h" />
-    <ClInclude Include="Player\State\PlayerState.h" />
-    <ClInclude Include="Player\State\StateBase.h" />
-    <ClInclude Include="Player\State\StateManager.h" />
     <ClInclude Include="RadioButton.h" />
     <ClInclude Include="Engine\Work.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
     <ClInclude Include="Engine\Node.h">
+      <Filter>Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\State\PlayerState.h">
+      <Filter>Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\State\StateBase.h">
+      <Filter>Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\State\StateManager.h">
+      <Filter>Player\State</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\Player.h">
+      <Filter>Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\AI\AIWork.h">
+      <Filter>Player\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\AI\EnemyAI.h">
+      <Filter>Player\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Engine\RootNode.h">
       <Filter>Engine\AI</Filter>
     </ClInclude>
   </ItemGroup>

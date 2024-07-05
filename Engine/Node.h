@@ -7,7 +7,7 @@ class Node
 public:
 	Node(Node* _parent, Work* _work);
 	NodeState Run();
-	NodeState Result(NodeState _result);
+	virtual NodeState Result(NodeState _result);
 	//子ノード実行
 	NodeState ChildExcute();
 
