@@ -8,6 +8,8 @@ class Button
 	bool isClick_;
 	//クリックして離したかどうか
 	bool isRelease_;
+	//選ばれてるかどうか
+	bool isSelect_;
 	//このボタンが押せるかどうか
 	//true : 押せる
 	//false : 押せない
@@ -42,6 +44,15 @@ public:
 	//開放
 	void Release() override;
 
+	//マウスの位置の(0, 0)を画面の中心にする
+	void MousePosSetting();
+
+	//ボタンの中にマウスカーソルが入ってるか
+	bool IsMouseEnter();
+
+	//ボタンが押されたらtrue
+	bool OnClick();
+
 //セッターゲッター類
 public:
 	void SetPictNum(int _pict);
@@ -53,6 +64,8 @@ public:
 	void SetIsClicked(bool _isClick) { isClick_ = _isClick; }
 	bool GetIsReleased() { return isRelease_; }
 	void SetIsReleased(bool _isRelease) { isRelease_ = _isRelease; }
+	bool GetIsSelect() { return isSelect_; }
+	void SetIsSelect(bool _isSelect) { isSelect_ = _isSelect; }
 
 	void SetAlpha(int _alpha);
 

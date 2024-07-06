@@ -126,8 +126,7 @@ void MapEditScene::Update()
 		selectMath = mathInitPos;
 	}
 
-	//選ばれてるマスの種類検索
-	SelectMathType();
+	ButtonUpdate();
 
 	if (selectMath.x != -1 && selectMath.y != -1)
 	{
@@ -496,10 +495,10 @@ void MapEditScene::ButtonInit()
 	//ボタンのオブジェクトネーム
 	std::string buttonStr;
 
-	for (buttonNum_ = buttonInitNum; buttonNum_ < MATH_MAX; buttonNum_++)
+	for (int i = buttonInitNum; i < MATH_MAX; i++)
 	{
-		pMathButton_[buttonNum_] = ButtonManager::GetButton(ButtonManager::AddButton(("MathButton" + std::to_string(buttonNum_)), this));
-		pMathButton_[buttonNum_]->SetPictNum(mathButtonNum[buttonNum_]);
+		pMathButton_[i] = ButtonManager::GetButton(ButtonManager::AddButton(("MathButton" + std::to_string(i)), this));
+		pMathButton_[i]->SetPictNum(mathButtonNum[i]);
 
 		
 		//マス選択ボタンの基準の位置
@@ -513,16 +512,16 @@ void MapEditScene::ButtonInit()
 			(1.0f / Direct3D::bfr_scrHeight) * mathButtonSize * 2, 0);
 		//マス選択ボタンの間隔
 		const XMFLOAT3 mbIntervalBase = XMFLOAT3(0, 0, 0);
-		const XMFLOAT3 mbInterval = XMFLOAT3(((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbIntervalBase.x,
-			-((buttonNum_ - buttonInitNum) / mbNewLineNum) * mbIntervalBase.y, 0);
-		mbPos.x =  (float)((buttonNum_ - buttonInitNum) % mbNewLineNum) * mbSize.x + mbInitPos.x + mbInterval.x;
-		mbPos.y = -(float)((buttonNum_ - buttonInitNum) / mbNewLineNum) * mbSize.y + mbInitPos.y + mbInterval.y;
+		const XMFLOAT3 mbInterval = XMFLOAT3(((i - buttonInitNum) % mbNewLineNum) * mbIntervalBase.x,
+			-((i - buttonInitNum) / mbNewLineNum) * mbIntervalBase.y, 0);
+		mbPos.x =  (float)((i - buttonInitNum) % mbNewLineNum) * mbSize.x + mbInitPos.x + mbInterval.x;
+		mbPos.y = -(float)((i - buttonInitNum) / mbNewLineNum) * mbSize.y + mbInitPos.y + mbInterval.y;
 		mbPos.z = mbInitPos.z;
 
 		Transform mbTransform;
 		mbTransform.position_ = mbPos;
 		mbTransform.scale_ = mbScale;
-		pMathButton_[buttonNum_]->SetTransform(mbTransform);
+		pMathButton_[i]->SetTransform(mbTransform);
 	}
 
 	//その他のボタンの大きさ
@@ -557,6 +556,54 @@ void MapEditScene::ButtonInit()
 	ccbTransform.scale_ = obScale;
 	pCancelButton_->SetTransform(ccbTransform);
 	pCancelButton_->SetPictNum(cancelNum);
+}
+
+void MapEditScene::ButtonUpdate()
+{
+	SelectMathType();
+	OtherButtonPush();
+}
+
+void MapEditScene::OtherButtonPush()
+{
+	static PlayScene* pTestplay = nullptr;
+
+	pTestplayButton_->SetIsCanPush(canTest_ * isDisp_);
+	//テストプレイクリアできないと押せないようにする
+	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
+	//テストプレイしてる時だけ押せるようにする
+	pCancelButton_->SetIsCanPush(!isDisp_);
+
+	//テストプレイボタンが押されたら
+	if (pTestplayButton_->OnClick())
+	{
+		//マップエディター非表示
+		isDisp_ = false;
+		Write();
+		pTestplay->Instantiate<PlayScene>(this);
+		pTestplay = (PlayScene*)FindObject("PlayScene");
+	}
+	//完了ボタンが押されたら
+	else if (pCompleteButton_->OnClick())
+	{
+		//音楽停止
+		Audio::Stop(hAudio_Music_);
+		//ファイルに書き込み
+		Write();
+		pGP_->MapEditFinished();
+	}
+	//中止ボタン
+	//テストプレイしているとき
+	else if (pTestplay != nullptr)
+	{
+		if (pCancelButton_->OnClick())
+		{
+			pTestplay->KillMe();
+			pTestplay = nullptr;
+			//マップエディター表示
+			isDisp_ = true;
+		}
+	}
 }
 
 void MapEditScene::ExpantionInit()
@@ -681,50 +728,18 @@ void MapEditScene::SelectMathType()
 {
 	for (int i = 0; i < MATH_MAX; i++)
 	{
-		if (pMathButton_[i]->GetIsClicked())
+		if (pMathButton_[i]->OnClick())
 		{
 			mathtype_ = i;
 		}
 	}
-	static PlayScene* pTestplay = nullptr;
-
-	pTestplayButton_->SetIsCanPush(canTest_ * isDisp_);
-	//テストプレイボタンが押されたら
-	if (pTestplayButton_->GetIsClicked())
+	//選ばれてるボタン
+	for (int i = 0; i < MATH_MAX; i++)
 	{
-		pTestplayButton_->SetIsClicked(false);
-		//マップエディター非表示
-		isDisp_ = false;
-		Write();
-		pTestplay->Instantiate<PlayScene>(this);
-		pTestplay = (PlayScene*)FindObject("PlayScene");
-	}
-
-	//テストプレイクリアできないと押せないようにする
-	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
-	//完了ボタンが押されたら
-	if (pCompleteButton_->GetIsClicked())
-	{
-		//音楽停止
-		Audio::Stop(hAudio_Music_);
-		//ファイルに書き込み
-		Write();
-		pGP_->MapEditFinished();
-	}
-
-	//中止ボタン
-	//テストプレイしてる時だけ押せるようにする
-	pCancelButton_->SetIsCanPush(!isDisp_);
-	//テストプレイしているとき
-	if (pTestplay != nullptr)
-	{
-		if (pCancelButton_->GetIsClicked())
+		pMathButton_[i]->SetIsSelect(false);
+		if (mathtype_ == i)
 		{
-			pCancelButton_->SetIsClicked(false);
-			pTestplay->KillMe();
-			pTestplay = nullptr;
-			//マップエディター表示
-			isDisp_ = true;
+			pMathButton_[i]->SetIsSelect(true);
 		}
 	}
 

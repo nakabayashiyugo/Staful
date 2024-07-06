@@ -46,7 +46,7 @@ void TitleScene::Initialize()
 void TitleScene::Update()
 {
 	//スタートボタンを押して離したら
-	if (ButtonManager::GetButton(startBtnHandle_)->GetIsReleased())
+	if (ButtonManager::GetButton(startBtnHandle_)->OnClick())
 	{
 		MathInit* mathInit = new MathInit();
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");

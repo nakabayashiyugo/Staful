@@ -14,18 +14,7 @@ Button::Button(GameObject* parent)
 	hPict_(-1), isCanPush_(true), isCursorMatched_(false), isDisp_(true),
 	hSE_(-1)
 {
-	//親クラスがMapEditSceneなら
-	if (pParent_->GetObjectName() == "MapEditScene")
-	{
-		//自身のオブジェクトネームに番号を付ける
-		MapEditScene* pMES = (MapEditScene*)FindObject("MapEditScene");
-		this->objectName_ += std::to_string(pMES->GetButtonNum());
-	}
-	if (pParent_->GetObjectName() == "ExpantionScene")
-	{
-		ExpantionScene* pES = (ExpantionScene*)FindObject("ExpantionScene");
-		this->objectName_ += std::to_string(pES->GetButtonNum());
-	}
+
 }
 
 Button::Button(std::string _btnName, GameObject* parent)
@@ -50,59 +39,6 @@ void Button::Initialize()
 
 void Button::Update()
 {
-	if (isCanPush_)
-	{
-		mousePos_ = Input::GetMousePosition();
-
-		mousePos_.x = mousePos_.x - (Direct3D::bfr_scrWidth / 2);
-		mousePos_.y = mousePos_.y - (Direct3D::bfr_scrHeight / 2);
-
-		std::string resStr = std::to_string((float)mousePos_.x) + ", " + std::to_string(mousePos_.y) + "\n";
-		OutputDebugString(resStr.c_str());
-
-		XMFLOAT3 startButtonSize = Image::GetTextureSize(hPict_);
-
-		//ボタンの位置のyが0.0fのときのカーソルとの誤差
-		float cursorErrorInit = 9.0f;
-		//ボタンの位置のyとカーソルとの誤差
-		float cursorError = cursorErrorInit + (-tPict_.position_.y * 10);
-
-		//ボタンの右の座標
-		float SBRight = tPict_.position_.x * (Direct3D::bfr_scrWidth / 2) + (startButtonSize.x * tPict_.scale_.x / 2);
-		//ボタンの左の座標
-		float SBLeft = tPict_.position_.x * (Direct3D::bfr_scrWidth / 2) - (startButtonSize.x * tPict_.scale_.x / 2);
-		//ボタンの上の座標
-		float SBUp = -((tPict_.position_.y * (Direct3D::bfr_scrHeight / 2) + (startButtonSize.y * tPict_.scale_.y / 2))) + cursorError;
-		//ボタンの下の座標
-		float SBDown = SBUp + (startButtonSize.y * tPict_.scale_.y);
-
-		if (mousePos_.x >= SBLeft && mousePos_.x <= SBRight &&
-			mousePos_.y >= SBUp && mousePos_.y <= SBDown)
-		{
-			isCursorMatched_ = true;
-			if (Input::IsMouseButtonDown(0))
-			{
-				Audio::Play(hSE_, 0.5f);
-				isClick_ = true;
-			}
-			if (Input::IsMuoseButtonUp(0))
-			{
-				Audio::Stop(hSE_);
-				isClick_ = false;
-				isRelease_ = true;
-			}
-		}
-		else
-		{
-			isCursorMatched_ = false;
-			isClick_ = false;
-		}
-	}
-	else
-	{
-		isCursorMatched_ = false;
-		isClick_ = false;
-	}
 }
 
 void Button::Draw()
@@ -120,11 +56,11 @@ void Button::Draw()
 
 		XMFLOAT3 buttonColor;
 		buttonColor = color;
-		if (isCursorMatched_)
+		if (IsMouseEnter())
 		{
 			buttonColor = cursorMatchColor;
 		}
-		if (isClick_)
+		if (OnClick() || isSelect_)
 		{
 			buttonColor = clickedColor;
 		}
@@ -140,6 +76,66 @@ void Button::Draw()
 
 void Button::Release()
 {
+}
+
+void Button::MousePosSetting()
+{
+	mousePos_ = Input::GetMousePosition();
+
+	mousePos_.x = mousePos_.x - (Direct3D::bfr_scrWidth / 2);
+	mousePos_.y = mousePos_.y - (Direct3D::bfr_scrHeight / 2);
+
+	std::string resStr = std::to_string((float)mousePos_.x) + ", " + std::to_string(mousePos_.y) + "\n";
+	OutputDebugString(resStr.c_str());
+}
+
+bool Button::IsMouseEnter()
+{
+	MousePosSetting();
+
+	XMFLOAT3 startButtonSize = Image::GetTextureSize(hPict_);
+
+	//ボタンの位置のyが0.0fのときのカーソルとの誤差
+	float cursorErrorInit = 9.0f;
+	//ボタンの位置のyとカーソルとの誤差
+	float cursorError = cursorErrorInit + (-tPict_.position_.y * 10);
+
+	//ボタンの右の座標
+	float SBRight = tPict_.position_.x * (Direct3D::bfr_scrWidth / 2) + (startButtonSize.x * tPict_.scale_.x / 2);
+	//ボタンの左の座標
+	float SBLeft = tPict_.position_.x * (Direct3D::bfr_scrWidth / 2) - (startButtonSize.x * tPict_.scale_.x / 2);
+	//ボタンの上の座標
+	float SBUp = -((tPict_.position_.y * (Direct3D::bfr_scrHeight / 2) + (startButtonSize.y * tPict_.scale_.y / 2))) + cursorError;
+	//ボタンの下の座標
+	float SBDown = SBUp + (startButtonSize.y * tPict_.scale_.y);
+
+	if (mousePos_.x >= SBLeft && mousePos_.x <= SBRight &&
+		mousePos_.y >= SBUp && mousePos_.y <= SBDown)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Button::OnClick()
+{
+	if (isCanPush_)
+	{
+		if (IsMouseEnter())
+		{
+			if (Input::IsMouseButtonDown(0))
+			{
+				Audio::Play(hSE_, 1);
+				return true;
+			}
+			else if (Input::IsMuoseButtonUp(0))
+			{
+				Audio::Stop(hSE_);
+			}
+		}
+	}
+	return false;
 }
 
 void Button::SetPictNum(int _pict)

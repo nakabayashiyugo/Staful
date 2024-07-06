@@ -88,16 +88,15 @@ private:
 	Button* pTestplayButton_;
 	//中止ボタン
 	Button* pCancelButton_;
-	//ボタンの番号
-	int buttonNum_;
 	//テクスチャのサイズ
 	XMFLOAT3 texture_size_;
 public:
 	//マス選択ボタンの初期化
 	void ButtonInit();
-
-	int GetButtonNum() { return buttonNum_; }
-
+	//それぞれのボタンが押された時の処理
+	void ButtonUpdate();
+	//マス選択ボタン以外のボタンが押されたとき
+	void OtherButtonPush();
 
 //マスの説明について
 private:

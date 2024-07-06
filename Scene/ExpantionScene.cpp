@@ -61,23 +61,21 @@ void ExpantionScene::Initialize()
 void ExpantionScene::Update()
 {
 	//了解ボタンが押されたら
-	if (ButtonManager::GetButton(nextBtnHandle_)->GetIsClicked())
+	if (ButtonManager::GetButton(nextBtnHandle_)->OnClick())
 	{
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
 		pSceneManager->ChangeScene(SCENE_ID_TRANSITION);
 	}
 	//右のボタンが押されたら
-	if (ButtonManager::GetButton(explanNextBtnHandle_)->GetIsClicked())
+	if (ButtonManager::GetButton(explanNextBtnHandle_)->OnClick())
 	{
-		ButtonManager::GetButton(explanNextBtnHandle_)->SetIsClicked(false);
 		prevPos_ = (int)curExplanNum_;
 		destPos_ = curExplanNum_ + 1;
 		isMoving_ = true;
 	}
 	//左のボタンが押されたら
-	if (ButtonManager::GetButton(explanBackBtnHandle_)->GetIsClicked())
+	if (ButtonManager::GetButton(explanBackBtnHandle_)->OnClick())
 	{
-		ButtonManager::GetButton(explanBackBtnHandle_)->SetIsClicked(false);
 		prevPos_ = (int)curExplanNum_;
 		destPos_ = curExplanNum_ - 1;
 		isMoving_ = true;
