@@ -189,8 +189,9 @@ public:
 	XMFLOAT3 GetPosition() { return transform_.position_; }
 	//standMath_のゲッター
 	MATHDEDAIL GetStandMath() { return standMath_; }
-	//プレイヤーのステートのゲッター
+	//プレイヤーのステートのゲッター・セッター
 	PLAYER_STATE GetPlayerState() { return playerState_; }
+	void SetPlayerState(PLAYER_STATE _state) { playerState_ = _state; }
 	//ゲームの進行度のステートのゲッター
 	STAGE_STATE GetStageState() { return stageState_; }
 

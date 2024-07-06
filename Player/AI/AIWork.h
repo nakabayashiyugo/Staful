@@ -2,12 +2,31 @@
 
 class Player;
 
-class Action_Idle : public Work
+//ActionNode
+class PlayerActionBase : public Work
+{
+public:
+	virtual NodeState operator()() override {};
+	PlayerActionBase() {};
+	//Playerのセッター
+	void SetPlayer(Player* _p) { pPlayer_ = _p; }
+
+protected:
+	Player* pPlayer_;
+};
+
+class Action_Walk : public PlayerActionBase
 {
 public:
 	NodeState operator()()override;
-	Action_Idle();
+	Action_Walk();
 private:
-	//プレイヤー取得
-	Player* FindPlayer();
+};
+
+class Action_Jump : public PlayerActionBase
+{
+public:
+	NodeState operator()()override;
+	Action_Jump();
+private:
 };
