@@ -1,12 +1,12 @@
 #include "ButtonManager.h"
 
 #include "Button.h"
+#include "RadioButton.h"
 
 namespace ButtonManager
 {
 	std::vector<Button*> buttons_;
-	//ボタンのタイプ
-	BUTTONTYPE btnType_;
+	std::vector<RadioButton*> radioButtons_;
 }
 int ButtonManager::AddButton(std::string _btnName, GameObject* _parent)
 {
@@ -44,3 +44,20 @@ void ButtonManager::SetTransform(int _handle, Transform _transform)
 {
 	buttons_[_handle]->SetTransform(_transform);
 }
+
+//int ButtonManager::AddRadioButton(std::string _btnName, int btn[], int _num, GameObject* _parent)
+//{
+//}
+//
+//void ButtonManager::RemoveRadioButton(int _handle)
+//{
+//}
+//
+//void ButtonManager::RemoveAllRadioButton()
+//{
+//}
+//
+//RadioButton* ButtonManager::GetRadioButton(int _handle)
+//{
+//	return nullptr;
+//}

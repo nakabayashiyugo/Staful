@@ -498,11 +498,7 @@ void MapEditScene::ButtonInit()
 
 	for (buttonNum_ = buttonInitNum; buttonNum_ < MATH_MAX; buttonNum_++)
 	{
-		pMathButton_[buttonNum_]->Instantiate<Button>(this);
-		//探すボタンのオブジェクトネーム
-		buttonStr = "Button";
-		buttonStr += std::to_string(buttonNum_);
-		pMathButton_[buttonNum_] = (Button*)FindObject(buttonStr);
+		pMathButton_[buttonNum_] = ButtonManager::GetButton(ButtonManager::AddButton(("MathButton" + std::to_string(buttonNum_)), this));
 		pMathButton_[buttonNum_]->SetPictNum(mathButtonNum[buttonNum_]);
 
 		

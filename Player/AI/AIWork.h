@@ -6,8 +6,8 @@ class Player;
 class PlayerActionBase : public Work
 {
 public:
-	virtual NodeState operator()() override {};
-	PlayerActionBase() {};
+	virtual NodeState operator()() override = 0{};
+	PlayerActionBase() : pPlayer_(nullptr) {};
 	//Playerのセッター
 	void SetPlayer(Player* _p) { pPlayer_ = _p; }
 
