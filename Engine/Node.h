@@ -1,3 +1,4 @@
+#pragma once
 #include <vector>
 #include "Work.h"
 
@@ -12,8 +13,10 @@ public:
 	NodeState ChildExcute();
 
 	//éqÉmÅ[Éhí«â¡
-	void ChildPushBack(Work* _work);
-private:
+	void ChildPushBack(Node* _node);
+	//RootNodeíTçı
+	Node* GetRootNode();
+protected:
 	Node* parent_;
 	std::vector<Node*> children_;
 

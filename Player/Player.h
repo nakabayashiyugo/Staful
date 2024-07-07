@@ -11,6 +11,8 @@ class Shaker;
 class Text;
 class StateManager;
 
+class RootNode;
+
 enum PLAYER_STATE
 {
 	STATE_IDLE = 0,	//止まってるとき
@@ -194,6 +196,8 @@ public:
 	void SetPlayerState(PLAYER_STATE _state) { playerState_ = _state; }
 	//ゲームの進行度のステートのゲッター
 	STAGE_STATE GetStageState() { return stageState_; }
+	//プレイヤーの移動方向のセッター
+	void SetMoveDir(PLAYER_MOVEDIR _dir){ moveDir_ = possiMoveDir_[pushButtonMoveDir_[pushButton_]]; }
 
 	void PossiMoveDirInit();
 	
@@ -291,4 +295,14 @@ private:
 public:
 	//音の初期化
 	void AudioInit();
+
+
+//AIについて(仮)
+private:
+	//ルートノード
+	RootNode* rootNode_;
+
+public:
+	//子供追加する
+	void AddChild();
 };

@@ -4,12 +4,14 @@
 Node::Node(Node* _parent, Work* _work)
 	:parent_(_parent), myWork_(_work)
 {
+	if(parent_ != nullptr)	parent_->ChildPushBack(this);
 }
 
 
 NodeState Node:: Run()
 {
-	NodeState result = myWork_->operator()();
+	NodeState result = NodeState::RUNNING;
+	if(myWork_ != nullptr)	result = myWork_->operator()();
 
 	result = Result(result);
 
@@ -18,7 +20,7 @@ NodeState Node:: Run()
 
 NodeState Node::Result(NodeState _result)
 {
-	NodeState ret;
+	NodeState ret = NodeState::RUNNING;
 	switch (_result)
 	{
 	case NodeState::RUNNING:
@@ -34,7 +36,7 @@ NodeState Node::Result(NodeState _result)
 //子ノード実行
 NodeState Node::ChildExcute()
 {
-	NodeState ret;
+	NodeState ret = NodeState::RUNNING;
 	for (int i = 0; i < children_.size(); i++)
 	{
 		ret = children_[i]->Run();
@@ -43,9 +45,19 @@ NodeState Node::ChildExcute()
 }
 
 	//子ノード追加
-void Node::ChildPushBack(Work* _work)
+void Node::ChildPushBack(Node* _node)
 {
-	Node* child = new Node(this, _work);
-	children_.push_back(child);
-	delete child;
+	children_.push_back(_node);
+}
+
+Node* Node::GetRootNode()
+{
+	if (this->parent_ == nullptr)
+	{
+		return this;
+	}
+	else
+	{
+		return this->parent_->GetRootNode();
+	}
 }

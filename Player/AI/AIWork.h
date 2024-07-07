@@ -30,3 +30,13 @@ public:
 	Action_Jump();
 private:
 };
+
+//ˆÚ“®•ûŒüŒˆ‚ß‚éWork
+class PlayerMoveDirSelect : public PlayerActionBase
+{
+public:
+	NodeState operator()()override;
+	PlayerMoveDirSelect();
+private:
+
+};
