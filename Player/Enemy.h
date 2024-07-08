@@ -20,6 +20,6 @@ public:
 	//Žq‹Ÿ’Ç‰Á‚·‚é
 	void AddChildNode();
 	//ˆÚ“®•ûŒüŒˆ‚ß‚é
-	void SelectMoveDir();
+	PLAYER_MOVEDIR SelectMoveDir();
 };
 

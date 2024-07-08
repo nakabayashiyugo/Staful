@@ -1,6 +1,7 @@
 #include "AIWork.h"
 
 #include "../Player.h"
+#include "../Enemy.h"
 
 NodeState Action_Walk::operator()()
 {
@@ -24,7 +25,7 @@ Action_Jump::Action_Jump()
 
 NodeState PlayerMoveDirSelect::operator()()
 {
-	pPlayer_->SetMoveDir(DIR_W);
+	pPlayer_->SetMoveDir(dynamic_cast<Enemy*>(pPlayer_)->SelectMoveDir());
 	return NodeState::RUNNING;
 }
 

@@ -31,6 +31,7 @@ void Enemy::AddChildNode()
 	Node* walk = new Action_StateWalk(selectDir, new Action_Walk());
 }
 
-void Enemy::SelectMoveDir()
+PLAYER_MOVEDIR Enemy::SelectMoveDir()
 {
+
 }
