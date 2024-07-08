@@ -85,6 +85,8 @@ public:
 
 	void SetTogetogeRoute(std::vector<TOGETOGEROUTE> _tgtgRoute);
 
+	MATHVOLUME GetMathVolume() { return mathVolume_; }
+
 	//マス情報書き込み
 	void Write();
 	//マス情報読み込み

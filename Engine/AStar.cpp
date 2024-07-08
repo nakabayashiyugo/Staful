@@ -41,12 +41,12 @@ Astar_Node* Astar_Node::GetFewCostChild()
 {
 	//最大のコスト(さすがにこれが最小になることないでしょ)
 	const int costMax = 99999999;
-	Astar_Node* ret;
+	Astar_Node* ret = new Astar_Node(nullptr, {0, 0});
 	ret->SetActualCost(costMax);
 	for (int i = 0; i < childList_.size(); i++)
 	{
 		//兄弟でバトル
-		if (ret->GetCost() > childList_[i]->GetCost())
+		if (childList_[i]->GetState() != STATE_CLOSED && ret->GetCost() > childList_[i]->GetCost())
 		{
 			ret = childList_[i];
 		}
@@ -60,13 +60,22 @@ Astar_Node* Astar_Node::GetFewCostChild()
 	return ret;
 }
 
+void Astar_Node::GetPath(std::vector<Pos> &_path)
+{
+	_path.push_back(this->GetNodePos());
+	if (this->GetParentNode() == nullptr)
+	{
+		return;
+	}
+	this->GetParentNode()->GetPath(_path);
+}
+
 
 //移動可能方向
-const int dirVertical[DIR_MAX] = { -1, 0, 1, 0 };
-const int dirBeside[DIR_MAX] = { 0, 1, 0, -1 };
+const int dirVertical[MAX] = { -1, 0, 1, 0 };
+const int dirBeside[MAX] = { 0, 1, 0, -1 };
 
 Astar::Astar()
-	:rootNode_(new Astar_Node(nullptr, startPos_))
 {
 }
 
@@ -78,6 +87,7 @@ void Astar::SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysiz
 {
 	startPos_ = _start;
 	goalPos_ = _goal;
+	rootNode_ = new Astar_Node(nullptr, startPos_);
 
 	table_.resize(_xsize);
 	for (int x = 0; x < table_.size(); x++)
@@ -88,9 +98,10 @@ void Astar::SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysiz
 			table_[x][y] = _table[x][y];
 		}
 	}
+	NodeOpen(rootNode_);
 }
 
-std::vector<DIR> Astar::Excute()
+Pos Astar::Excute()
 {
 	//基準ノードの検索(最初はrootNode)
 	static Astar_Node* checkNode = rootNode_;
@@ -105,6 +116,12 @@ std::vector<DIR> Astar::Excute()
 		checkNode = BaseNodeSearch();
 	}
 
+	checkNode->GetPath(route_);
+	//route_を参照する値
+	static int refVal = route_.size() - 2;
+	Pos ret = route_[refVal];
+	refVal--;
+	return ret;
 }
 
 void Astar::NodeOpen(Astar_Node* _node)
@@ -115,21 +132,21 @@ void Astar::NodeOpen(Astar_Node* _node)
 
 void Astar::NeighborNodeOpen(Astar_Node* _node)
 {
-	for (int i = 0; i < DIR_MAX; i++)
+	for (int i = 0; i < MAX; i++)
 	{
 		Pos openPos;
 		//周りが範囲外でなければ
-		if (_node->GetNodePos().x + dirVertical[i] >= 0 && 
-			_node->GetNodePos().x + dirVertical[i] < table_.size())
+		if (_node->GetNodePos().x + dirBeside[i] >= 0 &&
+			_node->GetNodePos().x + dirBeside[i] < table_.size())
 		{
-			openPos.x = _node->GetNodePos().x + dirVertical[i];
+			openPos.x = _node->GetNodePos().x + dirBeside[i];
 		}
 		else
 		{
 			continue;
 		}
-		if (_node->GetNodePos().y + dirBeside[i] >= 0 &&
-			_node->GetNodePos().y + dirBeside[i] < table_[0].size())
+		if (_node->GetNodePos().y + dirVertical[i] >= 0 &&
+			_node->GetNodePos().y + dirVertical[i] < table_[0].size())
 		{
 			openPos.y = _node->GetNodePos().y + dirVertical[i];
 		}
@@ -138,7 +155,7 @@ void Astar::NeighborNodeOpen(Astar_Node* _node)
 			continue;
 		}
 
-		NodeOpen(new Astar_Node(_node, openPos));
+		if(_node->GetState() == STATE_OPEN)		NodeOpen(new Astar_Node(_node, openPos));
 	}
 	NodeClose(_node);
 }
@@ -158,9 +175,14 @@ Astar_Node* Astar::BaseNodeSearch()
 void Astar::CalcCost(Astar_Node* _node)
 {
 	//実コスト
-	static int cost = 0;
-	cost += table_[_node->GetNodePos().x][_node->GetNodePos().y];
-	_node->SetActualCost(cost);
+	if (_node->GetParentNode() != nullptr)
+	{
+		_node->SetActualCost(_node->GetParentNode()->GetActualCost() + table_[_node->GetNodePos().x][_node->GetNodePos().y]);
+	}
+	else
+	{
+		_node->SetActualCost(0);
+	}
 	//推定コスト計算
 	_node->SetHeuristicCost(abs(_node->GetNodePos().x - goalPos_.x) + abs(_node->GetNodePos().y - goalPos_.y));
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include "Player.h"
+#include "../StageOrigin.h"
 
 class Enemy : public Player
 {
@@ -16,10 +17,13 @@ private:
 	//ルートノード
 	RootNode* rootNode_;
 
+	//マスごとの危険度
+	std::vector<int> risks_;
+
 public:
 	//子供追加する
 	void AddChildNode();
 	//移動方向決める
-	PLAYER_MOVEDIR SelectMoveDir();
+	void SelectMoveDir();
 };
 

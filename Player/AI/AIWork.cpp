@@ -25,7 +25,7 @@ Action_Jump::Action_Jump()
 
 NodeState PlayerMoveDirSelect::operator()()
 {
-	pPlayer_->SetMoveDir(dynamic_cast<Enemy*>(pPlayer_)->SelectMoveDir());
+	dynamic_cast<Enemy*>(pPlayer_)->SelectMoveDir();
 	return NodeState::RUNNING;
 }
 

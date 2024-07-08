@@ -42,7 +42,7 @@ enum PLAYER_MOVEDIR
 };
 
 class Player
-	:public GameObject, StageOrigin
+	:public GameObject, public StageOrigin
 {
 	int hModel_;
 
@@ -66,7 +66,7 @@ public:
 	void OnCollision(GameObject* pTarget) override;
 
 //カメラについて
-private:
+protected:
 	//カメラの位置
 	XMFLOAT3 camPos_;
 	//カメラの見るオブジェクト
@@ -87,7 +87,7 @@ public:
 
 
 //プレイヤーの操作について
-private:
+protected:
 	//スタート位置、ゴール位置
 	XMFLOAT3 startPos_, goalPos_;
 	//基準の高さ
@@ -197,13 +197,15 @@ public:
 	//ゲームの進行度のステートのゲッター
 	STAGE_STATE GetStageState() { return stageState_; }
 	//プレイヤーの移動方向のセッター
-	void SetMoveDir(PLAYER_MOVEDIR _dir){ moveDir_ = possiMoveDir_[pushButtonMoveDir_[pushButton_]]; }
+	void SetMoveDir(PLAYER_MOVEDIR _dir){ 
+		moveDir_ = possiMoveDir_[pushButtonMoveDir_[_dir]];
+	}
 
 	void PossiMoveDirInit();
 	
 
 //操作説明について
-private:
+protected:
 	//移動方向を文字として入れた配列
 	std::string moveDirStr_[DIR_MAX];
 
@@ -218,7 +220,7 @@ public:
 
 
 //影について
-private:
+protected:
 	//影のモデル番号
 	int hShadow_;
 	//影のトランスフォーム
@@ -231,7 +233,7 @@ public:
 	void ShadowManagement();
 
 //プレイヤーのアニメーションについて
-private:
+protected:
 	//アニメーションのフレーム
 	int nowFrame_, startFrame_, endFrame_;
 	//移動にかかるフレーム数
@@ -242,7 +244,7 @@ public:
 
 
 //ヒットストップについて
-private:
+protected:
 	//ヒットストップの時間
 	float hitStopTime_;
 	bool isHitStop_;
@@ -259,7 +261,7 @@ public:
 
 
 //時間ゲージについて
-private:
+protected:
 	//制限時間
 	int gameTime_;
 	//時間ゲージの画像
@@ -276,7 +278,7 @@ public:
 
 
 //エフェクトについて
-private:
+protected:
 	//とげとげと当たった時に出るエフェクトに関するデータ
 	EmitterData deadEmitData_;
 	//とげとげと当たった時に出るエフェクトに関するデータのハンドル
@@ -289,7 +291,7 @@ public:
 
 
 //音楽について
-private:
+protected:
 	//とげとげと当たった時のSEのハンドル
 	int hSE_Damage_;
 public:

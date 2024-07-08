@@ -8,7 +8,7 @@ enum DIR
 	DOWN,
 	RIGHT,
 	LEFT,
-	DIR_MAX,
+	MAX,
 };
 
 enum ASTARSTATE
@@ -43,13 +43,19 @@ public:
 	Astar_Node* GetRootNode();
 	//子ノードの中で一番コストが小さいノード取得
 	Astar_Node* GetFewCostChild();
+	//経路探索が終わった後の経路取得
+	void GetPath(std::vector<Pos> &_path);
 //ゲッターセッター類
 public:
 	Pos GetNodePos() { return pos_; }
 	void SetNodePos(Pos _pos) { pos_ = _pos; }
+	ASTARSTATE GetState() { return state_; }
+	int GetActualCost() { return actualCost_; }
 	void SetActualCost(int _cost) { actualCost_ = _cost; }
+	int GetHeuristicCost() { return heuristicCost_; }
 	void SetHeuristicCost(int _cost) { heuristicCost_ = _cost; }
 	int GetCost() { return actualCost_ + heuristicCost_; }
+	Astar_Node* GetParentNode() { return parent_; }
 	void SetParentNode(Astar_Node* _node) { parent_ = _node; }
 	std::vector<Astar_Node*> GetChildList() { return childList_; }
 };
@@ -62,14 +68,14 @@ class Astar
 	Pos goalPos_;
 	Astar_Node* rootNode_;
 	//移動方向
-	std::vector<DIR> dirs_;
+	std::vector<Pos> route_;
 public:
 	Astar();
 	~Astar();
 
 	void SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysize, Pos _start, Pos _goal);
 	//経路探索開始
-	std::vector<DIR> Excute();
+	Pos Excute();
 	//ノードをオープンにする
 	void NodeOpen(Astar_Node* _node);
 	//周りのノードオープン
