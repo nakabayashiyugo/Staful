@@ -153,7 +153,7 @@ private:
 public:
 	void PlayUpdate();
 	//プレイヤーの操作に関する関数
-	void PlayerOperation();
+	virtual void PlayerOperation();
 	//移動
 	void PlayerMove();
 	//プレイヤーを引数の方向に向かせる
@@ -295,14 +295,4 @@ private:
 public:
 	//音の初期化
 	void AudioInit();
-
-
-//AIについて(仮)
-private:
-	//ルートノード
-	RootNode* rootNode_;
-
-public:
-	//子供追加する
-	void AddChild();
 };

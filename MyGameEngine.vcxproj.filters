@@ -146,6 +146,9 @@
     <ClCompile Include="Engine\RootNode.cpp">
       <Filter>Engine\AI</Filter>
     </ClCompile>
+    <ClCompile Include="Player\Enemy.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Simple2D.hlsl">
@@ -282,6 +285,9 @@
     </ClInclude>
     <ClInclude Include="Engine\RootNode.h">
       <Filter>Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\Enemy.h">
+      <Filter>Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

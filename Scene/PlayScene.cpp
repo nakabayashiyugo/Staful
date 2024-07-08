@@ -14,6 +14,7 @@
 #include "../GamePlayer.h"
 
 #include "../Player/Player.h"
+#include "../Player/Enemy.h"
 
 PlayScene::PlayScene(GameObject* parent)
 	: GameObject(parent, "PlayScene"),
@@ -41,8 +42,8 @@ PlayScene::PlayScene(GameObject* parent)
 void PlayScene::Initialize()
 {
 	pStage_->Instantiate<Stage>(this);
-	pPlayer_->Instantiate<Player>(this);
-	pPlayer_ = (Player*)FindObject("Player");
+	pPlayer_->Instantiate<Enemy>(this);
+	pPlayer_ = (Enemy*)FindObject("Enemy");
 	pStage_ = (Stage*)FindObject("Stage");
 	
 	cancelButton_->Instantiate<Button>(this);

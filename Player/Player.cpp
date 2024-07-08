@@ -13,10 +13,6 @@
 #include "../Engine/Audio.h"
 #include "../Engine/Text.h"
 
-#include "../Engine/RootNode.h"
-#include "AI/AIWork.h"
-#include "AI/EnemyAI.h"
-
 #include "../Scene/PlayScene.h"
 #include "../Scene/SceneTransition.h"
 
@@ -111,11 +107,7 @@ Player::Player(GameObject* parent)
 
 	//アニメーションに関する変数
 	//移動にかかるフレーム数
-	moveFrameNum_(moveCountEnd / moveCntUpdateInit),
-
-	//AIについて
-	rootNode_(new RootNode(this, nullptr))
-
+	moveFrameNum_(moveCountEnd / moveCntUpdateInit)
 {
 	MathVolumeRead();
 	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
@@ -173,8 +165,6 @@ void Player::Initialize()
 	AudioInit();
 	//ステート初期化
 	StateInit();
-
-	AddChild();
 
 	//カメラの振動　初期化
 	pCamShaker_ = new Shaker();
@@ -560,14 +550,11 @@ void Player::IdleUpdate()
 	moveFinished_ = false;
 	moveDir_ = moveInit;
 
-	//AI実行
-	rootNode_->Run();
-
-
-	//立っているマスの効果
-	MathTypeEffect();
 	//playerの操作
 	PlayerOperation();
+	//立っているマスの効果
+	MathTypeEffect();
+	
 }
 
 void Player::WalkUpdate()
@@ -1001,10 +988,4 @@ void Player::AudioInit()
 	//SEロード
 	std::string se = folderName + SEFolder + "SE_Damage.wav";
 	hSE_Damage_ = Audio::Load(se, false);
-}
-
-void Player::AddChild()
-{
-	Node* selectDir = new MoveDirSet(rootNode_, new PlayerMoveDirSelect());
-	Node* walk = new Action_StateWalk(selectDir, new Action_Walk());
 }
