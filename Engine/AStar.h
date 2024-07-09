@@ -42,6 +42,8 @@ public:
 	Astar_Node* GetFewCostChild();
 	//経路探索が終わった後の経路取得
 	void GetPath(std::vector<XMFLOAT2> &_path);
+	//引数の位置のノードが存在するかチェック
+	bool IsExistNode(XMFLOAT2 _pos);
 //ゲッターセッター類
 public:
 	XMFLOAT2 GetNodePos() { return pos_; }

@@ -12,7 +12,7 @@
 const int wallRisk = 500;
 const int holeRisk = 5;
 const int convRisk = 1;
-const int togeRisk = 5;
+const int togeRisk = 10;
 const int pitRisk = 1;
 const int timedecRisk = 1;
 const int confRisk = 5;

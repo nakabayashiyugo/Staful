@@ -58,6 +58,22 @@ Astar_Node* Astar_Node::GetFewCostChild()
 	return ret;
 }
 
+bool Astar_Node::IsExistNode(XMFLOAT2 _pos)
+{
+	if (this->pos_.x == _pos.x && this->pos_.y == _pos.y)
+	{
+		return true;
+	}
+	for (int i = 0; i < childList_.size(); i++)
+	{
+		if (childList_[i]->IsExistNode(_pos))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 void Astar_Node::GetPath(std::vector<XMFLOAT2> &_path)
 {
 	_path.push_back(this->GetNodePos());
@@ -152,7 +168,13 @@ void Astar::NeighborNodeOpen(Astar_Node* _node)
 			continue;
 		}
 
-		if(_node->GetState() == STATE_OPEN)		NodeOpen(new Astar_Node(_node, openPos));
+		if (_node->GetState() == STATE_OPEN)
+		{
+			if (!rootNode_->IsExistNode(openPos))	//オープンする位置にすでにノードがあるかどうか検索
+			{
+				NodeOpen(new Astar_Node(_node, openPos));
+			}
+		}
 	}
 	NodeClose(_node);
 }
