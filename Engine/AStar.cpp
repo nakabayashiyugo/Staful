@@ -1,6 +1,6 @@
 #include "AStar.h"
 
-Astar_Node::Astar_Node(Astar_Node* _parent, Pos _start)
+Astar_Node::Astar_Node(Astar_Node* _parent, XMFLOAT2 _start)
 	:parent_(_parent), pos_(_start)
 {
 	if(parent_ != nullptr)	parent_->AddChildNode(this);
@@ -16,15 +16,13 @@ void Astar_Node::AddChildNode(Astar_Node* _node)
 	childList_.push_back(_node);
 }
 
-void Astar_Node::RemoveChildNode(Astar_Node* _node)
+void Astar_Node::RemoveAllNode()
 {
 	for (int i = 0; i < this->childList_.size(); i++)
 	{
-		if (childList_[i] == _node)
-		{
-			childList_.erase(childList_.begin() + i);
-			break;
-		}
+		childList_[i]->RemoveAllNode();
+		childList_.erase(childList_.begin() + i);
+		break;
 	}
 }
 
@@ -60,7 +58,7 @@ Astar_Node* Astar_Node::GetFewCostChild()
 	return ret;
 }
 
-void Astar_Node::GetPath(std::vector<Pos> &_path)
+void Astar_Node::GetPath(std::vector<XMFLOAT2> &_path)
 {
 	_path.push_back(this->GetNodePos());
 	if (this->GetParentNode() == nullptr)
@@ -83,7 +81,7 @@ Astar::~Astar()
 {
 }
 
-void Astar::SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysize, Pos _start, Pos _goal)
+void Astar::SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysize, XMFLOAT2 _start, XMFLOAT2 _goal)
 {
 	startPos_ = _start;
 	goalPos_ = _goal;
@@ -99,29 +97,28 @@ void Astar::SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysiz
 		}
 	}
 	NodeOpen(rootNode_);
+	//基準ノードの検索(最初はrootNode)
+	checkNode_ = rootNode_;
 }
 
-Pos Astar::Excute()
+void Astar::Excute()
 {
-	//基準ノードの検索(最初はrootNode)
-	static Astar_Node* checkNode = rootNode_;
-	while (checkNode->GetNodePos().x != goalPos_.x || checkNode->GetNodePos().y != goalPos_.y)
+	
+	while (checkNode_->GetNodePos().x != goalPos_.x || checkNode_->GetNodePos().y != goalPos_.y)
 	{
 		//基準ノードの周りをopen
-		NeighborNodeOpen(checkNode);
+		NeighborNodeOpen(checkNode_);
 
 		//基準ノードのclose(NeighborNodeOpenでやってる)
 
 		//基準ノードの検索
-		checkNode = BaseNodeSearch();
+		checkNode_ = BaseNodeSearch();
 	}
 
-	checkNode->GetPath(route_);
-	//route_を参照する値
-	static int refVal = route_.size() - 2;
-	Pos ret = route_[refVal];
-	refVal--;
-	return ret;
+	checkNode_->GetPath(route_);
+	RouteReverse();
+	//全ノード開放
+	rootNode_->RemoveAllNode();
 }
 
 void Astar::NodeOpen(Astar_Node* _node)
@@ -134,7 +131,7 @@ void Astar::NeighborNodeOpen(Astar_Node* _node)
 {
 	for (int i = 0; i < MAX; i++)
 	{
-		Pos openPos;
+		XMFLOAT2 openPos;
 		//周りが範囲外でなければ
 		if (_node->GetNodePos().x + dirBeside[i] >= 0 &&
 			_node->GetNodePos().x + dirBeside[i] < table_.size())
@@ -185,4 +182,15 @@ void Astar::CalcCost(Astar_Node* _node)
 	}
 	//推定コスト計算
 	_node->SetHeuristicCost(abs(_node->GetNodePos().x - goalPos_.x) + abs(_node->GetNodePos().y - goalPos_.y));
+}
+
+void Astar::RouteReverse()
+{
+	for (int i = 0; i < route_.size() / 2; i++)
+	{
+		//入れ替え
+		XMFLOAT2 tmp = route_[i];
+		route_[i] = route_[(route_.size() - 1) - i];
+		route_[(route_.size() - 1) - i] = tmp;
+	}
 }

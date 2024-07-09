@@ -75,10 +75,19 @@ void Enemy::SelectMoveDir()
 	}
 	//AstarŒÄ‚Ô
 	Astar* astar = new Astar;
-	Pos startPos = { startPos_.x, startPos_.z };
-	Pos goalPos = { goalPos_.x, goalPos_.z };
+	XMFLOAT2 startPos = { transform_.position_.x, transform_.position_.z };
+	XMFLOAT2 goalPos = { goalPos_.x, goalPos_.z };
 	astar->SetTable(table, mathVolume_.x, mathVolume_.z, startPos, goalPos);
-	Pos destPos = astar->Excute();
+	astar->Excute();
+
+	std::vector<XMFLOAT2> path(astar->GetRouteSize());
+	path = astar->GetRoute();
+	XMFLOAT2 destPos;
+	if (path.size() > 1)	destPos = path[1];
+	else
+	{
+		return;
+	}
 
 	PLAYER_MOVEDIR ret = DIR_W;
 	switch ((int)(destPos.x - transform_.position_.x))

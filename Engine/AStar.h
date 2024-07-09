@@ -2,6 +2,8 @@
 #include <iostream>
 #include <vector>
 
+#include "Direct3D.h"
+
 enum DIR
 {
 	UP = 0,
@@ -18,37 +20,32 @@ enum ASTARSTATE
 	STATE_CLOSED,
 };
 
-struct Pos
-{
-	int x;
-	int y;
-};
 class Astar_Node
 {
-	Pos pos_;
+	XMFLOAT2 pos_;
 	ASTARSTATE state_;
 	int actualCost_;		//実コスト
 	int heuristicCost_;		//推定コスト
 	Astar_Node* parent_;
 	std::vector<Astar_Node*> childList_;
 public:
-	Astar_Node(Astar_Node* _parent, Pos _start);
+	Astar_Node(Astar_Node* _parent, XMFLOAT2 _start);
 	void ChangeState(ASTARSTATE _state);
 
 	//子ノード追加
 	void AddChildNode(Astar_Node* _node);
-	//子ノード削除
-	void RemoveChildNode(Astar_Node* _node);
+	//全ノード削除
+	void RemoveAllNode();
 	//ルートノード取得
 	Astar_Node* GetRootNode();
 	//子ノードの中で一番コストが小さいノード取得
 	Astar_Node* GetFewCostChild();
 	//経路探索が終わった後の経路取得
-	void GetPath(std::vector<Pos> &_path);
+	void GetPath(std::vector<XMFLOAT2> &_path);
 //ゲッターセッター類
 public:
-	Pos GetNodePos() { return pos_; }
-	void SetNodePos(Pos _pos) { pos_ = _pos; }
+	XMFLOAT2 GetNodePos() { return pos_; }
+	void SetNodePos(XMFLOAT2 _pos) { pos_ = _pos; }
 	ASTARSTATE GetState() { return state_; }
 	int GetActualCost() { return actualCost_; }
 	void SetActualCost(int _cost) { actualCost_ = _cost; }
@@ -64,18 +61,19 @@ class Astar
 {
 	//それぞれのマスを通るときにかかるコスト
 	std::vector<std::vector<int>> table_;
-	Pos startPos_;
-	Pos goalPos_;
+	XMFLOAT2 startPos_;
+	XMFLOAT2 goalPos_;
 	Astar_Node* rootNode_;
+	Astar_Node* checkNode_;
 	//移動方向
-	std::vector<Pos> route_;
+	std::vector<XMFLOAT2> route_;
 public:
 	Astar();
 	~Astar();
 
-	void SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysize, Pos _start, Pos _goal);
+	void SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysize, XMFLOAT2 _start, XMFLOAT2 _goal);
 	//経路探索開始
-	Pos Excute();
+	void Excute();
 	//ノードをオープンにする
 	void NodeOpen(Astar_Node* _node);
 	//周りのノードオープン
@@ -86,4 +84,10 @@ public:
 	Astar_Node* BaseNodeSearch();
 	//コスト計算
 	void CalcCost(Astar_Node* _node);
+	//route_をリバースさせる
+	void RouteReverse();
+
+public:
+	std::vector<XMFLOAT2> GetRoute() { return route_; }
+	int GetRouteSize() { return route_.size(); }
 };
