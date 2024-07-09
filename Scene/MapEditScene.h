@@ -67,13 +67,19 @@ public:
 private:
 	//選ばれてるマスの種類
 	int mathtype_;
+	//カーソルが置かれてるマスの位置
+	XMFLOAT3 selectMath_;
 public:
 	//マスの初期化
 	void MathInit();
 	//マスの表示
 	void MathDraw();
+
+	//カーソルが置かれてるマスの位置の値いれる
+	virtual void SelectMathSet();
 	//マスタイプ選択
-	void SelectMathType();
+	virtual void SelectMathType();
+
 	//クリックしたマスを選択してるマスに変える
 	void ChangeSelectMath(XMFLOAT3 _selectMath);
 

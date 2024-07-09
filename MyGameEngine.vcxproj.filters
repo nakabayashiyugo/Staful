@@ -26,6 +26,9 @@
     <Filter Include="Player\AI">
       <UniqueIdentifier>{19c13d23-e592-4a89-bddb-902d58aff88c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\AI">
+      <UniqueIdentifier>{0b470c83-0200-4582-9d11-6e28a536e493}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Camera.cpp">
@@ -151,6 +154,9 @@
     </ClCompile>
     <ClCompile Include="Engine\AStar.cpp">
       <Filter>Engine\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\EnemyMapEditScene.cpp">
+      <Filter>Scene\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -294,6 +300,9 @@
     </ClInclude>
     <ClInclude Include="Engine\AStar.h">
       <Filter>Engine\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\EnemyMapEditScene.h">
+      <Filter>Scene\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

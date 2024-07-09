@@ -195,6 +195,7 @@
     <ClCompile Include="Player\State\StateManager.cpp" />
     <ClCompile Include="RadioButton.cpp" />
     <ClCompile Include="Scene\BetweenScene.cpp" />
+    <ClCompile Include="Scene\EnemyMapEditScene.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditScene.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
@@ -261,6 +262,7 @@
     <ClInclude Include="RadioButton.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene\BetweenScene.h" />
+    <ClInclude Include="Scene\EnemyMapEditScene.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
     <ClInclude Include="Scene\MapEditScene.h" />
     <ClInclude Include="Scene\PlayScene.h" />

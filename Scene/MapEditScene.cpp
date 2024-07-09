@@ -111,26 +111,14 @@ void MapEditScene::Initialize()
 void MapEditScene::Update()
 {
 	Audio::Play(hAudio_Music_, soundVolume);
-	//カーソルが置かれてるマスの位置
-	static XMFLOAT3 selectMath;
 	
 	MousePosSet();
-
-	selectMath.x = (int)(mousePos_.x / MATHSIZE);
-	selectMath.y = mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE);
-
-	//マウスの位置がマス目から出たら
-	if (selectMath.x < 0 || selectMath.x >= mathVolume_.x ||
-		selectMath.y < 0 || selectMath.y >= mathVolume_.z)
-	{
-		selectMath = mathInitPos;
-	}
-
+	SelectMathSet();
 	ButtonUpdate();
 
-	if (selectMath.x != -1 && selectMath.y != -1)
+	if (selectMath_.x != -1 && selectMath_.y != -1)
 	{
-		if (math_origin_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATH_DELETE)
+		if (math_origin_[(int)selectMath_.x][(int)selectMath_.y].mathType_ == MATH_DELETE)
 		{
 			switch ((MATHTYPE)mathtype_)
 			{
@@ -150,7 +138,7 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						ChangeSelectMath(selectMath);
+						ChangeSelectMath(selectMath_);
 					}
 				}
 				break;
@@ -170,28 +158,28 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						ChangeSelectMath(selectMath);
+						ChangeSelectMath(selectMath_);
 					}
 				}
 				break;
 			case MATH_DELETE:
 				if (Input::IsMouseButton(0))
 				{
-					ChangeSelectMath(selectMath);
+					ChangeSelectMath(selectMath_);
 				}
 			case MATH_CONVEYOR:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement(selectMath))
+					if (CostManagement(selectMath_))
 					{
-						ChangeSelectMath(selectMath);
+						ChangeSelectMath(selectMath_);
 					}
 				}
 				if (Input::IsMouseButtonDown(1))
 				{
-					if (math_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+					if (math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
 					{
-						isConvRot_[(int)selectMath.x][(int)selectMath.y] = true;
+						isConvRot_[(int)selectMath_.x][(int)selectMath_.y] = true;
 						isClear_ = false;
 					}
 				}
@@ -199,10 +187,10 @@ void MapEditScene::Update()
 			case MATH_TOGETOGE:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement(selectMath))
+					if (CostManagement(selectMath_))
 					{
-						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
-						ChangeSelectMath(selectMath);
+						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath_.x, (int)selectMath_.y, 0);
+						ChangeSelectMath(selectMath_);
 
 						//tTgtgRouteの中に位置が同じなとげとげが存在してるか
 						auto itr = tTgtgRoute_.begin();
@@ -229,9 +217,9 @@ void MapEditScene::Update()
 				}
 				if (Input::IsMouseButtonDown(1))
 				{
-					if (math_[(int)selectMath.x][(int)selectMath.y].mathType_ == MATH_TOGETOGE)
+					if (math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ == MATH_TOGETOGE)
 					{
-						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath.x, (int)selectMath.y, 0);
+						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath_.x, (int)selectMath_.y, 0);
 						isClear_ = false;
 					}
 				}
@@ -239,9 +227,9 @@ void MapEditScene::Update()
 			default:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement(selectMath))
+					if (CostManagement(selectMath_))
 					{
-						ChangeSelectMath(selectMath);
+						ChangeSelectMath(selectMath_);
 					}
 				}
 				break;
@@ -721,6 +709,19 @@ void MapEditScene::MathDraw()
 			Image::Draw(hPict_[math_[x][y].mathType_]);
 
 		}
+	}
+}
+
+void MapEditScene::SelectMathSet()
+{
+	selectMath_.x = (int)(mousePos_.x / MATHSIZE);
+	selectMath_.y = mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE);
+
+	//マウスの位置がマス目から出たら
+	if (selectMath_.x < 0 || selectMath_.x >= mathVolume_.x ||
+		selectMath_.y < 0 || selectMath_.y >= mathVolume_.z)
+	{
+		selectMath_ = mathInitPos;
 	}
 }
 
