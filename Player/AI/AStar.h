@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "Direct3D.h"
+#include "../../Engine/Direct3D.h"
 
 enum DIR
 {

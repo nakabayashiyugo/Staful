@@ -159,7 +159,7 @@
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="ButtonManager.cpp" />
-    <ClCompile Include="Engine\AStar.cpp" />
+    <ClCompile Include="EnemyMapEditAI.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BillBoard.cpp" />
     <ClCompile Include="Engine\Easing.cpp" />
@@ -188,6 +188,7 @@
     <ClCompile Include="Engine\Transform.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player\AI\AIWork.cpp" />
+    <ClCompile Include="Player\AI\AStar.cpp" />
     <ClCompile Include="Player\AI\EnemyAI.cpp" />
     <ClCompile Include="Player\Enemy.cpp" />
     <ClCompile Include="Player\Player.cpp" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Scene\BetweenScene.cpp" />
     <ClCompile Include="Scene\EnemyMapEditScene.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
+    <ClCompile Include="Scene\MapEditAIWork.cpp" />
     <ClCompile Include="Scene\MapEditScene.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
@@ -224,7 +226,7 @@
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="ButtonManager.h" />
-    <ClInclude Include="Engine\AStar.h" />
+    <ClInclude Include="EnemyMapEditAI.h" />
     <ClInclude Include="Engine\Audio.h" />
     <ClInclude Include="Engine\BillBoard.h" />
     <ClInclude Include="Engine\Easing.h" />
@@ -253,6 +255,7 @@
     <ClInclude Include="Engine\Texture.h" />
     <ClInclude Include="Engine\Transform.h" />
     <ClInclude Include="Player\AI\AIWork.h" />
+    <ClInclude Include="Player\AI\AStar.h" />
     <ClInclude Include="Player\AI\EnemyAI.h" />
     <ClInclude Include="Player\Enemy.h" />
     <ClInclude Include="Player\Player.h" />
@@ -264,6 +267,7 @@
     <ClInclude Include="Scene\BetweenScene.h" />
     <ClInclude Include="Scene\EnemyMapEditScene.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
+    <ClInclude Include="Scene\MapEditAIWork.h" />
     <ClInclude Include="Scene\MapEditScene.h" />
     <ClInclude Include="Scene\PlayScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />

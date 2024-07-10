@@ -1,7 +1,7 @@
 #include "Enemy.h"
 
 
-#include "../Engine/AStar.h"
+#include "./AI/AStar.h"
 #include "../Engine/RootNode.h"
 #include "AI/AIWork.h"
 #include "AI/EnemyAI.h"

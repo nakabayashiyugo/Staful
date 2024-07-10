@@ -152,10 +152,16 @@
     <ClCompile Include="Player\Enemy.cpp">
       <Filter>Player</Filter>
     </ClCompile>
-    <ClCompile Include="Engine\AStar.cpp">
-      <Filter>Engine\AI</Filter>
-    </ClCompile>
     <ClCompile Include="Scene\EnemyMapEditScene.cpp">
+      <Filter>Scene\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Player\AI\AStar.cpp">
+      <Filter>Player\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\MapEditAIWork.cpp">
+      <Filter>Scene\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyMapEditAI.cpp">
       <Filter>Scene\AI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -298,10 +304,16 @@
     <ClInclude Include="Player\Enemy.h">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="Engine\AStar.h">
-      <Filter>Engine\AI</Filter>
-    </ClInclude>
     <ClInclude Include="Scene\EnemyMapEditScene.h">
+      <Filter>Scene\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Player\AI\AStar.h">
+      <Filter>Player\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\MapEditAIWork.h">
+      <Filter>Scene\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="EnemyMapEditAI.h">
       <Filter>Scene\AI</Filter>
     </ClInclude>
   </ItemGroup>
