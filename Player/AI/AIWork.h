@@ -40,3 +40,11 @@ public:
 private:
 
 };
+
+//ジャンプかウォークか決めるWork
+class Select_State : public PlayerActionBase
+{
+public:
+	NodeState operator()()override;
+	Select_State();
+};

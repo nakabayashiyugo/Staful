@@ -1,15 +1,22 @@
 #include "../../Engine/Node.h"
 
 //移動方向決めるNode
-class MoveDirSet : public Node
+class Node_SetMoveDir : public Node
 {
 public:
-	MoveDirSet(Node* _parent, Work* _work);
+	Node_SetMoveDir(Node* _parent, Work* _work);
 };
 
 //playerのステートをWalkにするNode
-class Action_StateWalk : public Node
+class Node_Action_StateWalk : public Node
 {
 public:
-	Action_StateWalk(Node* _parent, Work* _work);
+	Node_Action_StateWalk(Node* _parent, Work* _work);
+};
+
+//playerのステートをJumpにするNode
+class Node_Action_StateJump : public Node
+{
+public:
+	Node_Action_StateJump(Node* _parent, Work* _work);
 };

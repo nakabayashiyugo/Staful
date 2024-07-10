@@ -338,7 +338,7 @@ void MapEditScene::MousePosSet()
 	mousePos_.y -= ((-(math_[mathVolume_.x - 1][mathVolume_.z - 1].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
 }
 
-bool MapEditScene::CostManagement(XMFLOAT3 _selectMath)
+bool MapEditScene::CostManagement(XMFLOAT3 selectMath_)
 {
 	int costSum = 0;
 	//変更前のコスト計算
@@ -350,7 +350,7 @@ bool MapEditScene::CostManagement(XMFLOAT3 _selectMath)
 		}
 	}
 	//変更後のコストたす
-	if (math_[_selectMath.x][_selectMath.y].mathType_ != mathtype_)
+	if (math_[selectMath_.x][selectMath_.y].mathType_ != mathtype_)
 	{
 		costSum += costs_[mathtype_];
 		//コストの制限を超えていたら
@@ -392,14 +392,14 @@ void MapEditScene::CostDraw()
 	pText_->Draw(costLimitPos.x, costLimitPos.y, strCostLimit.c_str());
 }
 
-void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
+void MapEditScene::ChangeSelectMath()
 {
 	//クリックしたマスを選んでるマスに変える
-	if (math_[(int)_selectMath.x][(int)_selectMath.y].mathType_ != MATH_CONVEYOR)
+	if (math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ != MATH_CONVEYOR)
 	{
-		math_[(int)_selectMath.x][(int)_selectMath.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+		math_[(int)selectMath_.x][(int)selectMath_.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
 	}
-	math_[(int)_selectMath.x][(int)_selectMath.y].mathType_ = (MATHTYPE)mathtype_;
+	math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ = (MATHTYPE)mathtype_;
 	isClear_ = false;
 
 	//テストプレイできるかどうかチェック
@@ -408,12 +408,12 @@ void MapEditScene::ChangeSelectMath(XMFLOAT3 _selectMath)
 	//マスを置いた時のSE
 	//直前までカーソルの置かれていたマス
 	static XMFLOAT3 prevMath = mathInitPos;
-	if (prevMath.x != _selectMath.x || prevMath.y != _selectMath.y)
+	if (prevMath.x != selectMath_.x || prevMath.y != selectMath_.y)
 	{
 		Audio::Stop(hSE_PutMath_);
 	}
 	Audio::Play(hSE_PutMath_, 1);
-	prevMath = _selectMath;
+	prevMath = selectMath_;
 }
 
 void MapEditScene::ButtonInit()

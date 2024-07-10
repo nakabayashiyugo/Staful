@@ -57,8 +57,8 @@ void Enemy::PlayerOperation()
 
 void Enemy::AddChildNode()
 {
-	Node* selectDir = new MoveDirSet(rootNode_, new PlayerMoveDirSelect());
-	Node* walk = new Action_StateWalk(selectDir, new Action_Walk());
+	Node* selectDir = new Node_SetMoveDir(rootNode_, new PlayerMoveDirSelect());
+	Node* walk = new Node_Action_StateWalk(selectDir, new Action_Walk());
 }
 
 void Enemy::SelectMoveDir()

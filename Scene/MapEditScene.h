@@ -81,7 +81,7 @@ public:
 	virtual void SelectMathType();
 
 	//クリックしたマスを選択してるマスに変える
-	void ChangeSelectMath(XMFLOAT3 _selectMath);
+	void ChangeSelectMath();
 
 
 //ボタンについて

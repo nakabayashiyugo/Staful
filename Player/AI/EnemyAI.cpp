@@ -4,16 +4,23 @@
 
 #include "../../Engine/RootNode.h"
 
-MoveDirSet::MoveDirSet(Node* _parent, Work* _work)
+Node_SetMoveDir::Node_SetMoveDir(Node* _parent, Work* _work)
 	:Node(_parent, _work)
 {
 	dynamic_cast<PlayerMoveDirSelect*> (myWork_)->SetPlayer(
 		(Player*)(dynamic_cast<RootNode*>(this->GetRootNode())->GetGameObject_Parent()));
 }
 
-Action_StateWalk::Action_StateWalk(Node* _parent, Work* _work)
+Node_Action_StateWalk::Node_Action_StateWalk(Node* _parent, Work* _work)
 	:Node(_parent, _work)
 {
 	dynamic_cast<Action_Walk*> (myWork_)->SetPlayer(
+		(Player*)(dynamic_cast<RootNode*>(this->GetRootNode())->GetGameObject_Parent()));
+}
+
+Node_Action_StateJump::Node_Action_StateJump(Node* _parent, Work* _work)
+	:Node(_parent, _work)
+{
+	dynamic_cast<Action_Jump*> (myWork_)->SetPlayer(
 		(Player*)(dynamic_cast<RootNode*>(this->GetRootNode())->GetGameObject_Parent()));
 }
