@@ -20,3 +20,10 @@ class Node_Action_StateJump : public Node
 public:
 	Node_Action_StateJump(Node* _parent, Work* _work);
 };
+
+class Node_Select_State : public Node
+{
+public:
+	Node_Select_State(Node* _parent, Work* _work);
+	NodeState Result(NodeState _result) override;
+};

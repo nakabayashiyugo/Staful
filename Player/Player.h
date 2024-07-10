@@ -189,6 +189,13 @@ public:
 
 	//プレイヤーのポジションのゲッター
 	XMFLOAT3 GetPosition() { return transform_.position_; }
+	//移動先のポジションのゲッター
+	XMFLOAT3 GetDestPos()
+	{
+		return XMFLOAT3(transform_.position_.x + moveDir_.x,
+						transform_.position_.y + moveDir_.y,
+						transform_.position_.z + moveDir_.z);
+	}
 	//standMath_のゲッター
 	MATHDEDAIL GetStandMath() { return standMath_; }
 	//プレイヤーのステートのゲッター・セッター

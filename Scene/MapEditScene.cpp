@@ -138,7 +138,7 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						ChangeSelectMath(selectMath_);
+						ChangeSelectMath();
 					}
 				}
 				break;
@@ -158,21 +158,21 @@ void MapEditScene::Update()
 								}
 							}
 						}
-						ChangeSelectMath(selectMath_);
+						ChangeSelectMath();
 					}
 				}
 				break;
 			case MATH_DELETE:
 				if (Input::IsMouseButton(0))
 				{
-					ChangeSelectMath(selectMath_);
+					ChangeSelectMath();
 				}
 			case MATH_CONVEYOR:
 				if (Input::IsMouseButton(0))
 				{
 					if (CostManagement(selectMath_))
 					{
-						ChangeSelectMath(selectMath_);
+						ChangeSelectMath();
 					}
 				}
 				if (Input::IsMouseButtonDown(1))
@@ -190,7 +190,7 @@ void MapEditScene::Update()
 					if (CostManagement(selectMath_))
 					{
 						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath_.x, (int)selectMath_.y, 0);
-						ChangeSelectMath(selectMath_);
+						ChangeSelectMath();
 
 						//tTgtgRouteÇÃíÜÇ…à íuÇ™ìØÇ∂Ç»Ç∆Ç∞Ç∆Ç∞Ç™ë∂ç›ÇµÇƒÇÈÇ©
 						auto itr = tTgtgRoute_.begin();
@@ -229,7 +229,7 @@ void MapEditScene::Update()
 				{
 					if (CostManagement(selectMath_))
 					{
-						ChangeSelectMath(selectMath_);
+						ChangeSelectMath();
 					}
 				}
 				break;

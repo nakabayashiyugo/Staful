@@ -35,8 +35,8 @@ PlayerMoveDirSelect::PlayerMoveDirSelect()
 
 NodeState Select_State::operator()()
 {
-	MATHTYPE type = dynamic_cast<Enemy*>(pPlayer_)->GetMathType(dynamic_cast<Enemy*>(pPlayer_)->GetPosition()).mathType_;
-	if (type == MATH_HOLE && type == MATH_TOGETOGE)
+	MATHTYPE type = dynamic_cast<Enemy*>(pPlayer_)->GetMathType(dynamic_cast<Enemy*>(pPlayer_)->GetDestPos()).mathType_;
+	if (type == MATH_HOLE || type == MATH_TOGETOGE)
 	{
 		//Walké∏îsÇ¡ÇƒÇ±Ç∆Ç≈FAILED(JumpÇ…çsÇ≠)
 		return NodeState::FAILED;
