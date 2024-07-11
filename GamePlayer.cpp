@@ -3,6 +3,7 @@
 #include "Engine/Image.h"
 
 #include "Scene/MapEditScene.h"
+#include "Scene/EnemyMapEditScene.h"
 #include "Scene/PlayScene.h"
 #include "Scene/SceneTransition.h"
 
@@ -46,8 +47,8 @@ void GamePlayer::MapEdit()
 	else if (pST_->GetTurnNum() % 2 != 0 && playerNum_ == 1) saveNum_ = saveFileName1;
 	else if (pST_->GetTurnNum() % 2 != 1 && playerNum_ == 0)	saveNum_ = saveFileName1;
 	else saveNum_ = saveFileName2;
-	pMES_->Instantiate<MapEditScene>(this);
-	pMES_ = (MapEditScene*)FindObject("MapEditScene");
+	pMES_->Instantiate<EnemyMapEditScene>(this);
+	pMES_ = (EnemyMapEditScene*)FindObject("EnemyMapEditScene");
 }
 
 void GamePlayer::Challenge()

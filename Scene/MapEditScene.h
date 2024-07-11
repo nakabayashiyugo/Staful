@@ -6,7 +6,7 @@ class Button;
 class GamePlayer;
 
 class MapEditScene
-	:public GameObject, StageOrigin
+	:public GameObject, public StageOrigin
 {
 	int hPict_[MATH_MAX];
 	
@@ -82,6 +82,11 @@ public:
 
 	//クリックしたマスを選択してるマスに変える
 	void ChangeSelectMath();
+
+	int GetMathType() { return mathtype_; }
+	void SetMathType(int _type) { mathtype_ = _type; }
+	XMFLOAT3 GetSelectMath() { return selectMath_; }
+	void SetSelectMath(XMFLOAT3 _select) { selectMath_ = _select; }
 
 
 //ボタンについて

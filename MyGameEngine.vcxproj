@@ -159,7 +159,6 @@
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="ButtonManager.cpp" />
-    <ClCompile Include="EnemyMapEditAI.cpp" />
     <ClCompile Include="Engine\Audio.cpp" />
     <ClCompile Include="Engine\BillBoard.cpp" />
     <ClCompile Include="Engine\Easing.cpp" />
@@ -196,6 +195,7 @@
     <ClCompile Include="Player\State\StateManager.cpp" />
     <ClCompile Include="RadioButton.cpp" />
     <ClCompile Include="Scene\BetweenScene.cpp" />
+    <ClCompile Include="Scene\EnemyMapEditAI.cpp" />
     <ClCompile Include="Scene\EnemyMapEditScene.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditAIWork.cpp" />
@@ -226,7 +226,6 @@
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="ButtonManager.h" />
-    <ClInclude Include="EnemyMapEditAI.h" />
     <ClInclude Include="Engine\Audio.h" />
     <ClInclude Include="Engine\BillBoard.h" />
     <ClInclude Include="Engine\Easing.h" />
@@ -265,6 +264,7 @@
     <ClInclude Include="RadioButton.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Scene\BetweenScene.h" />
+    <ClInclude Include="Scene\EnemyMapEditAI.h" />
     <ClInclude Include="Scene\EnemyMapEditScene.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
     <ClInclude Include="Scene\MapEditAIWork.h" />

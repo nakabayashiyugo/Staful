@@ -2,6 +2,19 @@
 
 #include "MapEditScene.h"
 
+NodeState MapEdit_IsPutMath::operator()()
+{
+	if (editer_->CostManagement(editer_->GetSelectMath()))
+	{
+		return NodeState::RUNNING;
+	}
+	return NodeState::FAILED;
+}
+
+MapEdit_IsPutMath::MapEdit_IsPutMath()
+{
+}
+
 NodeState MapEdit_Action_ChangeMath::operator()()
 {
 	editer_->ChangeSelectMath();

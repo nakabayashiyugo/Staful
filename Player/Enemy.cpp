@@ -29,7 +29,7 @@ Enemy::Enemy(GameObject* _parent)
 	objectName_ = "Enemy";
 
 	//ルートノードに子ノード追加
-	AddChildNode();
+	AddNode();
 
 	risks_.resize(MATH_MAX);
 	risks_ = {
@@ -44,6 +44,17 @@ Enemy::Enemy(GameObject* _parent)
 		goalRisk,
 		floorRisk,
 	};
+
+	//コスト入れる
+	costs_.resize(mathVolume_.x);
+	for (int x = 0; x < costs_.size(); x++)
+	{
+		costs_[x].resize(mathVolume_.z);
+		for (int y = 0; y < costs_[x].size(); y++)
+		{
+			costs_[x][y] = risks_[math_[x][y].mathType_];
+		}
+	}
 }
 
 Enemy::~Enemy()
@@ -55,7 +66,15 @@ void Enemy::PlayerOperation()
 	rootNode_->Run();
 }
 
-void Enemy::AddChildNode()
+void Enemy::OnCollision(GameObject* pTarget)
+{
+	//死んだとき直前までいたマスのコストを上げる
+	const int deadCost = 100;
+	costs_[prevPos_.x][prevPos_.z] = deadCost;
+	Player::OnCollision(pTarget);
+}
+
+void Enemy::AddNode()
 {
 	Node* selectDir = new Node_SetMoveDir(rootNode_, new PlayerMoveDirSelect());
 	Node* selectState = new Node_Select_State(selectDir, new Select_State());
@@ -65,25 +84,17 @@ void Enemy::AddChildNode()
 
 void Enemy::SelectMoveDir()
 {
-	std::vector<std::vector<int>> table;
-	table.resize(mathVolume_.x);
-	for (int x = 0; x < table.size(); x++)
-	{
-		table[x].resize(mathVolume_.z);
-		for (int y = 0; y < table[x].size(); y++)
-		{
-			table[x][y] = risks_[math_[x][y].mathType_];
-		}
-	}
 	//Astar呼ぶ
 	Astar* astar = new Astar;
 	XMFLOAT2 startPos = { transform_.position_.x, transform_.position_.z };
 	XMFLOAT2 goalPos = { goalPos_.x, goalPos_.z };
-	astar->SetTable(table, mathVolume_.x, mathVolume_.z, startPos, goalPos);
+	astar->SetTable(costs_, mathVolume_.x, mathVolume_.z, startPos, goalPos);
+	//経路探索実行
 	astar->Excute();
-
+	//スタートからゴールまでのパス取得
 	std::vector<XMFLOAT2> path(astar->GetRouteSize());
 	path = astar->GetRoute();
+
 	XMFLOAT2 destPos;
 	if (path.size() > 1)	destPos = path[1];
 	else
@@ -111,4 +122,14 @@ void Enemy::SelectMoveDir()
 		break;
 	}
 	SetMoveDir(ret);
+}
+
+int Enemy::GetCost(int x, int y)
+{
+	return costs_[x][y];
+}
+
+void Enemy::SetCost(int _cost, int x, int y)
+{
+	costs_[x][y] = _cost;
 }

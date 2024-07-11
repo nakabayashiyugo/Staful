@@ -161,7 +161,7 @@
     <ClCompile Include="Scene\MapEditAIWork.cpp">
       <Filter>Scene\AI</Filter>
     </ClCompile>
-    <ClCompile Include="EnemyMapEditAI.cpp">
+    <ClCompile Include="Scene\EnemyMapEditAI.cpp">
       <Filter>Scene\AI</Filter>
     </ClCompile>
   </ItemGroup>
@@ -313,7 +313,7 @@
     <ClInclude Include="Scene\MapEditAIWork.h">
       <Filter>Scene\AI</Filter>
     </ClInclude>
-    <ClInclude Include="EnemyMapEditAI.h">
+    <ClInclude Include="Scene\EnemyMapEditAI.h">
       <Filter>Scene\AI</Filter>
     </ClInclude>
   </ItemGroup>
