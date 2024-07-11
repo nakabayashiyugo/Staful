@@ -124,6 +124,7 @@ void MapEditScene::Update()
 	{
 		if (math_origin_[(int)selectMath_.x][(int)selectMath_.y].mathType_ == MATH_DELETE)
 		{
+			XMFLOAT2 select = XMFLOAT2(selectMath_.x, selectMath_.y);
 			switch ((MATHTYPE)mathtype_)
 			{
 			case MATH_START:
@@ -136,9 +137,9 @@ void MapEditScene::Update()
 						{
 							for (int y = 0; y < mathVolume_.z; y++)
 							{
-								if (math_[x][y].mathType_ == MATH_START)
+								if (table_->GetMathType(XMFLOAT2(x, y)) == MATH_START)
 								{
-									math_[x][y].mathType_ = MATH_DELETE;
+									table_->SetMathType(XMFLOAT2(x, y), MATH_DELETE);
 								}
 							}
 						}
@@ -156,9 +157,9 @@ void MapEditScene::Update()
 						{
 							for (int y = 0; y < mathVolume_.z; y++)
 							{
-								if (math_[x][y].mathType_ == MATH_GOAL)
+								if (table_->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
 								{
-									math_[x][y].mathType_ = MATH_DELETE;
+									table_->SetMathType(XMFLOAT2(x, y), MATH_DELETE);
 								}
 							}
 						}
@@ -221,7 +222,7 @@ void MapEditScene::Update()
 				}
 				if (Input::IsMouseButtonDown(1))
 				{
-					if (math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ == MATH_TOGETOGE)
+					if (table_->GetMathType(select) == MATH_TOGETOGE)
 					{
 						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath_.x, (int)selectMath_.y, 0);
 						isClear_ = false;
@@ -338,23 +339,16 @@ void MapEditScene::MousePosSet()
 	mousePos_.x = Input::GetMousePosition().x;
 	mousePos_.y = Input::GetMousePosition().y;
 
-	mousePos_.x -= ((math_[0][0].mathPos_.position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
-	mousePos_.y -= ((-(math_[mathVolume_.x - 1][mathVolume_.z - 1].mathPos_.position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
+	mousePos_.x -= ((table_->GetMathTransform(XMFLOAT2(0, 0)).position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
+	mousePos_.y -= ((-(table_->GetMathTransform(XMFLOAT2(mathVolume_.x - 1, mathVolume_.z - 1)).position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
 }
 
 bool MapEditScene::CostManagement(XMFLOAT3 selectMath_)
 {
 	int costSum = 0;
-	//変更前のコスト計算
-	for (int x = 0; x < math_.size(); x++)
-	{
-		for (int y = 0; y < math_[x].size(); y++)
-		{
-			costSum += costs_[math_[x][y].mathType_];
-		}
-	}
+	costSum = table_->GetStageCost();
 	//変更後のコストたす
-	if (math_[selectMath_.x][selectMath_.y].mathType_ != mathtype_)
+	if (table_->GetMathType(XMFLOAT2(selectMath_.x, selectMath_.y)) != mathtype_)
 	{
 		costSum += costs_[mathtype_];
 		//コストの制限を超えていたら
@@ -418,6 +412,9 @@ void MapEditScene::ChangeSelectMath()
 	}
 	Audio::Play(hSE_PutMath_, 1);
 	prevMath = selectMath_;
+
+	XMFLOAT2 set = XMFLOAT2(selectMath_.x, selectMath_.y);
+	table_->SetMathType(set, mathtype_);
 }
 
 void MapEditScene::ButtonInit()
@@ -670,13 +667,17 @@ void MapEditScene::MathInit()
 	XMFLOAT3 imageSize = Image::GetTextureSize(hPict_[0]);
 	//マスを置く基準の位置（中央のマスの位置)
 	const XMFLOAT3 mathInitPos = XMFLOAT3(0.25f, 0, 0);
-	//マスのサイズ調整
+
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
 		for (int y = 0; y < mathVolume_.z; y++)
 		{
 			math_origin_[x][y] = math_[x][y];
-			math_[x][y].mathPos_.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
+			XMFLOAT2 pos = XMFLOAT2(x, y);
+
+			Transform tMath;
+
+			tMath.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
 			//1マスの大きさ
 			const XMFLOAT2 mathSize = XMFLOAT2(((float)x / Direct3D::bfr_scrWidth) * MATHSIZE * 2,
 				((float)y / Direct3D::bfr_scrHeight) * MATHSIZE * 2);
@@ -684,8 +685,10 @@ void MapEditScene::MathInit()
 			const XMFLOAT2 mathPos = XMFLOAT2(mathInitPos.x - ((float)mathVolume_.x / Direct3D::bfr_scrWidth) * MATHSIZE,
 				mathInitPos.y - ((float)mathVolume_.z / Direct3D::bfr_scrHeight) * MATHSIZE);
 
-			math_[x][y].mathPos_.position_.x = mathSize.x + mathPos.x;
-			math_[x][y].mathPos_.position_.y = mathSize.y + mathPos.y;
+			tMath.position_.x = mathSize.x + mathPos.x;
+			tMath.position_.y = mathSize.y + mathPos.y;
+
+			table_->SetMathTransform(pos, tMath);
 		}
 	}
 }
@@ -696,21 +699,31 @@ void MapEditScene::MathDraw()
 	{
 		for (int y = 0; y < mathVolume_.z; y++)
 		{
+			XMFLOAT2 drawPos = XMFLOAT2(x, mathVolume_.z - 1 - y);
 			//コンベアの回転
-			if (isConvRot_[x][mathVolume_.z - 1 - y])
+			if (isConvRot_[drawPos.x][drawPos.y])
 			{
-				math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z += 5;
+				//コンベアが回る音
 				Audio::Play(hSE_ConvRot_, 1);
-				if ((int)math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z % 90 == 0)
+
+				//1フレームに回転する量
+				const float rotValUpdate = 5;
+				Transform tConv = table_->GetMathTransform(drawPos);
+				tConv.rotate_.z += rotValUpdate;
+				
+				//1回転の量
+				const float rotVal = 90;
+
+				if ((int)tConv.rotate_.z % (int)rotVal == 0)
 				{
-					math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z = (int)(math_[x][mathVolume_.z - 1 - y].mathPos_.rotate_.z / 90) * 90;
+					tConv.rotate_.z = (tConv.rotate_.z / rotVal) * rotVal;
 					isConvRot_[x][mathVolume_.z - 1 - y] = false;
 					Audio::Stop(hSE_ConvRot_);
 				}
+				table_->SetMathTransform(drawPos, tConv);
 			}
-
-			Image::SetTransform(hPict_[math_[x][y].mathType_], math_[x][y].mathPos_);
-			Image::Draw(hPict_[math_[x][y].mathType_]);
+			Image::SetTransform(hPict_[table_->GetMathType(XMFLOAT2(x, y))], table_->GetMathTransform(XMFLOAT2(x, y)));
+			Image::Draw(hPict_[table_->GetMathType(XMFLOAT2(x, y))]);
 
 		}
 	}
@@ -879,7 +892,7 @@ void MapEditScene::TogetogeElemDelete()
 	auto itr = tTgtgRoute_.begin();
 	while (itr != tTgtgRoute_.end())
 	{
-		if (math_[itr->initPos_.x][itr->initPos_.y].mathType_ != MATH_TOGETOGE)
+		if (table_->GetMathType(XMFLOAT2(itr->initPos_.x, itr->initPos_.y)) != (int)MATH_TOGETOGE)
 		{
 			tTgtgRoute_.erase(itr);
 			break;

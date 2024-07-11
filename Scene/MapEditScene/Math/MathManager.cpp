@@ -14,7 +14,7 @@ MathManager::MathManager(int _xsize, int _ysize, std::vector<int> _costs, int _n
 
 	//マス初期化
 	//マスの初期化の際のマスの種類
-	const int initType = 0;
+	const int initType = (int)MATH_DELETE;
 	maths_.resize(_xsize);
 	for (int x = 0; x < maths_.size(); x++)
 	{
@@ -35,6 +35,16 @@ void MathManager::SetMathType(XMFLOAT2 _pos, int _type)
 int MathManager::GetMathType(XMFLOAT2 _pos)
 {
 	return maths_[_pos.x][_pos.y]->GetMathType();
+}
+
+Transform MathManager::GetMathTransform(XMFLOAT2 _pos)
+{
+	return maths_[_pos.x][_pos.y]->GetMathTransform();
+}
+
+void MathManager::SetMathTransform(XMFLOAT2 _pos, Transform _transform)
+{
+	maths_[_pos.x][_pos.y]->SetMathTransform(_transform);
 }
 
 int MathManager::GetCost(int _type)

@@ -20,6 +20,11 @@ public:
 	void SetMathType(XMFLOAT2 _pos, int _type);
 	//引数１：ゲットする要素数
 	int GetMathType(XMFLOAT2 _pos);
+	//引数1：ゲットする要素数
+	Transform GetMathTransform(XMFLOAT2 _pos);
+	//引数1：セットする要素数
+	//引数2：セットするトランスフォーム
+	void SetMathTransform(XMFLOAT2 _pos, Transform _transform);
 	//引数１：ゲットするマスのタイプ
 	int GetCost(int _type);
 	//現在のコースにかかってるコスト取得
