@@ -1,9 +1,9 @@
 #include "EnemyMapEditScene.h"
 
-#include "../Engine/RootNode.h"
+#include "../../Engine/RootNode.h"
 
-#include "MapEditAIWork.h"
-#include "EnemyMapEditAI.h"
+#include "AI/MapEditAIWork.h"
+#include "AI/EnemyMapEditAI.h"
 
 EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 	:MapEditScene(_parent),

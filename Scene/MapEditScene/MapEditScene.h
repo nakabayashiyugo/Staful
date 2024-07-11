@@ -1,9 +1,10 @@
 #pragma once
-#include "../StageOrigin.h"
+#include "../../StageOrigin.h"
 
 class Text;
 class Button;
 class GamePlayer;
+class MathManager;
 
 class MapEditScene
 	:public GameObject, public StageOrigin
@@ -69,6 +70,8 @@ private:
 	int mathtype_;
 	//カーソルが置かれてるマスの位置
 	XMFLOAT3 selectMath_;
+
+	MathManager* table_;
 public:
 	//マスの初期化
 	void MathInit();

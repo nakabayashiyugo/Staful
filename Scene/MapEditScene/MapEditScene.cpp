@@ -1,18 +1,20 @@
 #include "MapEditScene.h"
 
-#include "../Engine/SceneManager.h"
-#include "../Engine/Image.h"
-#include "../Engine/Input.h"
-#include "../Engine/Text.h"
-#include "../Engine/Audio.h"
+#include "../../Engine/SceneManager.h"
+#include "../../Engine/Image.h"
+#include "../../Engine/Input.h"
+#include "../../Engine/Text.h"
+#include "../../Engine/Audio.h"
 
-#include "../resource.h"
-#include "../ButtonManager.h"
-#include "../Button.h"
-#include "../GamePlayer.h"
+#include "../../resource.h"
+#include "../../ButtonManager.h"
+#include "../../Button.h"
+#include "../../GamePlayer.h"
 
-#include "SceneTransition.h"
-#include "PlayScene.h"
+#include "../SceneTransition.h"
+#include "../PlayScene.h"
+
+#include "Math/MathManager.h"
 
 //マスの位置の初期値
 const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
@@ -88,6 +90,8 @@ MapEditScene::MapEditScene(GameObject* parent)
 	costLimitPlus = costLimitFirst / 2;
 	turnNum_ = pGP_->GetTurnNum();
 	costLimit_ = costLimitFirst + (turnNum_ - 1) * costLimitPlus;
+
+	table_ = new MathManager(mathVolume_.x, mathVolume_.z, costs_, costs_.size());
 }
 
 void MapEditScene::Initialize()

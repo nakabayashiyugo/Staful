@@ -1,5 +1,5 @@
 #pragma once
-#include "MapEditScene.h"
+#include "../MapEditScene/MapEditScene.h"
 
 class RootNode;
 
