@@ -88,9 +88,9 @@ public:
 	MATHVOLUME GetMathVolume() { return mathVolume_; }
 
 	//マス情報書き込み
-	void Write();
+	virtual void Write();
 	//マス情報読み込み
-	void Read();
+	virtual void Read();
 	//マスの量書き込み
 	void MathVolumeWrite();
 	//マスの量読み込み

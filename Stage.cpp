@@ -237,17 +237,6 @@ void Stage::SetIsStand(int _x, int _y, bool _isStand)
 	}
 }
 
-void Stage::SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math)
-{
-	for (int x = 0; x < mathVolume_.x; x++)
-	{
-		for (int z = 0; z < mathVolume_.z; z++)
-		{
-			math_.at(x).at(z) = _math.at(x).at(z);
-		}
-	}
-}
-
 XMFLOAT3 Stage::GetTogetogeInitPos()
 {
 	return tgtgGivePos_;

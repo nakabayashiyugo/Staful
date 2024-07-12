@@ -44,8 +44,6 @@ public:
 
 	void SetBlock(int x, int z, MATHTYPE _type);
 
-	void SetTableMath(std::vector<std::vector<MATHDEDAIL>> _math);
-
 	XMFLOAT3 GetTogetogeInitPos();
 
 	XMFLOAT3 GetTogetogeDestPos(XMFLOAT3 _pos)

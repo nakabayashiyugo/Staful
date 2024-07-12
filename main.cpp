@@ -34,7 +34,6 @@ HINSTANCE ghInstance;
 
 //プロトタイプ宣言
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
 
 ID3D11Device*           pDevice_;		//デバイス
 ID3D11DeviceContext*    pContext_;		//デバイスコンテキスト
@@ -215,9 +214,4 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
         
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
-BOOL CALLBACK DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-    return ((MapEditScene*)pRootJob->FindObject("MapEditScene"))->DialogProc(hDlg, msg, wp, lp);
 }

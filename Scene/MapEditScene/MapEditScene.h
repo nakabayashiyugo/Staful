@@ -36,9 +36,6 @@ public:
 	//開放
 	void Release() override;
 
-	BOOL DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp);
-
-
 //マウスの操作について
 private:
 	//マウスの位置
@@ -49,18 +46,10 @@ public:
 
 //コスト管理について
 private:
-	//置ける障害物の数
-	int costLimit_;
-	//おいてる障害物の数
-	int curCost_;
 	//それぞれのマスのコスト
 	std::vector<int> costs_;
 	Text* pText_;
 public:
-	//戻り値
-	//true : まだ置ける
-	//false : これ以上置けない
-	bool CostManagement(XMFLOAT3 _selectMath);
 	void CostDraw();
 
 
@@ -90,6 +79,7 @@ public:
 	void SetMathType(int _type) { mathtype_ = _type; }
 	XMFLOAT3 GetSelectMath() { return selectMath_; }
 	void SetSelectMath(XMFLOAT3 _select) { selectMath_ = _select; }
+	MathManager* GetTable() { return table_; }
 
 
 //ボタンについて
@@ -173,4 +163,12 @@ private:
 	
 public:
 	void AudioInit();
+
+
+//書き込み・読み込み
+private:
+
+public:
+	void Write() override;
+	void Read() override;
 };

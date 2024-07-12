@@ -4,11 +4,7 @@
 
 NodeState MapEdit_IsPutMath::operator()()
 {
-	if (editer_->CostManagement(editer_->GetSelectMath()))
-	{
-		return NodeState::RUNNING;
-	}
-	return NodeState::FAILED;
+	return NodeState::RUNNING;
 }
 
 MapEdit_IsPutMath::MapEdit_IsPutMath()
@@ -29,6 +25,11 @@ MapEdit_Action_ChangeMath::MapEdit_Action_ChangeMath()
 NodeState MapEdit_MathPosSelect::operator()()
 {
 	editer_->SelectMathSet();
+	if (editer_->GetSelectMath().x == -1 &&
+		editer_->GetSelectMath().y == -1)
+	{
+		return NodeState::FAILED;
+	}
 	return NodeState::RUNNING;
 }
 

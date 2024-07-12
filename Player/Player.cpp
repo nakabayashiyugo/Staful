@@ -370,6 +370,9 @@ void Player::OperateExplanDraw()
 	{
 		pText_->Draw(opePos.x, opePos.y + lineHeight * i, moveDirStr_[i].c_str());
 	}
+	//ƒWƒƒƒ“ƒvà–¾
+	std::string jumpExplan = "space + WASD - Jump";
+	pText_->Draw(opePos.x, opePos.y + lineHeight * DIR_MAX, jumpExplan.c_str());
 }
 
 void Player::PlayerOperation()

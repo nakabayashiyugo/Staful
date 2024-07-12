@@ -5,6 +5,8 @@
 #include "AI/MapEditAIWork.h"
 #include "AI/EnemyMapEditAI.h"
 
+#include "../MapEditScene/Math/MathManager.h"
+
 EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 	:MapEditScene(_parent),
 	rootNode_(new RootNode(this, nullptr))
@@ -17,7 +19,9 @@ EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 void EnemyMapEditScene::Initialize()
 {
 	MapEditScene::Initialize();
-	for (int i = 0; i < 100; i++)
+	//マス配置の試行回数
+	const int num = 100;
+	for (int i = 0; i < num; i++)
 	{
 		rootNode_->Run();
 	}
@@ -37,12 +41,49 @@ void EnemyMapEditScene::AddNode()
 
 void EnemyMapEditScene::SelectMathSet()
 {
-	srand(time(NULL));
 	XMFLOAT3 pos = XMFLOAT3((rand() % mathVolume_.x), (rand() % mathVolume_.z), 0);
-	SetSelectMath(pos);
+	if (GetTable()->GetMathType(XMFLOAT2(pos.x, pos.y)) == MATH_DELETE)
+	{
+		SetSelectMath(pos);
+	}
 }
 
 void EnemyMapEditScene::SelectMathType()
 {
-	SetMathType(0);
+	MATHTYPE setType = MATH_DELETE;
+	//すでにスタートマスとゴールマスがあったら
+	bool isStart = false, isGoal = false;
+	for (int x = 0; x < mathVolume_.x; x++)
+	{
+		for (int y = 0; y < mathVolume_.z; y++)
+		{
+			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_START)
+			{
+				isStart = true;
+			}
+			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
+			{
+				isGoal = true;
+			}
+		}
+	}
+	//スタートがないなら
+	if (!isStart)
+	{
+		setType = MATH_START;
+	}
+	//ゴールがないなら
+	else if (!isGoal)
+	{
+		setType = MATH_GOAL;
+	}
+	//両方あったら
+	else
+	{
+		//スタートとゴール以外のマスランダムで選択
+		do {
+			setType = (MATHTYPE)(rand() % MATH_MAX);
+		} while (setType == MATH_START || setType == MATH_GOAL);
+	}
+	SetMathType(rand() % MATH_MAX);
 }

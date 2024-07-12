@@ -14,6 +14,8 @@
 #include "../SceneTransition.h"
 #include "../PlayScene.h"
 
+#include "Math/MathManager.h"
+
 //マスの位置の初期値
 const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
 //音楽の大きさ
@@ -34,8 +36,6 @@ MapEditScene::MapEditScene(GameObject* parent)
 	: GameObject(parent, "MapEditScene"),
 	//マウス操作
 	mousePos_(0, 0, 0),
-	//コスト管理について
-	curCost_(0),
 	//マスの選択について
 	mathtype_(0),
 	//テストプレイについて
@@ -63,8 +63,6 @@ MapEditScene::MapEditScene(GameObject* parent)
 	pGP_ = (GamePlayer*)this->pParent_;
 	saveNum_ = pGP_->GetSaveNum();
 
-	Read();
-
 	//それぞれのマスのコスト設定
 	costs_.resize(MATH_MAX);
 
@@ -87,9 +85,11 @@ MapEditScene::MapEditScene(GameObject* parent)
 	costLimitFirst = mathVolume_.x + mathVolume_.z;
 	costLimitPlus = costLimitFirst / 2;
 	turnNum_ = pGP_->GetTurnNum();
-	costLimit_ = costLimitFirst + (turnNum_ - 1) * costLimitPlus;
+	int costLimit = costLimitFirst + (turnNum_ - 1) * costLimitPlus;
 
-	table_ = new MathManager(mathVolume_.x, mathVolume_.z, costs_, costs_.size());
+	table_ = new MathManager(mathVolume_.x, mathVolume_.z, MATH_DELETE, costs_, costs_.size(), costLimit);
+
+	Read();
 }
 
 void MapEditScene::Initialize()
@@ -173,10 +173,7 @@ void MapEditScene::Update()
 			case MATH_CONVEYOR:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement(selectMath_))
-					{
-						ChangeSelectMath();
-					}
+					ChangeSelectMath();
 				}
 				if (Input::IsMouseButtonDown(1))
 				{
@@ -190,33 +187,31 @@ void MapEditScene::Update()
 			case MATH_TOGETOGE:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement(selectMath_))
-					{
-						tgtgRouteMathDown_ = XMFLOAT3((int)selectMath_.x, (int)selectMath_.y, 0);
-						ChangeSelectMath();
+					tgtgRouteMathDown_ = XMFLOAT3((int)selectMath_.x, (int)selectMath_.y, 0);
+					ChangeSelectMath();
 
-						//tTgtgRouteの中に位置が同じなとげとげが存在してるか
-						auto itr = tTgtgRoute_.begin();
-						while (itr != tTgtgRoute_.end())
+					//tTgtgRouteの中に位置が同じなとげとげが存在してるか
+					auto itr = tTgtgRoute_.begin();
+					while (itr != tTgtgRoute_.end())
+					{
+						if (itr->initPos_.x == tgtgRouteMathDown_.x &&
+							itr->initPos_.y == tgtgRouteMathDown_.y)
 						{
-							if (itr->initPos_.x == tgtgRouteMathDown_.x &&
-								itr->initPos_.y == tgtgRouteMathDown_.y)
-							{
-								break;
-							}
-							itr++;
+							break;
 						}
-						//存在しなかったら
-						if (itr == tTgtgRoute_.end())
-						{
-							//tTgtgRoute_に追加
-							TOGETOGEROUTE* ptg = new TOGETOGEROUTE();
-							ptg->initPos_ = ptg->destPos_ = tgtgRouteMathDown_;
-							ptg->route_.scale_ = XMFLOAT3(0, 0, 0);
-							tTgtgRoute_.push_back(*ptg);
-							delete ptg;
-						}
+						itr++;
 					}
+					//存在しなかったら
+					if (itr == tTgtgRoute_.end())
+					{
+						//tTgtgRoute_に追加
+						TOGETOGEROUTE* ptg = new TOGETOGEROUTE();
+						ptg->initPos_ = ptg->destPos_ = tgtgRouteMathDown_;
+						ptg->route_.scale_ = XMFLOAT3(0, 0, 0);
+						tTgtgRoute_.push_back(*ptg);
+						delete ptg;
+					}
+
 				}
 				if (Input::IsMouseButtonDown(1))
 				{
@@ -230,10 +225,7 @@ void MapEditScene::Update()
 			default:
 				if (Input::IsMouseButton(0))
 				{
-					if (CostManagement(selectMath_))
-					{
-						ChangeSelectMath();
-					}
+					ChangeSelectMath();
 				}
 				break;
 			}
@@ -280,57 +272,6 @@ void MapEditScene::Release()
 {
 }
 
-BOOL MapEditScene::DialogProc(HWND hDlg, UINT msg, WPARAM wp, LPARAM lp)
-{
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-		//ラジオボタンの初期値
-		SendMessage(GetDlgItem(hDlg, IDC_MAPEDIT_FLOOR), BM_SETCHECK, BST_CHECKED, 0);
-
-		return TRUE;
-
-	case WM_COMMAND:
-		bool startFlg = false, goalFlg = false;
-		switch (LOWORD(wp))
-		{
-		case IDC_MAPEDIT_FLOOR:		mathtype_ = MATH_DELETE; break;
-		case IDC_MAPEDIT_WALL:		mathtype_ = MATH_WALL; break;
-		case IDC_MAPEDIT_HOLL:		mathtype_ = MATH_HOLE; break;
-		case IDC_MAPEDIT_CONVEYOR:	mathtype_ = MATH_CONVEYOR; break;
-		case IDC_MAPEDIT_TOGETOGE:	mathtype_ = MATH_TOGETOGE; break;
-		case IDC_MAPEDIT_PITFALL:	mathtype_ = MATH_PITFALL; break;
-		case IDC_MAPEDIT_START:		mathtype_ = MATH_START; break;
-		case IDC_MAPEDIT_GOAL:		mathtype_ = MATH_GOAL; break;
-		case IDC_MAPEDIT_COMPLETE:	
-			for (int x = 0; x < mathVolume_.x; x++)
-			{
-				for (int y = 0; y < mathVolume_.z; y++)
-				{
-					if (math_[x][y].mathType_ == MATH_START)
-					{
-						startFlg = true;
-					}
-					if (math_[x][y].mathType_ == MATH_GOAL)
-					{
-						goalFlg = true;
-					}
-				}
-			}
-			if (startFlg && goalFlg)
-			{
-				Write();
-				EndDialog(hDlg, 0);
-			}
-			break;
-		default: break;
-		}
-
-		return TRUE;
-	}
-	return FALSE;
-}
-
 void MapEditScene::MousePosSet()
 {
 	//マウスの位置
@@ -339,26 +280,6 @@ void MapEditScene::MousePosSet()
 
 	mousePos_.x -= ((table_->GetMathTransform(XMFLOAT2(0, 0)).position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
 	mousePos_.y -= ((-(table_->GetMathTransform(XMFLOAT2(mathVolume_.x - 1, mathVolume_.z - 1)).position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
-}
-
-bool MapEditScene::CostManagement(XMFLOAT3 selectMath_)
-{
-	int costSum = 0;
-	costSum = table_->GetStageCost();
-	//変更後のコストたす
-	if (table_->GetMathType(XMFLOAT2(selectMath_.x, selectMath_.y)) != mathtype_)
-	{
-		costSum += costs_[mathtype_];
-		//コストの制限を超えていたら
-		if (costSum > costLimit_)
-		{
-			costSum -= costs_[mathtype_];
-			curCost_ = costSum;
-			return false;
-		}
-	}
-	curCost_ = costSum;
-	return true;
 }
 
 void MapEditScene::CostDraw()
@@ -382,7 +303,7 @@ void MapEditScene::CostDraw()
 	//文字「cost」表示
 	pText_->Draw(costPos.x, costPos.y, strCost.c_str());
 	//コスト表示
-	std::string str = std::to_string(curCost_) + " / " + std::to_string(costLimit_);
+	std::string str = std::to_string(table_->GetStageCost()) + " / " + std::to_string(table_->GetCostLimit());
 	pText_->Draw(curCostPos.x, curCostPos.y, str.c_str());
 	//文字「costLimit」表示
 	pText_->Draw(costLimitPos.x, costLimitPos.y, strCostLimit.c_str());
@@ -390,12 +311,18 @@ void MapEditScene::CostDraw()
 
 void MapEditScene::ChangeSelectMath()
 {
+	XMFLOAT2 set = XMFLOAT2(selectMath_.x, selectMath_.y);
+	table_->SetMathType(set, mathtype_);
+
 	//クリックしたマスを選んでるマスに変える
-	if (math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ != MATH_CONVEYOR)
+	if (table_->GetMathType(set) != MATH_CONVEYOR)
 	{
-		math_[(int)selectMath_.x][(int)selectMath_.y].mathPos_.rotate_ = XMFLOAT3(0, 0, 0);
+		Transform tMath = table_->GetMathTransform(set);
+		tMath.rotate_ = XMFLOAT3(0, 0, 0);
+		table_->SetMathTransform(set, tMath);
 	}
-	math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ = (MATHTYPE)mathtype_;
+
+
 	isClear_ = false;
 
 	//テストプレイできるかどうかチェック
@@ -410,9 +337,6 @@ void MapEditScene::ChangeSelectMath()
 	}
 	Audio::Play(hSE_PutMath_, 1);
 	prevMath = selectMath_;
-
-	XMFLOAT2 set = XMFLOAT2(selectMath_.x, selectMath_.y);
-	table_->SetMathType(set, mathtype_);
 }
 
 void MapEditScene::ButtonInit()
@@ -917,4 +841,32 @@ void MapEditScene::AudioInit()
 	//コンベアを回転させたときのSE
 	std::string convSe = folderName + SEFolder + "SE_Rotate.wav";
 	hSE_ConvRot_ = Audio::Load(convSe, false);
+}
+
+void MapEditScene::Write()
+{
+	//math_に値入れる
+	for (int x = 0; x < mathVolume_.x; x++)
+	{
+		for (int z = 0; z < mathVolume_.z; z++)
+		{
+			math_[x][z].mathType_ = (MATHTYPE)table_->GetMathType(XMFLOAT2(x, z));
+			math_[x][z].mathPos_ = table_->GetMathTransform(XMFLOAT2(x, z));
+		}
+	}
+	StageOrigin::Write();
+}
+
+void MapEditScene::Read()
+{
+	StageOrigin::Read();
+	//math_から値受け取る
+	for (int x = 0; x < mathVolume_.x; x++)
+	{
+		for (int z = 0; z < mathVolume_.z; z++)
+		{
+			table_->SetMathType(XMFLOAT2(x, z), math_[x][z].mathType_);
+			table_->SetMathTransform(XMFLOAT2(x, z), math_[x][z].mathPos_);
+		}
+	}
 }

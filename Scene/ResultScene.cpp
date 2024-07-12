@@ -38,7 +38,7 @@ void ResultScene::Initialize()
 
 void ResultScene::Update()
 {
-	if (pButton_->GetIsClicked())
+	if (pButton_->OnClick())
 	{
 		//ƒQ[ƒ€‚ªI—¹‚µ‚½‚ç
 		if (isClear_[0] != isClear_[1])

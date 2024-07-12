@@ -9,7 +9,7 @@ class EnemyMapEditScene : public MapEditScene
 public:
 	EnemyMapEditScene(GameObject* _parent);
 
-	void Initialize()override;
+	void Initialize() override;
 	void Update() override;
 //AI
 private:
