@@ -200,8 +200,6 @@
     <ClCompile Include="Scene\EnemyMapEditScene\EnemyMapEditScene.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditScene\MapEditScene.cpp" />
-    <ClCompile Include="Scene\MapEditScene\Math\Math.cpp" />
-    <ClCompile Include="Scene\MapEditScene\Math\MathManager.cpp" />
     <ClCompile Include="Scene\PlayScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\SceneTransition.cpp" />
@@ -271,8 +269,6 @@
     <ClInclude Include="Scene\EnemyMapEditScene\EnemyMapEditScene.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
     <ClInclude Include="Scene\MapEditScene\MapEditScene.h" />
-    <ClInclude Include="Scene\MapEditScene\Math\Math.h" />
-    <ClInclude Include="Scene\MapEditScene\Math\MathManager.h" />
     <ClInclude Include="Scene\PlayScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\SceneTransition.h" />

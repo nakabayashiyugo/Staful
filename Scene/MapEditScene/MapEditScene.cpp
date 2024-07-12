@@ -14,8 +14,6 @@
 #include "../SceneTransition.h"
 #include "../PlayScene.h"
 
-#include "Math/MathManager.h"
-
 //マスの位置の初期値
 const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);
 //音楽の大きさ
