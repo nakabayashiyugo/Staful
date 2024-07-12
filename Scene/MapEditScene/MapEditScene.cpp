@@ -1,18 +1,18 @@
 #include "MapEditScene.h"
 
-#include "../Engine/SceneManager.h"
-#include "../Engine/Image.h"
-#include "../Engine/Input.h"
-#include "../Engine/Text.h"
-#include "../Engine/Audio.h"
+#include "../../Engine/SceneManager.h"
+#include "../../Engine/Image.h"
+#include "../../Engine/Input.h"
+#include "../../Engine/Text.h"
+#include "../../Engine/Audio.h"
 
-#include "../resource.h"
-#include "../ButtonManager.h"
-#include "../Button.h"
-#include "../GamePlayer.h"
+#include "../../resource.h"
+#include "../../ButtonManager.h"
+#include "../../Button.h"
+#include "../../GamePlayer.h"
 
-#include "SceneTransition.h"
-#include "PlayScene.h"
+#include "../SceneTransition.h"
+#include "../PlayScene.h"
 
 //マスの位置の初期値
 const XMFLOAT3 mathInitPos = XMFLOAT3(-1, -1, 0);

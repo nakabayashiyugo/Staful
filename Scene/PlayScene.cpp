@@ -6,7 +6,7 @@
 #include "../Engine/Audio.h"
 
 #include "SceneTransition.h"
-#include "MapEditScene.h"
+#include "MapEditScene/MapEditScene.h"
 
 #include "../Timer.h"
 #include "../Stage.h"

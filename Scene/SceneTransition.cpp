@@ -1,6 +1,6 @@
 #include "SceneTransition.h"
 
-#include "MapEditScene.h"
+#include "MapEditScene/MapEditScene.h"
 #include "PlayScene.h"
 #include "BetweenScene.h"
 #include "ResultScene.h"

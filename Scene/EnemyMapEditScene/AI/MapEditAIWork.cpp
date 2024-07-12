@@ -1,6 +1,6 @@
 #include "MapEditAIWork.h"
 
-#include "MapEditScene.h"
+#include "../../MapEditScene/MapEditScene.h"
 
 NodeState MapEdit_IsPutMath::operator()()
 {

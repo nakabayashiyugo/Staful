@@ -17,7 +17,7 @@
 #include "Stage.h"
 #include "Player/Player.h"
 
-#include "Scene/MapEditScene.h"
+#include "Scene/MapEditScene/MapEditScene.h"
 #include "Scene/SceneTransition.h"
 
 //ƒŠƒ“ƒJ

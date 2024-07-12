@@ -1,5 +1,5 @@
 #pragma once
-#include "../StageOrigin.h"
+#include "../../StageOrigin.h"
 
 class Text;
 class Button;

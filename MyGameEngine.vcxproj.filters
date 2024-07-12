@@ -26,7 +26,13 @@
     <Filter Include="Player\AI">
       <UniqueIdentifier>{19c13d23-e592-4a89-bddb-902d58aff88c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\AI">
+    <Filter Include="Scene\MapEditScene">
+      <UniqueIdentifier>{5eeceef0-4f46-43f7-badf-0160085e2422}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\EnemyMapEditScene">
+      <UniqueIdentifier>{fcc96bd6-953c-476a-a030-a0de4ee0fdc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\EnemyMapEditScene\AI">
       <UniqueIdentifier>{0b470c83-0200-4582-9d11-6e28a536e493}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -103,9 +109,6 @@
     <ClCompile Include="Scene\BetweenScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\MapEditScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\Shaker.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
@@ -152,17 +155,20 @@
     <ClCompile Include="Player\Enemy.cpp">
       <Filter>Player</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\EnemyMapEditScene.cpp">
-      <Filter>Scene\AI</Filter>
-    </ClCompile>
     <ClCompile Include="Player\AI\AStar.cpp">
       <Filter>Player\AI</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\MapEditAIWork.cpp">
-      <Filter>Scene\AI</Filter>
+    <ClCompile Include="Scene\MapEditScene\MapEditScene.cpp">
+      <Filter>Scene\MapEditScene</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\EnemyMapEditAI.cpp">
-      <Filter>Scene\AI</Filter>
+    <ClCompile Include="Scene\EnemyMapEditScene\EnemyMapEditScene.cpp">
+      <Filter>Scene\EnemyMapEditScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\EnemyMapEditScene\AI\EnemyMapEditAI.cpp">
+      <Filter>Scene\EnemyMapEditScene\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\EnemyMapEditScene\AI\MapEditAIWork.cpp">
+      <Filter>Scene\EnemyMapEditScene\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -249,9 +255,6 @@
     <ClInclude Include="Scene\BetweenScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\MapEditScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\Shaker.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -304,17 +307,20 @@
     <ClInclude Include="Player\Enemy.h">
       <Filter>Player</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\EnemyMapEditScene.h">
-      <Filter>Scene\AI</Filter>
-    </ClInclude>
     <ClInclude Include="Player\AI\AStar.h">
       <Filter>Player\AI</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\MapEditAIWork.h">
-      <Filter>Scene\AI</Filter>
+    <ClInclude Include="Scene\MapEditScene\MapEditScene.h">
+      <Filter>Scene\MapEditScene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\EnemyMapEditAI.h">
-      <Filter>Scene\AI</Filter>
+    <ClInclude Include="Scene\EnemyMapEditScene\EnemyMapEditScene.h">
+      <Filter>Scene\EnemyMapEditScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\EnemyMapEditScene\AI\EnemyMapEditAI.h">
+      <Filter>Scene\EnemyMapEditScene\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\EnemyMapEditScene\AI\MapEditAIWork.h">
+      <Filter>Scene\EnemyMapEditScene\AI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

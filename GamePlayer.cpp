@@ -2,8 +2,8 @@
 
 #include "Engine/Image.h"
 
-#include "Scene/MapEditScene.h"
-#include "Scene/EnemyMapEditScene.h"
+#include "Scene/MapEditScene/MapEditScene.h"
+#include "Scene/EnemyMapEditScene/EnemyMapEditScene.h"
 #include "Scene/PlayScene.h"
 #include "Scene/SceneTransition.h"
 

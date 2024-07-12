@@ -2,7 +2,7 @@
 #include "../Scene/ResultScene.h"
 #include "../Scene/TitleScene.h"
 #include "../Scene/PlayScene.h"
-#include "../Scene/MapEditScene.h"
+#include "../Scene/MapEditScene/MapEditScene.h"
 #include "../Scene/SceneTransition.h"
 #include "../Scene/ExpantionScene.h"
 #include "Model.h"
