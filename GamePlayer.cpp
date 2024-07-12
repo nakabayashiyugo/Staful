@@ -47,8 +47,8 @@ void GamePlayer::MapEdit()
 	else if (pST_->GetTurnNum() % 2 != 0 && playerNum_ == 1) saveNum_ = saveFileName1;
 	else if (pST_->GetTurnNum() % 2 != 1 && playerNum_ == 0)	saveNum_ = saveFileName1;
 	else saveNum_ = saveFileName2;
-	pMES_->Instantiate<EnemyMapEditScene>(this);
-	pMES_ = (EnemyMapEditScene*)FindObject("EnemyMapEditScene");
+	pMES_->Instantiate<MapEditScene>(this);
+	pMES_ = (MapEditScene*)FindObject("MapEditScene");
 }
 
 void GamePlayer::Challenge()

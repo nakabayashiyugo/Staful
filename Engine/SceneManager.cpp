@@ -5,6 +5,8 @@
 #include "../Scene/MapEditScene/MapEditScene.h"
 #include "../Scene/SceneTransition.h"
 #include "../Scene/ExpantionScene.h"
+#include "../Scene/MapEditScene/MapEditScene.h"
+
 #include "Model.h"
 
 SceneManager::SceneManager(GameObject* parent)
