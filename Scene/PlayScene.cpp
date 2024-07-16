@@ -42,9 +42,18 @@ PlayScene::PlayScene(GameObject* parent)
 void PlayScene::Initialize()
 {
 	pStage_->Instantiate<Stage>(this);
-	pPlayer_->Instantiate<Enemy>(this);
-	pPlayer_ = (Enemy*)FindObject("Enemy");
 	pStage_ = (Stage*)FindObject("Stage");
+	//Ž©•ª‚ªEnemy‚¾‚Á‚½‚ç
+	if (pGP_->GetIsEnemy())
+	{
+		pPlayer_->Instantiate<Enemy>(this);
+		pPlayer_ = (Enemy*)FindObject("Enemy");
+	}
+	else
+	{
+		pPlayer_->Instantiate<Player>(this);
+		pPlayer_ = (Player*)FindObject("Player");
+	}
 	
 	cancelButton_->Instantiate<Button>(this);
 	cancelButton_ = (Button*)FindObject("Button");

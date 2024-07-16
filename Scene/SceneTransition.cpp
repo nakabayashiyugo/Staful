@@ -16,7 +16,8 @@ SceneTransition::SceneTransition(GameObject* parent)
 	: GameObject(parent, "SceneTransition"), 
 	sceneState_(SCENE_MAPEDIT1), 
 	prevSceneState_(SCENE_TURNEND),
-	hPlayer1_(-1), hPlayer2_(-1)
+	hPlayer1_(-1), hPlayer2_(-1),
+	gameState_(STATE_SOLO)
 {
 
 	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");
@@ -32,6 +33,14 @@ SceneTransition::SceneTransition(GameObject* parent)
 	}
 	gPlayer_[0]->SetPlayerPictNum(hPlayer1_);
 	gPlayer_[1]->SetPlayerPictNum(hPlayer2_);
+
+	switch (gameState_)
+	{
+	case STATE_SOLO:
+		//プレイヤー2をEnemy(コンピュータ)にする
+		gPlayer_[1]->SetIsEnemy(true);
+		break;
+	}
 }
 
 void SceneTransition::Initialize()

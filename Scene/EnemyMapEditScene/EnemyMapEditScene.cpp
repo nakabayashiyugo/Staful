@@ -1,5 +1,7 @@
 #include "EnemyMapEditScene.h"
 
+#include "../../Engine/Input.h"
+
 #include "../../Engine/RootNode.h"
 
 #include "AI/MapEditAIWork.h"
@@ -14,11 +16,14 @@ EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 	this->objectName_ = "EnemyMapEditScene";
 
 	AddNode();
+
 }
 
 void EnemyMapEditScene::Initialize()
 {
 	MapEditScene::Initialize();
+	//スタートマスとゴールマスがあるかどうか全マス探索
+	StartGoalCheck();
 	//マス配置の試行回数
 	const int num = 100;
 	for (int i = 0; i < num; i++)
@@ -29,6 +34,43 @@ void EnemyMapEditScene::Initialize()
 
 void EnemyMapEditScene::Update()
 {
+	if (Input::IsKeyDown(DIK_SPACE))
+	{
+		CompButtonPush();
+	}
+}
+
+void EnemyMapEditScene::ChangeSelectMath()
+{
+	//選ばれてるマスの種類がスタートマスだったら
+	if (GetMathType() == MATH_START)
+	{
+		isPutStartMath_ = true;
+	}
+	else if (GetMathType() == MATH_GOAL)
+	{
+		isPutGoalMath_ = true;
+	}
+	MapEditScene::ChangeSelectMath();
+}
+
+void EnemyMapEditScene::StartGoalCheck()
+{
+	for (int x = 0; x < mathVolume_.x; x++)
+	{
+		for (int y = 0; y < mathVolume_.z; y++)
+		{
+			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_START)
+			{
+				isPutStartMath_ = true;
+			}
+			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
+			{
+				isPutGoalMath_ = true;
+			}
+
+		}
+	}
 }
 
 void EnemyMapEditScene::AddNode()
@@ -51,39 +93,24 @@ void EnemyMapEditScene::SelectMathSet()
 void EnemyMapEditScene::SelectMathType()
 {
 	MATHTYPE setType = MATH_DELETE;
-	//すでにスタートマスとゴールマスがあったら
-	bool isStart = false, isGoal = false;
-	for (int x = 0; x < mathVolume_.x; x++)
-	{
-		for (int y = 0; y < mathVolume_.z; y++)
-		{
-			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_START)
-			{
-				isStart = true;
-			}
-			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
-			{
-				isGoal = true;
-			}
-		}
-	}
-	//スタートがないなら
-	if (!isStart)
+	//スタートマスが置かれていなかったら
+	if (!isPutStartMath_)
 	{
 		setType = MATH_START;
 	}
-	//ゴールがないなら
-	else if (!isGoal)
+	//ゴールマスが置かれていなかったら
+	else if (!isPutGoalMath_)
 	{
 		setType = MATH_GOAL;
 	}
-	//両方あったら
+	//どっちも置かれていなかったら
 	else
 	{
-		//スタートとゴール以外のマスランダムで選択
+		//スタートとゴール以外のマスにする
 		do {
 			setType = (MATHTYPE)(rand() % MATH_MAX);
 		} while (setType == MATH_START || setType == MATH_GOAL);
+		
 	}
-	SetMathType(rand() % MATH_MAX);
+	SetMathType(setType);
 }

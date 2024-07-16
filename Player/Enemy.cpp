@@ -84,6 +84,10 @@ void Enemy::AddNode()
 
 void Enemy::SelectMoveDir()
 {
+	if (!Is_InSide_Table(transform_.position_))
+	{
+		return;
+	}
 	//AstarŒÄ‚Ô
 	Astar* astar = new Astar;
 	XMFLOAT2 startPos = { transform_.position_.x, transform_.position_.z };

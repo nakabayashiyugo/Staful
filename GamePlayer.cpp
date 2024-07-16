@@ -10,7 +10,9 @@
 const int saveFileName1 = 1, saveFileName2 = 2;
 
 GamePlayer::GamePlayer(GameObject* parent)
-	:GameObject(parent, "GamePlayer")
+	:GameObject(parent, "GamePlayer"),
+	isEnemy_(false),
+	isClear_(false)
 {
 	pST_ = (SceneTransition*)this->pParent_;
 	playerNum_ = pST_->GetPlayerNum();
@@ -47,8 +49,16 @@ void GamePlayer::MapEdit()
 	else if (pST_->GetTurnNum() % 2 != 0 && playerNum_ == 1) saveNum_ = saveFileName1;
 	else if (pST_->GetTurnNum() % 2 != 1 && playerNum_ == 0)	saveNum_ = saveFileName1;
 	else saveNum_ = saveFileName2;
-	pMES_->Instantiate<EnemyMapEditScene>(this);
-	pMES_ = (EnemyMapEditScene*)FindObject("EnemyMapEditScene");
+	if (isEnemy_)
+	{
+		pMES_->Instantiate<EnemyMapEditScene>(this);
+		pMES_ = (EnemyMapEditScene*)FindObject("EnemyMapEditScene");
+	}
+	else
+	{
+		pMES_->Instantiate<MapEditScene>(this);
+		pMES_ = (MapEditScene*)FindObject("MapEditScene");
+	}
 }
 
 void GamePlayer::Challenge()

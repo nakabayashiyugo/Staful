@@ -5,6 +5,7 @@ class Text;
 class Button;
 class GamePlayer;
 class MathManager;
+class PlayScene;
 
 class MapEditScene
 	:public GameObject, public StageOrigin
@@ -73,7 +74,7 @@ public:
 	virtual void SelectMathType();
 
 	//クリックしたマスを選択してるマスに変える
-	void ChangeSelectMath();
+	virtual void ChangeSelectMath();
 
 	int GetMathType() { return mathtype_; }
 	void SetMathType(int _type) { mathtype_ = _type; }
@@ -94,6 +95,9 @@ private:
 	Button* pCancelButton_;
 	//テクスチャのサイズ
 	XMFLOAT3 texture_size_;
+
+	//テストプレイにつかうPlayScene
+	PlayScene* testPS_;
 public:
 	//マス選択ボタンの初期化
 	void ButtonInit();
@@ -101,6 +105,10 @@ public:
 	void ButtonUpdate();
 	//マス選択ボタン以外のボタンが押されたとき
 	void OtherButtonPush();
+
+	void CompButtonPush();
+	void TestButtonPush();
+	void CancelButtonPush();
 
 //マスの説明について
 private:

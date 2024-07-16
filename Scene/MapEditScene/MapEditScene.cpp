@@ -42,6 +42,7 @@ MapEditScene::MapEditScene(GameObject* parent)
 	isClear_(false),
 	canTest_(false),
 	isDisp_(true),
+	testPS_(nullptr),
 	//とげとげについて
 	tgtgRouteMathDown_(mathInitPos),
 	tgtgRouteMathUp_(mathInitPos),
@@ -177,7 +178,7 @@ void MapEditScene::Update()
 				}
 				if (Input::IsMouseButtonDown(1))
 				{
-					if (math_[(int)selectMath_.x][(int)selectMath_.y].mathType_ == MATHTYPE::MATH_CONVEYOR)
+					if (table_->GetMathType(select) == MATHTYPE::MATH_CONVEYOR)
 					{
 						isConvRot_[(int)selectMath_.x][(int)selectMath_.y] = true;
 						isClear_ = false;
@@ -477,8 +478,6 @@ void MapEditScene::ButtonUpdate()
 
 void MapEditScene::OtherButtonPush()
 {
-	static PlayScene* pTestplay = nullptr;
-
 	pTestplayButton_->SetIsCanPush(canTest_ * isDisp_);
 	//テストプレイクリアできないと押せないようにする
 	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
@@ -488,33 +487,48 @@ void MapEditScene::OtherButtonPush()
 	//テストプレイボタンが押されたら
 	if (pTestplayButton_->OnClick())
 	{
-		//マップエディター非表示
-		isDisp_ = false;
-		Write();
-		pTestplay->Instantiate<PlayScene>(this);
-		pTestplay = (PlayScene*)FindObject("PlayScene");
+		TestButtonPush();
 	}
 	//完了ボタンが押されたら
 	else if (pCompleteButton_->OnClick())
 	{
-		//音楽停止
-		Audio::Stop(hAudio_Music_);
-		//ファイルに書き込み
-		Write();
-		pGP_->MapEditFinished();
+		CompButtonPush();
 	}
 	//中止ボタン
 	//テストプレイしているとき
-	else if (pTestplay != nullptr)
+	else if (testPS_ != nullptr)
 	{
 		if (pCancelButton_->OnClick())
 		{
-			pTestplay->KillMe();
-			pTestplay = nullptr;
-			//マップエディター表示
-			isDisp_ = true;
+			CancelButtonPush();
 		}
 	}
+}
+
+void MapEditScene::CompButtonPush()
+{
+	//音楽停止
+	Audio::Stop(hAudio_Music_);
+	//ファイルに書き込み
+	Write();
+	pGP_->MapEditFinished();
+}
+
+void MapEditScene::TestButtonPush()
+{
+	//マップエディター非表示
+	isDisp_ = false;
+	Write();
+	testPS_->Instantiate<PlayScene>(this);
+	testPS_ = (PlayScene*)FindObject("PlayScene");
+}
+
+void MapEditScene::CancelButtonPush()
+{
+	testPS_->KillMe();
+	testPS_ = nullptr;
+	//マップエディター表示
+	isDisp_ = true;
 }
 
 void MapEditScene::ExpantionInit()
@@ -708,11 +722,11 @@ void MapEditScene::CheckCanTest()
 	{
 		for (int y = 0; y < mathVolume_.z; y++)
 		{
-			if (math_[x][y].mathType_ == MATH_START)
+			if (table_->GetMathType(XMFLOAT2(x, y)) == MATH_START)
 			{
 				isStart = true;
 			}
-			if (math_[x][y].mathType_ == MATH_GOAL)
+			if (table_->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
 			{
 				isGoal = true;
 			}
@@ -735,7 +749,7 @@ void MapEditScene::TogetogeRouteSet()
 	{
 		if (tgtgRouteMathDown_.x != -1)
 		{
-			tgtgRouteMathUp_ = XMFLOAT3((int)mousePos_.x / MATHSIZE, mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE), 0);
+			tgtgRouteMathUp_ = XMFLOAT3((int)selectMath_.x, selectMath_.y, 0);
 			//tgtgRouteMathUpがマスの範囲外だった時
 			if (tgtgRouteMathUp_.x < 0)
 			{
@@ -755,7 +769,6 @@ void MapEditScene::TogetogeRouteSet()
 			}
 
 			auto itr = tTgtgRoute_.begin();
-
 			while (itr != tTgtgRoute_.end())
 			{
 				if (itr->initPos_.x == tgtgRouteMathDown_.x &&
@@ -767,18 +780,27 @@ void MapEditScene::TogetogeRouteSet()
 			}
 			//とげとげルートの太さ
 			const int tgtgRouteThick = 5;
+			//1マスの大きさ
+			XMFLOAT3 mathSize = table_->GetMathTransform(XMFLOAT2(0, 0)).scale_;
 			//縦移動
 			if (abs(tgtgRouteMathUp_.x - tgtgRouteMathDown_.x) < abs(tgtgRouteMathUp_.y - tgtgRouteMathDown_.y))
 			{
+				//y方向の大きさ
+				float ysize = abs(tgtgRouteMathUp_.y - tgtgRouteMathDown_.y);
 
-				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x / tgtgRouteThick;
-				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y * abs(tgtgRouteMathUp_.y - tgtgRouteMathDown_.y);
+				itr->route_.scale_.x = mathSize.x / tgtgRouteThick;
+				itr->route_.scale_.y = mathSize.y * ysize;
 
-				itr->route_.position_ = math_[(int)tgtgRouteMathDown_.x][((int)tgtgRouteMathUp_.y + tgtgRouteMathDown_.y) / 2].mathPos_.position_;
+				//ルートを表示する位置
+				//y方向の表示する位置(マウスを押した位置と離した位置の中間の位置)
+				float ypos = ((int)tgtgRouteMathUp_.y + tgtgRouteMathDown_.y) / 2;
+				XMFLOAT3 routePos = table_->GetMathTransform(
+					XMFLOAT2((int)tgtgRouteMathDown_.x, ypos)).position_;
+				itr->route_.position_ = routePos;
 
 				if (((int)tgtgRouteMathUp_.y + (int)tgtgRouteMathDown_.y) % 2 != 0)
 				{
-					itr->route_.position_.y += (math_[0][0].mathPos_.scale_.y) / 2;
+					itr->route_.position_.y += (mathSize.y) / 2;
 				}
 				itr->destPos_.y = tgtgRouteMathUp_.y;
 				itr->destPos_.x = tgtgRouteMathDown_.x;
@@ -786,14 +808,22 @@ void MapEditScene::TogetogeRouteSet()
 			//横移動
 			else
 			{
-				itr->route_.scale_.x = math_[0][0].mathPos_.scale_.x * abs(tgtgRouteMathUp_.x - tgtgRouteMathDown_.x);
-				itr->route_.scale_.y = math_[0][0].mathPos_.scale_.y / tgtgRouteThick;
+				//x方向の大きさ
+				float xsize = abs(tgtgRouteMathUp_.x - tgtgRouteMathDown_.x);
 
-				itr->route_.position_ = math_[((int)tgtgRouteMathUp_.x + (int)tgtgRouteMathDown_.x) / 2][(int)tgtgRouteMathDown_.y].mathPos_.position_;
+				itr->route_.scale_.x = mathSize.x * xsize;
+				itr->route_.scale_.y = mathSize.y / tgtgRouteThick;
+
+				//ルートを表示する位置
+				//x方向の表示する位置(マウスを押した位置と離した位置の中間の位置)
+				float xpos = ((int)tgtgRouteMathUp_.x + tgtgRouteMathDown_.x) / 2;
+				XMFLOAT3 routePos = table_->GetMathTransform(
+					XMFLOAT2(xpos, (int)tgtgRouteMathDown_.y)).position_;
+				itr->route_.position_ = routePos;
 
 				if (((int)tgtgRouteMathUp_.x + (int)tgtgRouteMathDown_.x) % 2 != 0)
 				{
-					itr->route_.position_.x += (math_[0][0].mathPos_.scale_.x) / 2;
+					itr->route_.position_.x += (mathSize.x) / 2;
 				}
 				itr->destPos_.x = tgtgRouteMathUp_.x;
 				itr->destPos_.y = tgtgRouteMathDown_.y;

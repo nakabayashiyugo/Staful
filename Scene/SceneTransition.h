@@ -15,6 +15,13 @@ enum SCENESTATE
 	SCENE_TURNEND,
 };
 
+//一人プレイか二人プレイか
+enum GAMESTATE
+{
+	STATE_SOLO = 0,
+	STATE_TWO,
+};
+
 //プレイヤーの人数
 const int PLAYERNUMMAX = 2;
 
@@ -29,6 +36,9 @@ class SceneTransition
 	GamePlayer* gPlayer_[PLAYERNUMMAX];
 
 	SCENESTATE sceneState_, prevSceneState_;
+
+	//一人プレイか二人プレイか
+	GAMESTATE gameState_;
 
 	//ロゴの画像番号
 	int hPlayer1_, hPlayer2_;

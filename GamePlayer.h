@@ -15,6 +15,8 @@ class GamePlayer : public GameObject
 	int saveNum_;
 	//コースをクリアしたかどうか
 	bool isClear_;
+	//自分がEnemy(コンピュータ)かどうか
+	bool isEnemy_;
 
 	//シーン遷移担当
 	SceneTransition* pST_;
@@ -37,11 +39,20 @@ public:
 	//コース挑戦
 	void Challenge();
 
+	//プレイ中のプレイヤー表示
+	void PlayerNumDraw();
+
+	//結果書き込み
+	void ResultWrite(bool _isClear);
+
 	//マップエディットが終了したとき
 	void MapEditFinished();
 	//コース挑戦し終わったとき
 	void ChallengeFinished();
 
+
+//ゲッター・セッター類
+public:
 	//プレイ中のプレイヤーの画像番号のゲッター・セッター
 	int GetPlayerPictNum() { return hPlayer_; }
 	void SetPlayerPictNum(int _hPlayer) { hPlayer_ = _hPlayer; }
@@ -61,10 +72,9 @@ public:
 	//ターン数のゲッター
 	int GetTurnNum();
 
-	//プレイ中のプレイヤー表示
-	void PlayerNumDraw();
-
-	//結果書き込み
-	void ResultWrite(bool _isClear);
+	//Enemyかどうか
+	bool GetIsEnemy() { return isEnemy_; }
+	void SetIsEnemy(bool _isEnemy) { isEnemy_ = _isEnemy; }
+	
 };
 
