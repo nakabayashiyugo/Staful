@@ -41,6 +41,9 @@
     <Filter Include="Scene\EnemyMapEditScene\AI">
       <UniqueIdentifier>{a1d092a6-3b80-438c-bf17-0a6ddc3ea7d9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\MapEditScene\Math">
+      <UniqueIdentifier>{e2cfba9e-407f-4d2d-89e2-72f2b4cc1be5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Camera.cpp">
@@ -176,9 +179,6 @@
     <ClCompile Include="Scene\EnemyMapEditScene\EnemyMapEditScene.cpp">
       <Filter>Scene\EnemyMapEditScene</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\MapEditScene\Math\Math.cpp">
-      <Filter>Scene\MapEditScene</Filter>
-    </ClCompile>
     <ClCompile Include="Scene\EnemyMapEditScene\EnemyMapEditScene.cpp">
       <Filter>Scene\EnemyMapEditScene</Filter>
     </ClCompile>
@@ -187,6 +187,12 @@
     </ClCompile>
     <ClCompile Include="Scene\EnemyMapEditScene\AI\MapEditAIWork.cpp">
       <Filter>Scene\EnemyMapEditScene\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\MapEditScene\Math\Math.cpp">
+      <Filter>Scene\MapEditScene\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\MapEditScene\Math\MathManager.cpp">
+      <Filter>Scene\MapEditScene\Math</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -339,6 +345,12 @@
     </ClInclude>
     <ClInclude Include="Scene\EnemyMapEditScene\AI\MapEditAIWork.h">
       <Filter>Scene\EnemyMapEditScene\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\MapEditScene\Math\Math.h">
+      <Filter>Scene\MapEditScene\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\MapEditScene\Math\MathManager.h">
+      <Filter>Scene\MapEditScene\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
