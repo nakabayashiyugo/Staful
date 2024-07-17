@@ -39,6 +39,7 @@ struct TOGETOGEROUTE
 struct MATHVOLUME
 {
 	int x;
+	int y;
 	int z;
 };
 

@@ -6,8 +6,11 @@
 
 #include "AI/MapEditAIWork.h"
 #include "AI/EnemyMapEditAI.h"
+#include "AI/CreateCourse/Procedural.h"
 
 #include "../MapEditScene/Math/MathManager.h"
+
+
 
 EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 	:MapEditScene(_parent),
@@ -16,14 +19,31 @@ EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 	this->objectName_ = "EnemyMapEditScene";
 
 	AddNode();
-
 }
 
 void EnemyMapEditScene::Initialize()
 {
 	MapEditScene::Initialize();
-	//スタートマスとゴールマスがあるかどうか全マス探索
-	StartGoalCheck();
+
+	if (!StartGoalCheck())
+	{
+		//スタートマストゴールマス決める
+		startMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
+		do {
+			goalMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
+		} while (startMathPos_.x == goalMathPos_.x && startMathPos_.y == goalMathPos_.y);
+		SetMathType(MATH_START);
+		SetSelectMath(XMFLOAT3(startMathPos_.x, startMathPos_.y, 0));
+		ChangeSelectMath();
+		SetMathType(MATH_GOAL);
+		SetSelectMath(XMFLOAT3(goalMathPos_.x, goalMathPos_.y, 0));
+		ChangeSelectMath();
+	}
+
+
+	//Procedural呼んでマスを置く候補に値入れる
+	ProcExcute();
+
 	//マス配置の試行回数
 	const int num = 100;
 	for (int i = 0; i < num; i++)
@@ -42,35 +62,27 @@ void EnemyMapEditScene::Update()
 
 void EnemyMapEditScene::ChangeSelectMath()
 {
-	//選ばれてるマスの種類がスタートマスだったら
-	if (GetMathType() == MATH_START)
-	{
-		isPutStartMath_ = true;
-	}
-	else if (GetMathType() == MATH_GOAL)
-	{
-		isPutGoalMath_ = true;
-	}
 	MapEditScene::ChangeSelectMath();
 }
 
-void EnemyMapEditScene::StartGoalCheck()
+bool EnemyMapEditScene::StartGoalCheck()
 {
+	bool isPutStartMath = false, isPutGoalMath = false;
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < mathVolume_.z; y++)
+		for (int y = 0; y < mathVolume_.y; y++)
 		{
 			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_START)
 			{
-				isPutStartMath_ = true;
+				isPutStartMath = true;
 			}
 			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
 			{
-				isPutGoalMath_ = true;
+				isPutGoalMath = true;
 			}
-
 		}
 	}
+	return isPutStartMath * isPutGoalMath;
 }
 
 void EnemyMapEditScene::AddNode()
@@ -83,34 +95,71 @@ void EnemyMapEditScene::AddNode()
 
 void EnemyMapEditScene::SelectMathSet()
 {
-	XMFLOAT3 pos = XMFLOAT3((rand() % mathVolume_.x), (rand() % mathVolume_.z), 0);
-	if (GetTable()->GetMathType(XMFLOAT2(pos.x, pos.y)) == MATH_DELETE)
+	//SelectMath_に設定する位置
+	//candidatePositions_の先頭の値をselectMathにセットしてセットした先頭をeraseする
+	XMFLOAT2 pos = XMFLOAT2(0, 0);
+	if (!candidatePositions_.empty())
 	{
-		SetSelectMath(pos);
+		pos = *candidatePositions_.begin();
+		candidatePositions_.erase(candidatePositions_.begin());
+	}
+
+	if (GetTable()->GetMathType(pos) == MATH_DELETE)
+	{
+		SetSelectMath(XMFLOAT3(pos.x, pos.y, 0));
 	}
 }
 
 void EnemyMapEditScene::SelectMathType()
 {
 	MATHTYPE setType = MATH_DELETE;
-	//スタートマスが置かれていなかったら
-	if (!isPutStartMath_)
-	{
-		setType = MATH_START;
-	}
-	//ゴールマスが置かれていなかったら
-	else if (!isPutGoalMath_)
-	{
-		setType = MATH_GOAL;
-	}
-	//どっちも置かれていなかったら
-	else
-	{
-		//スタートとゴール以外のマスにする
-		do {
-			setType = (MATHTYPE)(rand() % MATH_MAX);
-		} while (setType == MATH_START || setType == MATH_GOAL);
-		
-	}
+
+	//スタートとゴール以外のマスにする
+	do {
+		setType = (MATHTYPE)(rand() % MATH_MAX);
+	} while (setType == MATH_START || setType == MATH_GOAL);
 	SetMathType(setType);
+}
+
+void EnemyMapEditScene::ProcExcute()
+{
+	//Proceduralに渡すそれぞれのマスの濃淡
+	std::vector<std::vector<int>> shades_;
+	shades_.resize(mathVolume_.x);
+	for (int x = 0; x < shades_.size(); x++)
+	{
+		shades_[x].resize(mathVolume_.y);
+		for (int y = 0; y < shades_[x].size(); y++)
+		{
+			//スタートマスからの距離とゴールマスからの距離を合わせた値を濃淡の基準にする
+			//濃淡はマスの左上から右下までの最大の距離からスタートマスからの距離を引いた値、
+			// ゴールマスからの距離を引いた値のふたつを足した値
+			float maxDir = GetDistance(XMFLOAT2(0, 0), XMFLOAT2(mathVolume_.x - 1, mathVolume_.y - 1));
+			float startToShade = maxDir - GetDistance(startMathPos_, XMFLOAT2(x, y));
+			float goalToShade = maxDir - GetDistance(goalMathPos_, XMFLOAT2(x, y));
+
+			shades_[x][y] = startToShade + goalToShade;
+		}
+	}
+
+	
+	//Procedural呼ぶ
+	Procedural* proc = new Procedural(shades_, mathVolume_.x, mathVolume_.z);
+	proc->Excute(100);
+	//Proceduralから受け取るSeed
+	std::vector<Seed*> seeds(proc->GetSeedListSize());
+	seeds = proc->GetSeedList();
+	candidatePositions_.resize(seeds.size());
+	for (int i = 0; i < seeds.size(); i++)
+	{
+		candidatePositions_[i] = seeds[i]->GetPos();
+	}
+
+}
+
+float EnemyMapEditScene::GetDistance(XMFLOAT2 _pos1, XMFLOAT2 _pos2)
+{
+	float ret = 0;
+	ret = abs(sqrt((_pos1.x - _pos2.x) * (_pos1.x - _pos2.x) + (_pos1.y - _pos2.y) * (_pos1.y - _pos2.y)));
+	return ret;
 }

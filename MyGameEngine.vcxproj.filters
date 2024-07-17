@@ -44,6 +44,9 @@
     <Filter Include="Scene\MapEditScene\Math">
       <UniqueIdentifier>{e2cfba9e-407f-4d2d-89e2-72f2b4cc1be5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene\EnemyMapEditScene\AI\CreateCourse">
+      <UniqueIdentifier>{00369a8e-e55c-40b9-be3a-149ccbc7c871}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Camera.cpp">
@@ -193,6 +196,9 @@
     </ClCompile>
     <ClCompile Include="Scene\MapEditScene\Math\MathManager.cpp">
       <Filter>Scene\MapEditScene\Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\EnemyMapEditScene\AI\CreateCourse\Procedural.cpp">
+      <Filter>Scene\EnemyMapEditScene\AI\CreateCourse</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -351,6 +357,9 @@
     </ClInclude>
     <ClInclude Include="Scene\MapEditScene\Math\MathManager.h">
       <Filter>Scene\MapEditScene\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\EnemyMapEditScene\AI\CreateCourse\Procedural.h">
+      <Filter>Scene\EnemyMapEditScene\AI\CreateCourse</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -11,7 +11,8 @@ MathInit::MathInit()
 	//ステージの最大サイズ
 	const int stageSizeMax = 18;
 	mathVolume_.x = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
-	mathVolume_.z = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
+	mathVolume_.y = (rand() % (stageSizeMax - stageSizeMin)) + stageSizeMin;
+	mathVolume_.z = mathVolume_.y;
 
 	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
 
