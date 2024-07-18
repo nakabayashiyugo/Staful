@@ -57,9 +57,9 @@ MapEditScene::MapEditScene(GameObject* parent)
 	}
 	MathVolumeRead();
 
-	Math_Resize(mathVolume_.x, mathVolume_.z, &math_);
-	Math_Resize(mathVolume_.x, mathVolume_.z, &math_origin_);
-	Math_Resize(mathVolume_.x, mathVolume_.z, &isConvRot_);
+	Math_Resize(mathVolume_.x, mathVolume_.y, &math_);
+	Math_Resize(mathVolume_.x, mathVolume_.y, &math_origin_);
+	Math_Resize(mathVolume_.x, mathVolume_.y, &isConvRot_);
 
 	pGP_ = (GamePlayer*)this->pParent_;
 	saveNum_ = pGP_->GetSaveNum();
@@ -83,12 +83,12 @@ MapEditScene::MapEditScene(GameObject* parent)
 	int costLimitFirst;
 	int costLimitPlus;
 
-	costLimitFirst = mathVolume_.x + mathVolume_.z;
+	costLimitFirst = mathVolume_.x + mathVolume_.y;
 	costLimitPlus = costLimitFirst / 2;
 	turnNum_ = pGP_->GetTurnNum();
 	int costLimit = costLimitFirst + (turnNum_ - 1) * costLimitPlus;
 
-	table_ = new MathManager(mathVolume_.x, mathVolume_.z, MATH_DELETE, costs_, costs_.size(), costLimit);
+	table_ = new MathManager(mathVolume_.x, mathVolume_.y, MATH_DELETE, costs_, costs_.size(), costLimit);
 
 	Read();
 }
@@ -134,7 +134,7 @@ void MapEditScene::Update()
 						//スタートマスがすでにあるかどうか探索
 						for (int x = 0; x < mathVolume_.x; x++)
 						{
-							for (int y = 0; y < mathVolume_.z; y++)
+							for (int y = 0; y < mathVolume_.y; y++)
 							{
 								if (table_->GetMathType(XMFLOAT2(x, y)) == MATH_START)
 								{
@@ -154,7 +154,7 @@ void MapEditScene::Update()
 						//ゴールマスがすでにあるかどうか探索
 						for (int x = 0; x < mathVolume_.x; x++)
 						{
-							for (int y = 0; y < mathVolume_.z; y++)
+							for (int y = 0; y < mathVolume_.y; y++)
 							{
 								if (table_->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
 								{
@@ -280,7 +280,7 @@ void MapEditScene::MousePosSet()
 	mousePos_.y = Input::GetMousePosition().y;
 
 	mousePos_.x -= ((table_->GetMathTransform(XMFLOAT2(0, 0)).position_.x + 1.0f) * Direct3D::bfr_scrWidth / 2) - MATHSIZE / 2;
-	mousePos_.y -= ((-(table_->GetMathTransform(XMFLOAT2(mathVolume_.x - 1, mathVolume_.z - 1)).position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
+	mousePos_.y -= ((-(table_->GetMathTransform(XMFLOAT2(mathVolume_.x - 1, mathVolume_.y - 1)).position_.y) + 1.0f) * Direct3D::bfr_scrHeight / 2) - MATHSIZE / 2;
 }
 
 void MapEditScene::CostDraw()
@@ -606,7 +606,7 @@ void MapEditScene::MathInit()
 
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < mathVolume_.z; y++)
+		for (int y = 0; y < mathVolume_.y; y++)
 		{
 			math_origin_[x][y] = math_[x][y];
 			XMFLOAT2 pos = XMFLOAT2(x, y);
@@ -619,7 +619,7 @@ void MapEditScene::MathInit()
 				((float)y / Direct3D::bfr_scrHeight) * MATHSIZE * 2);
 			//マスを置く位置
 			const XMFLOAT2 mathPos = XMFLOAT2(mathInitPos.x - ((float)mathVolume_.x / Direct3D::bfr_scrWidth) * MATHSIZE,
-				mathInitPos.y - ((float)mathVolume_.z / Direct3D::bfr_scrHeight) * MATHSIZE);
+				mathInitPos.y - ((float)mathVolume_.y / Direct3D::bfr_scrHeight) * MATHSIZE);
 
 			tMath.position_.x = mathSize.x + mathPos.x;
 			tMath.position_.y = mathSize.y + mathPos.y;
@@ -633,9 +633,9 @@ void MapEditScene::MathDraw()
 {
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < mathVolume_.z; y++)
+		for (int y = 0; y < mathVolume_.y; y++)
 		{
-			XMFLOAT2 drawPos = XMFLOAT2(x, mathVolume_.z - 1 - y);
+			XMFLOAT2 drawPos = XMFLOAT2(x, mathVolume_.y - 1 - y);
 			//コンベアの回転
 			if (isConvRot_[drawPos.x][drawPos.y])
 			{
@@ -653,7 +653,7 @@ void MapEditScene::MathDraw()
 				if ((int)tConv.rotate_.z % (int)rotVal == 0)
 				{
 					tConv.rotate_.z = (tConv.rotate_.z / rotVal) * rotVal;
-					isConvRot_[x][mathVolume_.z - 1 - y] = false;
+					isConvRot_[x][mathVolume_.y - 1 - y] = false;
 					Audio::Stop(hSE_ConvRot_);
 				}
 				table_->SetMathTransform(drawPos, tConv);
@@ -668,11 +668,11 @@ void MapEditScene::MathDraw()
 void MapEditScene::SelectMathSet()
 {
 	selectMath_.x = (int)(mousePos_.x / MATHSIZE);
-	selectMath_.y = mathVolume_.z - 1 - (int)(mousePos_.y / MATHSIZE);
+	selectMath_.y = mathVolume_.y - 1 - (int)(mousePos_.y / MATHSIZE);
 
 	//マウスの位置がマス目から出たら
 	if (selectMath_.x < 0 || selectMath_.x >= mathVolume_.x ||
-		selectMath_.y < 0 || selectMath_.y >= mathVolume_.z)
+		selectMath_.y < 0 || selectMath_.y >= mathVolume_.y)
 	{
 		selectMath_ = mathInitPos;
 	}
@@ -720,7 +720,7 @@ void MapEditScene::CheckCanTest()
 	bool isStart = false, isGoal = false;
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int y = 0; y < mathVolume_.z; y++)
+		for (int y = 0; y < mathVolume_.y; y++)
 		{
 			if (table_->GetMathType(XMFLOAT2(x, y)) == MATH_START)
 			{
@@ -765,7 +765,7 @@ void MapEditScene::TogetogeRouteSet()
 			}
 			else if (tgtgRouteMathUp_.y >= mathVolume_.x)
 			{
-				tgtgRouteMathUp_.y = mathVolume_.z - 1;
+				tgtgRouteMathUp_.y = mathVolume_.y - 1;
 			}
 
 			auto itr = tTgtgRoute_.begin();
@@ -878,7 +878,7 @@ void MapEditScene::Write()
 	//math_に値入れる
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int z = 0; z < mathVolume_.z; z++)
+		for (int z = 0; z < mathVolume_.y; z++)
 		{
 			math_[x][z].mathType_ = (MATHTYPE)table_->GetMathType(XMFLOAT2(x, z));
 			math_[x][z].mathPos_ = table_->GetMathTransform(XMFLOAT2(x, z));
@@ -893,7 +893,7 @@ void MapEditScene::Read()
 	//math_から値受け取る
 	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int z = 0; z < mathVolume_.z; z++)
+		for (int z = 0; z < mathVolume_.y; z++)
 		{
 			table_->SetMathType(XMFLOAT2(x, z), math_[x][z].mathType_);
 			table_->SetMathTransform(XMFLOAT2(x, z), math_[x][z].mathPos_);

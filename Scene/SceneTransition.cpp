@@ -19,6 +19,7 @@ SceneTransition::SceneTransition(GameObject* parent)
 	hPlayer1_(-1), hPlayer2_(-1),
 	gameState_(STATE_SOLO)
 {
+	GameStateRead();
 
 	hPlayer1_ = Image::Load("Assets\\Logo_Player1.png");
 	assert(hPlayer1_ >= 0);
@@ -38,7 +39,7 @@ SceneTransition::SceneTransition(GameObject* parent)
 	{
 	case STATE_SOLO:
 		//プレイヤー2をEnemy(コンピュータ)にする
-		gPlayer_[1]->SetIsEnemy(true);
+		gPlayer_[0]->SetIsEnemy(true);
 		break;
 	}
 }
@@ -92,4 +93,23 @@ void SceneTransition::CallChallenge(int _playerNum)
 {
 	playerNum_ = _playerNum;
 	gPlayer_[playerNum_]->Challenge();
+}
+
+void SceneTransition::GameStateRead()
+{
+	std::ifstream read;
+	//マス情報読み込み
+	std::string openfile = "SaveFile\\gameState";
+	read.open(openfile, std::ios::in);
+	if (!read) {
+		std::cout << "ファイルが開けません";
+		return;
+	}
+	int state = 0;
+	read.read((char*)&state, sizeof(state));
+
+	gameState_ = (GAMESTATE)state;
+
+	read.close();  //ファイルを閉じる
+
 }

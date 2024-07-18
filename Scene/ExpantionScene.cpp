@@ -56,6 +56,7 @@ void ExpantionScene::Initialize()
 	tExplan_[0].position_ = XMFLOAT3(0, 0, 0);
 
 	ButtonInit();
+	ExplanPositioning();
 }
 
 void ExpantionScene::Update()

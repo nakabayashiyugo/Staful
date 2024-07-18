@@ -125,22 +125,41 @@ HRESULT Direct3D::Initialize(int winW, int winH, HWND hWnd)
     pDevice_->CreateTexture2D(&descDepth, NULL, &pDepthStencil);
     pDevice_->CreateDepthStencilView(pDepthStencil, NULL, &pDepthStencilView);
 
+    //深度テストを行う深度ステンシルステートの作成
+    {
+        //デフォルト
+        D3D11_DEPTH_STENCIL_DESC desc = {};
+        desc.DepthEnable = true;
+        desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+        desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+        desc.StencilEnable = true;
+        pDevice_->CreateDepthStencilState(&desc, &pDepthStencilState[BLEND_DEFAULT]);
+        pContext_->OMSetDepthStencilState(pDepthStencilState[BLEND_DEFAULT], 0);
+
+        //加算合成用（書き込みなし）
+        desc.StencilEnable = false;
+        pDevice_->CreateDepthStencilState(&desc, &pDepthStencilState[BLEND_ADD]);
+    }
+
     //ブレンドステート
     {
+        //通常
         D3D11_BLEND_DESC BlendDesc;
         ZeroMemory(&BlendDesc, sizeof(BlendDesc));
         BlendDesc.AlphaToCoverageEnable = FALSE;
         BlendDesc.IndependentBlendEnable = FALSE;
-        BlendDesc.RenderTarget[0].BlendEnable = TRUE;//半透明使うかどうか
-        BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;//今描画しようとしているもの
-        BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;//すでに描画されているもの
+        BlendDesc.RenderTarget[0].BlendEnable = TRUE;
+
+        BlendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+        BlendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+
         BlendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
         BlendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
         BlendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
         BlendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
         BlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
         pDevice_->CreateBlendState(&BlendDesc, &pBlendState[BLEND_DEFAULT]);
-        float blendFactor[4] = { D3D11_BLEND_ZERO , D3D11_BLEND_ZERO , D3D11_BLEND_ZERO ,D3D11_BLEND_ZERO };
+        float blendFactor[4] = { D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO, D3D11_BLEND_ZERO };
         pContext_->OMSetBlendState(pBlendState[BLEND_DEFAULT], blendFactor, 0xffffffff);
 
         //加算合成（重なるほど光って見える効果）
@@ -450,4 +469,21 @@ HRESULT Direct3D::InitShaderBillBoard()
     pContext_->RSSetState(shaderBundle[SHADER_BILLBOARD].pRasterizerState_);		//ラスタライザー
 
     return S_OK;
+}
+
+//Zバッファへの書き込みON/OFF
+void Direct3D::SetDepthBafferWriteEnable(bool isWrite)
+{
+    //ON
+    if (isWrite)
+    {
+        //Zバッファ（デプスステンシルを指定する）
+        pContext_->OMSetRenderTargets(1, &pRenderTargetView_, pDepthStencilView);
+    }
+
+    //OFF
+    else
+    {
+        pContext_->OMSetRenderTargets(1, &pRenderTargetView_, nullptr);
+    }
 }

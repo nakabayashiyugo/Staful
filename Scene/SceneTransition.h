@@ -57,6 +57,15 @@ public:
 	//開放
 	void Release() override;
 
+	//GamePlayerの関数を呼び出す関数
+	//引数：プレイヤー番号(0からスタート)
+	void CallMapEdit(int _playerNum);
+	void CallChallenge(int _playerNum);
+
+	//ゲームステートの読み込み
+	void GameStateRead();
+
+
 	int GetSceneState() { return (int)sceneState_; };
 	void SetSceneState(int _sceneState) { sceneState_ = (SCENESTATE)_sceneState; };
 
@@ -66,9 +75,4 @@ public:
 	int GetTurnNum() { return turnNum_; };
 
 	void SetNextScene() { sceneState_ = (SCENESTATE)((int)sceneState_ + 1); }
-
-	//GamePlayerの関数を呼び出す関数
-	//引数：プレイヤー番号(0からスタート)
-	void CallMapEdit(int _playerNum);
-	void CallChallenge(int _playerNum);
 };

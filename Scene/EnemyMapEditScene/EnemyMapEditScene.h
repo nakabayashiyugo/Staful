@@ -5,6 +5,9 @@ class RootNode;
 
 class EnemyMapEditScene : public MapEditScene
 {
+	//画像番号
+	int hPict_;
+
 	//スタートマス、ゴールマスの位置
 	XMFLOAT2 startMathPos_, goalMathPos_;
 public:
@@ -12,6 +15,8 @@ public:
 
 	void Initialize() override;
 	void Update() override;
+	void Draw() override;
+	void Release() override;
 
 	void ChangeSelectMath() override;
 

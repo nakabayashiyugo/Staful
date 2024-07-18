@@ -195,6 +195,10 @@ void Sprite::PassDataToCB(Transform& transform, RECT rect, float alpha, XMFLOAT3
 	Direct3D::pContext_->Unmap(pConstantBuffer_, 0);	//再開
 
 	Direct3D::pContext_->DrawIndexed(indexNum_, 0, 0);
+
+	Direct3D::SetShader(Direct3D::SHADER_3D);
+
+	Direct3D::SetDepthBafferWriteEnable(true);
 }
 
 void Sprite::SetBufferToPipeline()
@@ -213,5 +217,5 @@ void Sprite::SetBufferToPipeline()
 	Direct3D::pContext_->VSSetConstantBuffers(0, 1, &pConstantBuffer_);	//頂点シェーダー用	
 	Direct3D::pContext_->PSSetConstantBuffers(0, 1, &pConstantBuffer_);	//ピクセルシェーダー用
 
-	
+	Direct3D::SetDepthBafferWriteEnable(false);
 }

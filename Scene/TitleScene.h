@@ -7,13 +7,13 @@ class BillBoard;
 class TitleScene
 	:public GameObject
 {
-	int hStartButton_, hExitButton_;
+	int hSoloPlayButton_, hTwoPlayButton_;
 	int hStaful_;
-	Transform tStartButton_;
+	Transform tSoloPlayButton_, tTwoPlayButton_;
 	Transform tStaful_;
 
 	//ボタンのハンドル
-	int startBtnHandle_;
+	int soloPlayHandle_, twoPlayHandle_;
 	
 public:
 	TitleScene(GameObject* parent);
@@ -29,4 +29,6 @@ public:
 
 	//開放
 	void Release() override;
+
+	void GameStateWrite(int _state);
 };

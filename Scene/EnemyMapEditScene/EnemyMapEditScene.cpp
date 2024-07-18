@@ -1,6 +1,7 @@
 #include "EnemyMapEditScene.h"
 
 #include "../../Engine/Input.h"
+#include "../../Engine/Image.h"
 
 #include "../../Engine/RootNode.h"
 
@@ -14,6 +15,7 @@
 
 EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 	:MapEditScene(_parent), seedNum_(0),
+	hPict_(-1),
 	rootNode_(new RootNode(this, nullptr))
 {
 	this->objectName_ = "EnemyMapEditScene";
@@ -23,6 +25,10 @@ EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 
 void EnemyMapEditScene::Initialize()
 {
+	//マップ制作中に写す画像のロード
+	hPict_ = Image::Load("Assets\\EnemyMapEdit.png");
+	assert(hPict_ >= 0);
+
 	MapEditScene::Initialize();
 
 	//スタートマスとゴールマス設定
@@ -48,6 +54,24 @@ void EnemyMapEditScene::Update()
 	{
 		CompButtonPush();
 	}
+}
+
+void EnemyMapEditScene::Draw()
+{
+	MapEditScene::Draw();
+	//マップ製作中に写す画像のサイズ
+	XMFLOAT3 texSize = Image::GetTextureSize(hPict_);
+	//マップ製作中に写す画像のトランスフォーム
+	Transform tPict;
+	tPict.scale_ = XMFLOAT3(Direct3D::bfr_scrWidth / texSize.x,
+		Direct3D::bfr_scrWidth / texSize.x, 1);
+	Image::SetTransform(hPict_, tPict);
+	Image::Draw(hPict_);	
+}
+
+void EnemyMapEditScene::Release()
+{
+	MapEditScene::Release();
 }
 
 void EnemyMapEditScene::ChangeSelectMath()
