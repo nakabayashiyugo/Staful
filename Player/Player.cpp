@@ -55,6 +55,8 @@ const float decTime = 5.0f;
 const float confAnimTime = 2;
 //同時押しの許可フレーム
 const int simulPressFrame = 5;
+//混乱が解ける確率
+const float confCancelProbability = 0.1f;
 
 Player::Player(GameObject* parent)
 	: GameObject(parent, "Player"),
@@ -689,6 +691,24 @@ void Player::ReturnToStartMath()
 	{
 		isReturn_ = false;
 		stageState_ = STATE_START;
+	}
+}
+
+void Player::ConfCancel()
+{
+	//混乱解除
+	// 最小値0
+	// 最大値100の乱数を取得し、
+	// 最小値～最大値に混乱解除の確立を掛けた値内の
+	//数値が出たら混乱解除する
+	const int cancelMin = 0;
+	const int cancelMax = 100;
+	const int cancelProb = cancelMax * confCancelProbability;
+	int random = (rand() % cancelMax - cancelMin) + cancelMin;
+	if (random >= cancelMin && random <= cancelProb)
+	{
+		//移動方向戻す
+		PossiMoveDirInit();
 	}
 }
 

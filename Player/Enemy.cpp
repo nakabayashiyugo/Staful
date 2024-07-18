@@ -20,6 +20,9 @@ const int startRisk = 1;
 const int goalRisk = 1;
 const int floorRisk = 1;
 
+//アイドルステートの時の待つフレームの最大値
+const int idleFrameMax = 30;
+
 Enemy::Enemy(GameObject* _parent)
 	:Player(_parent),
 	//AIについて
@@ -63,7 +66,18 @@ Enemy::~Enemy()
 
 void Enemy::PlayerOperation()
 {
-	rootNode_->Run();
+	//何フレーム待つか
+	static int idleFrame = (rand() % idleFrameMax);
+	static int nowIdleFrame = 0;
+	nowIdleFrame++;
+	if (nowIdleFrame >= idleFrame)
+	{
+		rootNode_->Run();
+	}
+	//待つフレーム新しくする
+	idleFrame = (rand() % idleFrameMax);
+	nowIdleFrame = 0;
+	
 }
 
 void Enemy::OnCollision(GameObject* pTarget)

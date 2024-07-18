@@ -17,12 +17,16 @@ public:
 
 	//スタートマスとゴールマス探索
 	bool StartGoalCheck();
+	//スタートマスとゴールマスセット
+	void StartGoalSet();
 //AI
 private:
 	RootNode* rootNode_;
 
 	//マスを置く候補(優先順位高い順)
 	std::vector<XMFLOAT2> candidatePositions_;
+	//種をばらまく数
+	int seedNum_;
 public:
 	void AddNode();
 

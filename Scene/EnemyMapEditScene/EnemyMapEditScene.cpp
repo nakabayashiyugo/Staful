@@ -13,7 +13,7 @@
 
 
 EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
-	:MapEditScene(_parent),
+	:MapEditScene(_parent), seedNum_(0),
 	rootNode_(new RootNode(this, nullptr))
 {
 	this->objectName_ = "EnemyMapEditScene";
@@ -25,27 +25,17 @@ void EnemyMapEditScene::Initialize()
 {
 	MapEditScene::Initialize();
 
-	if (!StartGoalCheck())
-	{
-		//スタートマストゴールマス決める
-		startMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
-		do {
-			goalMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
-		} while (startMathPos_.x == goalMathPos_.x && startMathPos_.y == goalMathPos_.y);
-		SetMathType(MATH_START);
-		SetSelectMath(XMFLOAT3(startMathPos_.x, startMathPos_.y, 0));
-		ChangeSelectMath();
-		SetMathType(MATH_GOAL);
-		SetSelectMath(XMFLOAT3(goalMathPos_.x, goalMathPos_.y, 0));
-		ChangeSelectMath();
-	}
+	//スタートマスとゴールマス設定
+	StartGoalSet();
 
+	//バラまく種の数設定
+	seedNum_ = GetTable()->GetCostLimit() - GetTable()->GetStageCost();
 
 	//Procedural呼んでマスを置く候補に値入れる
 	ProcExcute();
-
-	//マス配置の試行回数
-	const int num = 100;
+	
+	//マスを置く試行回数
+	const int num = candidatePositions_.size();
 	for (int i = 0; i < num; i++)
 	{
 		rootNode_->Run();
@@ -85,6 +75,41 @@ bool EnemyMapEditScene::StartGoalCheck()
 	return isPutStartMath * isPutGoalMath;
 }
 
+void EnemyMapEditScene::StartGoalSet()
+{
+	if (!StartGoalCheck())
+	{
+		//スタートマストゴールマス決める
+		startMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
+		do {
+			goalMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
+		} while (startMathPos_.x == goalMathPos_.x && startMathPos_.y == goalMathPos_.y);
+		SetMathType(MATH_START);
+		SetSelectMath(XMFLOAT3(startMathPos_.x, startMathPos_.y, 0));
+		ChangeSelectMath();
+		SetMathType(MATH_GOAL);
+		SetSelectMath(XMFLOAT3(goalMathPos_.x, goalMathPos_.y, 0));
+		ChangeSelectMath();
+	}
+	else
+	{
+		for (int x = 0; x < mathVolume_.x; x++)
+		{
+			for (int y = 0; y < mathVolume_.y; y++)
+			{
+				if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_START)
+				{
+					startMathPos_ = XMFLOAT2(x, y);
+				}
+				if (GetTable()->GetMathType(XMFLOAT2(x, y)) == MATH_GOAL)
+				{
+					goalMathPos_ = XMFLOAT2(x, y);
+				}
+			}
+		}
+	}
+}
+
 void EnemyMapEditScene::AddNode()
 {
 	Node* selectType = new EnemyMapEditAI(rootNode_, new MapEdit_MathTypeSelect());
@@ -97,7 +122,8 @@ void EnemyMapEditScene::SelectMathSet()
 {
 	//SelectMath_に設定する位置
 	//candidatePositions_の先頭の値をselectMathにセットしてセットした先頭をeraseする
-	XMFLOAT2 pos = XMFLOAT2(0, 0);
+	XMFLOAT2 pos = XMFLOAT2(-1, -1);
+	SetSelectMath(XMFLOAT3(pos.x, pos.y, 0));
 	if (!candidatePositions_.empty())
 	{
 		pos = *candidatePositions_.begin();
@@ -145,7 +171,7 @@ void EnemyMapEditScene::ProcExcute()
 	
 	//Procedural呼ぶ
 	Procedural* proc = new Procedural(shades_, mathVolume_.x, mathVolume_.z);
-	proc->Excute(100);
+	proc->Excute(seedNum_);
 	//Proceduralから受け取るSeed
 	std::vector<Seed*> seeds(proc->GetSeedListSize());
 	seeds = proc->GetSeedList();

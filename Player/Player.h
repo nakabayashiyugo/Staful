@@ -176,6 +176,8 @@ public:
 	void DeadUpdate();
 	//スタートマスに戻す
 	void ReturnToStartMath();
+	//混乱解除
+	void ConfCancel();
 
 	//移動が終了したときの処理
 	void MoveFinished();

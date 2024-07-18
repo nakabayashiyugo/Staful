@@ -40,6 +40,11 @@ void Procedural::SeedScatter(int _seedNum)
 		Seed* seed = new Seed(XMFLOAT2(randX, randY));	//インスタンス作る
 		seed->SetShade(mathShades_[randX][randY]);		//濃淡入れる
 		seedList_.push_back(seed);						//リストに入れる
+		//リストのサイズがマスの数以上になったら繰り返し抜ける
+		if (seedList_.size() >= (mathShades_.size() * mathShades_[0].size()))
+		{
+			break;
+		}
 	}
 	SeedListSort();
 }

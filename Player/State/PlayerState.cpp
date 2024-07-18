@@ -12,6 +12,7 @@ PlayerIdleState::PlayerIdleState(StateManager* _pStateManager)
 
 void PlayerIdleState::EnterState()
 {
+	pPlayer_->ConfCancel();
 }
 
 void PlayerIdleState::UpdateState()
