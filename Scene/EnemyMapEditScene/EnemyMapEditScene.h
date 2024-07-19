@@ -2,11 +2,11 @@
 #include "../MapEditScene/MapEditScene.h"
 
 class RootNode;
+class EyeCatching;
 
 class EnemyMapEditScene : public MapEditScene
 {
-	//画像番号
-	int hPict_;
+	EyeCatching* eyeCatch_;
 
 	//スタートマス、ゴールマスの位置
 	XMFLOAT2 startMathPos_, goalMathPos_;
@@ -17,6 +17,8 @@ public:
 	void Update() override;
 	void Draw() override;
 	void Release() override;
+
+	void MathDraw() override;
 
 	void ChangeSelectMath() override;
 

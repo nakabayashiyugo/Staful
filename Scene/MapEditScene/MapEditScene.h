@@ -10,6 +10,7 @@ class PlayScene;
 class MapEditScene
 	:public GameObject, public StageOrigin
 {
+protected:
 	int hPict_[MATH_MAX];
 	
 	int hTgtgRoute_;
@@ -66,7 +67,7 @@ public:
 	//マスの初期化
 	void MathInit();
 	//マスの表示
-	void MathDraw();
+	virtual void MathDraw();
 
 	//カーソルが置かれてるマスの位置の値いれる
 	virtual void SelectMathSet();

@@ -3,6 +3,8 @@
 #include <DirectXMath.h>
 #include <vector>
 
+#include "Image.h"
+
 //変数
 namespace Direct3D
 {
@@ -210,6 +212,8 @@ void Direct3D::BeginDraw()
 //描画終了
 void Direct3D::EndDraw()
 {
+    Image::FrontHandlesDraw();
+
     //スワップ（バックバッファを表に表示する）
     pSwapChain_->Present(0, 0);
 }

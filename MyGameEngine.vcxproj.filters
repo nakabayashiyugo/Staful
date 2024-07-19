@@ -200,6 +200,9 @@
     <ClCompile Include="Scene\EnemyMapEditScene\AI\CreateCourse\Procedural.cpp">
       <Filter>Scene\EnemyMapEditScene\AI\CreateCourse</Filter>
     </ClCompile>
+    <ClCompile Include="Scene\EnemyMapEditScene\EyeCatching.cpp">
+      <Filter>Scene\EnemyMapEditScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shader\Simple2D.hlsl">
@@ -360,6 +363,9 @@
     </ClInclude>
     <ClInclude Include="Scene\EnemyMapEditScene\AI\CreateCourse\Procedural.h">
       <Filter>Scene\EnemyMapEditScene\AI\CreateCourse</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\EnemyMapEditScene\EyeCatching.h">
+      <Filter>Scene\EnemyMapEditScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

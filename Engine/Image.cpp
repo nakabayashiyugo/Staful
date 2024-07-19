@@ -24,6 +24,9 @@ namespace Image
 
 	//モデルのポインタを入れておくポインタ
 	std::vector<ImageData*> imageList;
+	//前(最後)に描写する画像のハンドル達
+	//先頭から描写するので後に登録した方が前に来る
+	std::vector<int> frontDrawHandles;
 }
 
 void Image::SetTransform(int hImage, Transform transform)
@@ -108,6 +111,14 @@ void Image::AllRelease()
 	imageList.clear();
 }
 
+void Image::FrontHandlesDraw()
+{
+	for (int i = 0; i < frontDrawHandles.size(); i++)
+	{
+		Draw(frontDrawHandles[i]);
+	}
+}
+
 void Image::SetRect(int hImage, int x, int y, int width, int height)
 {
 	if (hImage < 0 || hImage >= imageList.size())
@@ -152,6 +163,11 @@ void Image::SetColor(int hImage, XMFLOAT3 color)
 		return;
 	}
 	imageList[hImage]->color_ = color;
+}
+
+void Image::SetFrontDrawHandle(int hImage)
+{
+	frontDrawHandles.push_back(hImage);
 }
 
 XMFLOAT3 Image::GetTextureSize(int hImage)

@@ -199,6 +199,7 @@
     <ClCompile Include="Scene\EnemyMapEditScene\AI\EnemyMapEditAI.cpp" />
     <ClCompile Include="Scene\EnemyMapEditScene\AI\MapEditAIWork.cpp" />
     <ClCompile Include="Scene\EnemyMapEditScene\EnemyMapEditScene.cpp" />
+    <ClCompile Include="Scene\EnemyMapEditScene\EyeCatching.cpp" />
     <ClCompile Include="Scene\ExpantionScene.cpp" />
     <ClCompile Include="Scene\MapEditScene\MapEditScene.cpp" />
     <ClCompile Include="Scene\MapEditScene\Math\Math.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="Scene\EnemyMapEditScene\AI\EnemyMapEditAI.h" />
     <ClInclude Include="Scene\EnemyMapEditScene\AI\MapEditAIWork.h" />
     <ClInclude Include="Scene\EnemyMapEditScene\EnemyMapEditScene.h" />
+    <ClInclude Include="Scene\EnemyMapEditScene\EyeCatching.h" />
     <ClInclude Include="Scene\ExpantionScene.h" />
     <ClInclude Include="Scene\MapEditScene\MapEditScene.h" />
     <ClInclude Include="Scene\MapEditScene\Math\Math.h" />
