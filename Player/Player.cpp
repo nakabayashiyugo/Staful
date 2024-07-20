@@ -208,12 +208,12 @@ void Player::Draw()
 	//âeï\é¶
 	ShadowDraw();
 
-	Image::SetTransform(hGage_, tGage_);
-	Image::SetTransform(hFrame_, tFrame_);
 	Image::SetTransform(hFrameOutline_, tFrameOutline_);
-	Image::Draw(hGage_);
-	Image::Draw(hFrame_);
+	Image::SetTransform(hFrame_, tFrame_);
+	Image::SetTransform(hGage_, tGage_);
 	Image::Draw(hFrameOutline_);
+	Image::Draw(hFrame_);
+	Image::Draw(hGage_);
 
 	//éûä‘ÉQÅ[ÉWÇ∆ÇÃãóó£
 	const XMFLOAT3 tDis = XMFLOAT3(-0.1f, 0.1f, 0);

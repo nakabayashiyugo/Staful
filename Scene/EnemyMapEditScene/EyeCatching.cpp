@@ -19,19 +19,20 @@ EyeCatching::EyeCatching(GameObject* _parent)
 
 void EyeCatching::Initialize()
 {
-	makingTimer_ = new Timer(makingDrawChangeTime);
+	EnemyMapEditMakingInit();
+	makingPointTimer_ = new Timer(makingDrawChangeTime);
 }
 
 void EyeCatching::Update()
 {
-	makingTimer_->Update();
+	makingPointTimer_->Update();
 }
 
 void EyeCatching::Draw()
 {
-	if (makingTimer_->isTimeUpped())
+	if (makingPointTimer_->isTimeUpped())
 	{
-		makingTimer_->TimeReset();
+		makingPointTimer_->TimeReset();
 		makingPointNum_++;
 		if (makingPointNum_ > makingPointNumMax)
 		{

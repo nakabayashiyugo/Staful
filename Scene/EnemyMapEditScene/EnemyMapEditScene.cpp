@@ -15,21 +15,33 @@
 
 #include "../MapEditScene/Math/MathManager.h"
 
+//「マップ制作中」を表示する時間
+const float makingDrawTime = 3.0f;
+
 EnemyMapEditScene::EnemyMapEditScene(GameObject* _parent)
 	:MapEditScene(_parent),
 	seedNum_(0),
-	rootNode_(new RootNode(this, nullptr))
+	rootNode_(new RootNode(this, nullptr)),
+	eyeCatch_(nullptr)
 {
 	this->objectName_ = "EnemyMapEditScene";
 
 	AddNode();
+}
 
-	eyeCatch_ = (EyeCatching*)Instantiate<EyeCatching>(this);
+EnemyMapEditScene::~EnemyMapEditScene()
+{
+	delete eyeCatch_;
+	rootNode_->ChildRelease();
+	delete rootNode_;
+	delete makingTimer_;
 }
 
 void EnemyMapEditScene::Initialize()
 {
 	MapEditScene::Initialize();
+
+	eyeCatch_ = (EyeCatching*)Instantiate<EyeCatching>(this);
 
 	//スタートマスとゴールマス設定
 	StartGoalSet();
@@ -46,11 +58,14 @@ void EnemyMapEditScene::Initialize()
 	{
 		rootNode_->Run();
 	}
+
+	makingTimer_ = new Timer(makingDrawTime);
 }
 
 void EnemyMapEditScene::Update()
 {
-	if (Input::IsKeyDown(DIK_SPACE))
+	makingTimer_->Update();
+	if (makingTimer_->isTimeUpped())
 	{
 		CompButtonPush();
 	}

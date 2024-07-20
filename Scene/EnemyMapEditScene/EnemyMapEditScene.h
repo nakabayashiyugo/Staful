@@ -3,15 +3,18 @@
 
 class RootNode;
 class EyeCatching;
+class Timer;
 
 class EnemyMapEditScene : public MapEditScene
 {
 	EyeCatching* eyeCatch_;
+	Timer* makingTimer_;
 
 	//スタートマス、ゴールマスの位置
 	XMFLOAT2 startMathPos_, goalMathPos_;
 public:
 	EnemyMapEditScene(GameObject* _parent);
+	~EnemyMapEditScene();
 
 	void Initialize() override;
 	void Update() override;

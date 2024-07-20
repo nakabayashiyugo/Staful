@@ -7,6 +7,11 @@ Node::Node(Node* _parent, Work* _work)
 	if(parent_ != nullptr)	parent_->ChildPushBack(this);
 }
 
+Node::~Node()
+{
+	delete myWork_;
+}
+
 
 NodeState Node:: Run()
 {
@@ -48,6 +53,15 @@ NodeState Node::ChildExcute()
 void Node::ChildPushBack(Node* _node)
 {
 	children_.push_back(_node);
+}
+
+void Node::ChildRelease()
+{
+	for (int i = 0; i < children_.size(); i++)
+	{
+		children_[i]->ChildRelease();
+	}
+	delete this;
 }
 
 Node* Node::GetRootNode()

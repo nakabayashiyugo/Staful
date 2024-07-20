@@ -12,7 +12,7 @@ class EyeCatching : public GameObject
 	//マップ制作中の「.」の数
 	int makingPointNum_;
 
-	Timer* makingTimer_;
+	Timer* makingPointTimer_;
 public:
 	EyeCatching(GameObject* _parent);
 

@@ -244,6 +244,12 @@ void MapEditScene::Draw()
 	IsDisplay(isDisp_);
 	if(isDisp_)
 	{
+		//マス表示
+		MathDraw();
+		//マスの説明表示
+		ExpantionDraw();
+		//コスト表示
+		CostDraw();
 		//とげとげルート表示
 		auto itr = tTgtgRoute_.begin();
 		while (itr != tTgtgRoute_.end())
@@ -256,14 +262,6 @@ void MapEditScene::Draw()
 			}
 			itr++;
 		}
-		//コスト表示
-		CostDraw();
-
-		//マスの説明表示
-		ExpantionDraw();
-		//マス表示
-		MathDraw();
-
 		//プレイヤー番号表示
 		pGP_->PlayerNumDraw();
 	}
@@ -763,7 +761,7 @@ void MapEditScene::TogetogeRouteSet()
 			{
 				tgtgRouteMathUp_.y = 0;
 			}
-			else if (tgtgRouteMathUp_.y >= mathVolume_.x)
+			else if (tgtgRouteMathUp_.y >= mathVolume_.y)
 			{
 				tgtgRouteMathUp_.y = mathVolume_.y - 1;
 			}

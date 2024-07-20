@@ -39,7 +39,7 @@ SceneTransition::SceneTransition(GameObject* parent)
 	{
 	case STATE_SOLO:
 		//プレイヤー2をEnemy(コンピュータ)にする
-		gPlayer_[0]->SetIsEnemy(true);
+		gPlayer_[1]->SetIsEnemy(true);
 		break;
 	}
 }

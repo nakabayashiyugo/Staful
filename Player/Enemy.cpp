@@ -90,10 +90,10 @@ void Enemy::OnCollision(GameObject* pTarget)
 
 void Enemy::AddNode()
 {
-	Node* selectDir = new Node_SetMoveDir(rootNode_, new PlayerMoveDirSelect());
+	Node* selectDir = new Node_Enemy(rootNode_, new PlayerMoveDirSelect());
 	Node* selectState = new Node_Select_State(selectDir, new Select_State());
-	Node* walk = new Node_Action_StateWalk(selectState, new Action_Walk());
-	Node* jump = new Node_Action_StateJump(selectState, new Action_Jump());
+	Node* walk = new Node_Enemy(selectState, new Action_Walk());
+	Node* jump = new Node_Enemy(selectState, new Action_Jump());
 }
 
 void Enemy::SelectMoveDir()
@@ -114,7 +114,7 @@ void Enemy::SelectMoveDir()
 	path = astar->GetRoute();
 
 	XMFLOAT2 destPos;
-	if (path.size() > 1)	destPos = path[1];
+	if (!path.empty())	destPos = *(path.begin() + 1);
 	else
 	{
 		return;
