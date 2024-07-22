@@ -12,6 +12,7 @@
 #include "../Stage.h"
 #include "../Button.h"
 #include "../GamePlayer.h"
+#include "../ButtonManager.h"
 
 #include "../Player/Player.h"
 #include "../Player/Enemy.h"
@@ -39,24 +40,46 @@ PlayScene::PlayScene(GameObject* parent)
 	Read();
 }
 
+PlayScene::~PlayScene()
+{
+	ButtonManager::RemoveButton(hCancel_);
+}
+
 void PlayScene::Initialize()
 {
-	pStage_->Instantiate<Stage>(this);
-	pStage_ = (Stage*)FindObject("Stage");
+	pStage_ = (Stage*)Instantiate<Stage>(this);
 	//自分がEnemyだったら
 	if (pGP_->GetIsEnemy())
 	{
-		pPlayer_->Instantiate<Enemy>(this);
-		pPlayer_ = (Enemy*)FindObject("Enemy");
+		pPlayer_ = (Enemy*)Instantiate<Enemy>(this);
 	}
 	else
 	{
-		pPlayer_->Instantiate<Player>(this);
-		pPlayer_ = (Player*)FindObject("Player");
+		pPlayer_ = (Player*)Instantiate<Player>(this);
 	}
-	
-	cancelButton_->Instantiate<Button>(this);
-	cancelButton_ = (Button*)FindObject("Button");
+
+	//テストプレイの場合
+	if (pParent_->GetObjectName() == "MapEditScene")
+	{
+		//中止ボタン
+		std::string buttonCancel = "Button_Cancel.png";
+		//中止ボタンのロード
+		std::string folderName = "Assets\\Button\\";
+		buttonCancel = folderName + buttonCancel;
+		int cancelNum = Image::Load(buttonCancel);
+		assert(cancelNum >= 0);
+
+		//中止ボタンのトランスフォーム
+		hCancel_ = ButtonManager::AddButton("cancelButton", (GameObject*)this);
+		cancelButton_ = ButtonManager::GetButton(hCancel_);
+		const XMFLOAT3 cbPos = XMFLOAT3(-0.8f, -0.7f, 0);
+		const XMFLOAT3 cbScale = XMFLOAT3(0.3f, 0.3f, 1);
+		Transform ccbTransform;
+		ccbTransform.position_ = cbPos;
+		ccbTransform.scale_ = cbScale;
+		cancelButton_->SetTransform(ccbTransform);
+		cancelButton_->SetPictNum(cancelNum);
+	}
 }
 
 void PlayScene::Update()
@@ -77,6 +100,12 @@ void PlayScene::Update()
 			//マップエディター表示
 			pMES->SetIsDisp(true);
 			KillMe();
+		}
+
+		//中止ボタンが押されたら
+		if (cancelButton_->OnClick())
+		{
+			pMES->CancelButtonPush();
 		}
 	}
 	else

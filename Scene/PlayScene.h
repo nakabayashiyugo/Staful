@@ -20,6 +20,7 @@ class PlayScene
 	//player‚ÌŠî€‚Ì‚‚³
 	int playerHeight_;
 
+	int hCancel_;
 	Button* cancelButton_;
 
 	GamePlayer* pGP_;
@@ -28,6 +29,7 @@ class PlayScene
 	int hAudio_Music_;
 public:
 	PlayScene(GameObject* parent);
+	~PlayScene();
 
 	//‰Šú‰»
 	void Initialize() override;

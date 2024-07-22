@@ -134,11 +134,11 @@ void StageOrigin::Read()
 	}
 	//  ファイルが開けなかったときの対策
 	//ファイルの最後まで続ける
-	for (int i = 0; i < mathVolume_.x; i++)
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-		for (int j = 0; j < mathVolume_.z; j++)
+		for (int z = 0; z < mathVolume_.z; z++)
 		{
-			read.read((char*)&math_[i][j], sizeof(math_[i][j]));
+			read.read((char*)&math_[x][z], sizeof(math_[x][z]));
 			//文字列ではないデータを読みこむ
 		}
 	}

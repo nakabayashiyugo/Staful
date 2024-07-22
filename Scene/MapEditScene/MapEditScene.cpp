@@ -351,9 +351,7 @@ void MapEditScene::ButtonInit()
 	std::string buttonComplete = "Button_Complete.png";
 	//テストプレイボタン
 	std::string buttonTestplay = "Button_TestPlay.png";
-	//中止ボタン
-	std::string buttonCancel = "Button_Cancel.png";
-
+	
 	//上のファイルが入ってるフォルダー
 	std::string folderName = "Assets\\Button\\MathSelect\\";
 
@@ -388,12 +386,6 @@ void MapEditScene::ButtonInit()
 	buttonTestplay = folderName + buttonTestplay;
 	testplayNum = Image::Load(buttonTestplay);
 	assert(testplayNum >= 0);
-
-	//中止ボタンのロード
-	folderName = "Assets\\Button\\";
-	buttonCancel = folderName + buttonCancel;
-	cancelNum = Image::Load(buttonCancel);
-	assert(cancelNum >= 0);
 
 	//ボタンの普通のマスとの倍率
 	const float normalMathtoMult = 2.0f;
@@ -456,16 +448,6 @@ void MapEditScene::ButtonInit()
 	tbTransform.scale_ = obScale;
 	pTestplayButton_->SetTransform(tbTransform);
 	pTestplayButton_->SetPictNum(testplayNum);
-
-	//中止ボタン
-	pCancelButton_ = ButtonManager::GetButton(ButtonManager::AddButton("cancelButton", (GameObject*)this));
-
-	const XMFLOAT3 ccbPos = tbPos;
-	Transform ccbTransform;
-	ccbTransform.position_ = ccbPos;
-	ccbTransform.scale_ = obScale;
-	pCancelButton_->SetTransform(ccbTransform);
-	pCancelButton_->SetPictNum(cancelNum);
 }
 
 void MapEditScene::ButtonUpdate()
@@ -479,8 +461,6 @@ void MapEditScene::OtherButtonPush()
 	pTestplayButton_->SetIsCanPush(canTest_ * isDisp_);
 	//テストプレイクリアできないと押せないようにする
 	pCompleteButton_->SetIsCanPush(isClear_ * isDisp_);
-	//テストプレイしてる時だけ押せるようにする
-	pCancelButton_->SetIsCanPush(!isDisp_);
 
 	//テストプレイボタンが押されたら
 	if (pTestplayButton_->OnClick())
@@ -491,15 +471,6 @@ void MapEditScene::OtherButtonPush()
 	else if (pCompleteButton_->OnClick())
 	{
 		CompButtonPush();
-	}
-	//中止ボタン
-	//テストプレイしているとき
-	else if (testPS_ != nullptr)
-	{
-		if (pCancelButton_->OnClick())
-		{
-			CancelButtonPush();
-		}
 	}
 }
 
@@ -708,8 +679,6 @@ void MapEditScene::IsDisplay(bool _isDisp)
 	pCompleteButton_->SetIsDisplay(_isDisp);
 	//テストプレイボタン表示非表示切り替え
 	pTestplayButton_->SetIsDisplay(_isDisp);
-	//中止ボタン表示日表示切替
-	pCancelButton_->SetIsDisplay(!_isDisp);
 }
 
 void MapEditScene::CheckCanTest()
