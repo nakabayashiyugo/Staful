@@ -120,7 +120,8 @@ void Astar::SetTable(std::vector<std::vector<int>> _table, int _xsize, int _ysiz
 void Astar::Excute()
 {
 	
-	while (checkNode_->GetNodePos().x != goalPos_.x || checkNode_->GetNodePos().y != goalPos_.y)
+	while (checkNode_->GetNodePos().x != goalPos_.x || 
+		checkNode_->GetNodePos().y != goalPos_.y)
 	{
 		//Šî€ƒm[ƒh‚Ìü‚è‚ğopen
 		NeighborNodeOpen(checkNode_);
