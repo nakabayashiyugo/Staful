@@ -2,14 +2,6 @@
 
 #include "../../MapEditScene/MapEditScene.h"
 
-NodeState MapEdit_IsPutMath::operator()()
-{
-	return NodeState::RUNNING;
-}
-
-MapEdit_IsPutMath::MapEdit_IsPutMath()
-{
-}
 
 NodeState MapEdit_Action_ChangeMath::operator()()
 {

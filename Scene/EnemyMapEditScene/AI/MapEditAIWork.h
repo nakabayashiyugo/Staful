@@ -14,14 +14,6 @@ protected:
 	MapEditScene* editer_;
 };
 
-//これ以上マスが置けるか
-class MapEdit_IsPutMath : public MapEdit_Work
-{
-public:
-	NodeState operator()()override;
-	MapEdit_IsPutMath();
-};
-
 //マス変える
 class MapEdit_Action_ChangeMath : public MapEdit_Work
 {

@@ -158,8 +158,7 @@ void EnemyMapEditScene::StartGoalSet()
 void EnemyMapEditScene::AddNode()
 {
 	Node* selectType = new EnemyMapEditAI(rootNode_, new MapEdit_MathTypeSelect());
-	Node* costManage = new EnemyMapEditAI(selectType, new MapEdit_IsPutMath());
-	Node* selectPos = new EnemyMapEditAI(costManage, new MapEdit_MathPosSelect());
+	Node* selectPos = new EnemyMapEditAI(selectType, new MapEdit_MathPosSelect());
 	Node* putMath = new EnemyMapEditAI(selectPos, new MapEdit_Action_ChangeMath());
 }
 
