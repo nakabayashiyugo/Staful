@@ -119,6 +119,9 @@ void MapEditScene::Update()
 	SelectMathSet();
 	ButtonUpdate();
 
+	if(Input::IsMouseButtonDown(0))	
+		XMFLOAT2 ind = table_->GetCursorCellIndex();
+
 	if (selectMath_.x != -1 && selectMath_.y != -1)
 	{
 		if (math_origin_[(int)selectMath_.x][(int)selectMath_.y].mathType_ == MATH_DELETE)

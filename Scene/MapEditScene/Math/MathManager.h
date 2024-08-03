@@ -20,6 +20,9 @@ public:
 
 	bool IsCostOver(XMFLOAT2 _pos, int _type);
 
+	//マウスのカーソルがどの位置のマスにあっているか
+	XMFLOAT2 GetCursorCellIndex();
+
 public:
 	//引数１：セットする要素数
 	//引数２：セットするマスのタイプ

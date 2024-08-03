@@ -13,6 +13,9 @@ class Math
 public:
 	Math(MathManager* _parent, int _type, int _cost);
 
+	//自分のマスの中に引数の値の位置が入っているか
+	bool IsMouseEnter(XMFLOAT2 _pos);
+
 //ゲッターセッター類
 public:
 	int GetMathType() { return mathType_; }

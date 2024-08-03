@@ -82,8 +82,8 @@ void Button::MousePosSetting()
 	mousePos_.x = mousePos_.x - (Direct3D::bfr_scrWidth / 2);
 	mousePos_.y = mousePos_.y - (Direct3D::bfr_scrHeight / 2);
 
-	std::string resStr = std::to_string((float)mousePos_.x) + ", " + std::to_string(mousePos_.y) + "\n";
-	OutputDebugString(resStr.c_str());
+	//std::string resStr = std::to_string((float)mousePos_.x) + ", " + std::to_string(mousePos_.y) + "\n";
+	//OutputDebugString(resStr.c_str());
 }
 
 bool Button::IsMouseEnter()
