@@ -38,14 +38,6 @@ public:
 	//開放
 	void Release() override;
 
-//マウスの操作について
-private:
-	//マウスの位置
-	XMFLOAT3 mousePos_;
-public:
-	//マウスの位置の代入
-	void MousePosSet();
-
 //コスト管理について
 private:
 	//それぞれのマスのコスト
@@ -62,12 +54,29 @@ private:
 	//カーソルが置かれてるマスの位置
 	XMFLOAT3 selectMath_;
 
+	//右クリックしたときのマウスの位置
+	XMFLOAT2 rightClickPos_;
+	//右クリックを話した時のマウスの位置
+	XMFLOAT2 rightReleasePos_;
+	//左クリックしたときのマウスの位置
+	XMFLOAT2 leftClickPos_;
+
 	MathManager* table_;
 public:
 	//マスの初期化
 	void MathInit();
 	//マスの表示
 	virtual void MathDraw();
+
+	//左クリックしたときの処理
+	void LeftClicked();
+	//右クリックしたときの処理
+	void RightClicked();
+	//右クリック離した時の処理
+	void RightReleased();
+
+	//とげとげルートに新しくできたとげとげの情報を入れる
+	void TgtgPushBack(XMFLOAT3 _mousePos);
 
 	//カーソルが置かれてるマスの位置の値いれる
 	virtual void SelectMathSet();
