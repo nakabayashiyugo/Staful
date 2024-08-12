@@ -68,6 +68,12 @@ void MathManager::SetMathType(XMFLOAT2 _pos, int _type)
 
 int MathManager::GetMathType(XMFLOAT2 _pos)
 {
+	//”ÍˆÍŠO‚¾‚Á‚½‚ç
+	if ((_pos.x < 0 || _pos.x >= maths_.size()) &&
+		(_pos.y < 0 || _pos.y >= maths_[_pos.x].size()))
+	{
+		return MATH_HOLE;
+	}
 	return maths_[_pos.x][_pos.y]->GetMathType();
 }
 

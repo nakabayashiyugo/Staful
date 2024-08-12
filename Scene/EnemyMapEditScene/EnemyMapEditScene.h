@@ -29,6 +29,9 @@ public:
 	bool StartGoalCheck();
 	//スタートマスとゴールマスセット
 	void StartGoalSet();
+
+	//引数1の位置から一番近い引数2のマスの種類の位置を返す
+	XMFLOAT2 FindNearMathPos(XMFLOAT2 _pos, MATHTYPE _type);
 //AI
 private:
 	RootNode* rootNode_;

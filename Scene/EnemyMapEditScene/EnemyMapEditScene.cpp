@@ -97,6 +97,42 @@ void EnemyMapEditScene::MathDraw()
 
 void EnemyMapEditScene::ChangeSelectMath()
 {
+	if (GetMathType() == MATH_CONVEYOR)
+	{
+		//コンベアに代入するトランスフォーム
+		Transform tConv = GetTable()->GetMathTransform(XMFLOAT2(GetSelectMath().x, GetSelectMath().y));
+		//コンベアが向く方向
+		const float left = 0;
+		const float back = 90;
+		const float right = 180;
+		const float front = 270;
+
+		//一番近くの「穴」の方向を向かせる
+		const XMFLOAT2 holePos = FindNearMathPos(XMFLOAT2(GetSelectMath().x, GetSelectMath().y), MATH_HOLE);
+		//holePosとselectMath_のxとyでそれぞれ引いて
+		//絶対値が大きい方を出す
+		//その数値が+か-かでどっちを向かせるか決める
+		float xdis = GetSelectMath().x - holePos.x;
+		float ydis = GetSelectMath().y - holePos.y;
+		//横向かせるの確定
+		if (abs(xdis) > abs(ydis))
+		{
+			//+だったら
+			if (xdis > 0)	tConv.rotate_.z = left;
+			//-だったら
+			else	tConv.rotate_.z = right;
+		}
+		//縦向かせるの確定
+		else
+		{
+			//+だったら
+			if (ydis > 0)	tConv.rotate_.z = back;
+			//-だったら
+			else	tConv.rotate_.z = front;
+		}
+
+		GetTable()->SetMathTransform(XMFLOAT2(GetSelectMath().x, GetSelectMath().y), tConv);
+	}
 	MapEditScene::ChangeSelectMath();
 }
 
@@ -122,13 +158,30 @@ bool EnemyMapEditScene::StartGoalCheck()
 
 void EnemyMapEditScene::StartGoalSet()
 {
+	//スタートマストゴールマスがすでに置かれているか
 	if (!StartGoalCheck())
 	{
 		//スタートマストゴールマス決める
+		//スタートの位置は完全にランダム
 		startMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
+		//スタートとゴールの距離の最小値
+		int disMin = 0;
+		if (mathVolume_.x > mathVolume_.y)
+		{
+			disMin = mathVolume_.y;
+		}
+		else
+		{
+			disMin = mathVolume_.x;
+		}
+		disMin /= 2;
 		do {
+			//ゴールの位置はスタートからはなしたい
+			//スタートとゴールの距離がステージ全体の
+			// xとyの大きさの小さい方の半分(disMin)以上でないとダメ
 			goalMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
-		} while (startMathPos_.x == goalMathPos_.x && startMathPos_.y == goalMathPos_.y);
+		} while (startMathPos_.x == goalMathPos_.x && startMathPos_.y == goalMathPos_.y &&
+			GetDistance(startMathPos_, goalMathPos_) < disMin);
 		SetMathType(MATH_START);
 		SetSelectMath(XMFLOAT3(startMathPos_.x, startMathPos_.y, 0));
 		ChangeSelectMath();
@@ -138,6 +191,7 @@ void EnemyMapEditScene::StartGoalSet()
 	}
 	else
 	{
+		//スタートとゴールの位置を探索する
 		for (int x = 0; x < mathVolume_.x; x++)
 		{
 			for (int y = 0; y < mathVolume_.y; y++)
@@ -153,6 +207,19 @@ void EnemyMapEditScene::StartGoalSet()
 			}
 		}
 	}
+}
+
+XMFLOAT2 EnemyMapEditScene::FindNearMathPos(XMFLOAT2 _pos, MATHTYPE _type)
+{
+	const int besideDir[4] = { 1, 0, 1, 0 };
+	const int vertical[4] = { 0, 1, 0, 1 };
+
+	for (int i = 0; i < 4; i++)
+	{
+
+	}
+
+	return XMFLOAT2();
 }
 
 void EnemyMapEditScene::AddNode()
