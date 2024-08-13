@@ -180,7 +180,7 @@ void EnemyMapEditScene::StartGoalSet()
 			//スタートとゴールの距離がステージ全体の
 			// xとyの大きさの小さい方の半分(disMin)以上でないとダメ
 			goalMathPos_ = XMFLOAT2((rand() % mathVolume_.x), (rand() % mathVolume_.y));
-		} while (startMathPos_.x == goalMathPos_.x && startMathPos_.y == goalMathPos_.y &&
+		} while (startMathPos_.x == goalMathPos_.x && startMathPos_.y == goalMathPos_.y ||
 			GetDistance(startMathPos_, goalMathPos_) < disMin);
 		SetMathType(MATH_START);
 		SetSelectMath(XMFLOAT3(startMathPos_.x, startMathPos_.y, 0));
@@ -214,12 +214,59 @@ XMFLOAT2 EnemyMapEditScene::FindNearMathPos(XMFLOAT2 _pos, MATHTYPE _type)
 	const int besideDir[4] = { 1, 0, 1, 0 };
 	const int vertical[4] = { 0, 1, 0, 1 };
 
-	for (int i = 0; i < 4; i++)
+	//引数として渡されたマスの種類があるかどうかチェック
+	std::vector<XMFLOAT2> types;
+	for (int x = 0; x < mathVolume_.x; x++)
 	{
-
+		for (int y = 0; y < mathVolume_.y; y++)
+		{
+			if (GetTable()->GetMathType(XMFLOAT2(x, y)) == _type)
+			{
+				XMFLOAT2 pos = XMFLOAT2(x, y);
+				types.push_back(pos);
+			}
+		}
 	}
 
-	return XMFLOAT2();
+	//引数として渡されたマスの種類がある場合
+	if (types.size() > 0)
+	{
+		//typesの中から_posに一番距離近い要素を返す
+		XMFLOAT2 ret = types[0];
+		for (int i = 1; i < types.size(); i++)
+		{
+			if (GetDistance(_pos, ret) > GetDistance(_pos, types[i]))
+			{
+				ret = types[i];
+			}
+		}
+		return ret;
+	}
+	//なかった場合
+	else
+	{
+		//引数として渡されたマスの種類が「穴」だったら
+		if (_type == MATH_HOLE)
+		{
+			//上下左右の範囲外の中で一番距離が近い要素を返す
+			XMFLOAT2 outs[4] = { XMFLOAT2(-1, _pos.y), XMFLOAT2(_pos.x, -1),
+								XMFLOAT2(mathVolume_.x, _pos.y) ,XMFLOAT2(_pos.x, mathVolume_.y) };
+			XMFLOAT2 ret = outs[0];
+			for (int i = 1; i < 4; i++)
+			{
+				if (GetDistance(_pos, ret) > GetDistance(_pos, outs[i]))
+				{
+					ret = outs[i];
+				}
+			}
+			return ret;
+		}
+		//じゃなかったら
+		else
+		{
+			return XMFLOAT2(-1, -1);
+		}
+	}
 }
 
 void EnemyMapEditScene::AddNode()
