@@ -275,7 +275,7 @@ void MapEditScene::ButtonInit()
 	//ボタンの普通のマスとの倍率
 	const float normalMathtoMult = 2.0f;
 	//ボタンのサイズ
-	const float mathButtonSize = MATHSIZE * normalMathtoMult;
+	const float mathButtonSize = EDITERMATHSIZE * normalMathtoMult;
 	//ボタンの大きさ設定
 	const XMFLOAT3 mbScale = XMFLOAT3(1.0f / imageSize.x * mathButtonSize, 1.0f / imageSize.y * mathButtonSize, 1);
 	const int buttonInitNum = 0;
@@ -467,13 +467,13 @@ void MapEditScene::MathInit()
 
 			Transform tMath;
 
-			tMath.scale_ = XMFLOAT3(1.0f / imageSize.x * MATHSIZE, 1.0f / imageSize.y * MATHSIZE, 1);
+			tMath.scale_ = XMFLOAT3(1.0f / imageSize.x * EDITERMATHSIZE, 1.0f / imageSize.y * EDITERMATHSIZE, 1);
 			//1マスの大きさ
-			const XMFLOAT2 mathSize = XMFLOAT2(((float)x / Direct3D::bfr_scrWidth) * MATHSIZE * 2,
-				((float)y / Direct3D::bfr_scrHeight) * MATHSIZE * 2);
+			const XMFLOAT2 mathSize = XMFLOAT2(((float)x / Direct3D::bfr_scrWidth) * EDITERMATHSIZE * 2,
+				((float)y / Direct3D::bfr_scrHeight) * EDITERMATHSIZE * 2);
 			//マスを置く位置
-			const XMFLOAT2 mathPos = XMFLOAT2(mathInitPos.x - ((float)mathVolume_.x / Direct3D::bfr_scrWidth) * MATHSIZE,
-				mathInitPos.y - ((float)mathVolume_.y / Direct3D::bfr_scrHeight) * MATHSIZE);
+			const XMFLOAT2 mathPos = XMFLOAT2(mathInitPos.x - ((float)mathVolume_.x / Direct3D::bfr_scrWidth) * EDITERMATHSIZE,
+				mathInitPos.y - ((float)mathVolume_.y / Direct3D::bfr_scrHeight) * EDITERMATHSIZE);
 
 			tMath.position_.x = mathSize.x + mathPos.x;
 			tMath.position_.y = mathSize.y + mathPos.y;
@@ -585,7 +585,7 @@ void MapEditScene::LeftClicked()
 void MapEditScene::RightClicked()
 {
 	rightClickPos_ = table_->GetCursorCellIndex();
-	tgtgRouteMathDown_ = XMFLOAT3(rightClickPos_.x, rightClickPos_.y, 0);
+	
 
 	//コンベアマス回転
 	//押したところがマスの範囲外だったら
@@ -599,6 +599,13 @@ void MapEditScene::RightClicked()
 				isClear_ = false;
 			}
 		}
+		if ((MATHTYPE)mathtype_ == MATH_TOGETOGE)
+		{
+			if (table_->GetMathType(rightClickPos_) == MATHTYPE::MATH_TOGETOGE)
+			{
+				tgtgRouteMathDown_ = XMFLOAT3(rightClickPos_.x, rightClickPos_.y, 0);
+			}
+		}
 	}
 }
 
@@ -607,7 +614,7 @@ void MapEditScene::RightReleased()
 	rightReleasePos_ = table_->GetCursorCellIndex();
 	tgtgRouteMathUp_ = XMFLOAT3(rightReleasePos_.x, rightReleasePos_.y, 0);
 	
-	//押したところがマスの範囲外だったら
+	//押したところがマスの範囲外じゃなかったら
 	if (rightReleasePos_.x != -1)
 	{
 		if ((MATHTYPE)mathtype_ == MATH_TOGETOGE)

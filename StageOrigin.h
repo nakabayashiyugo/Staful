@@ -42,10 +42,12 @@ struct MATHVOLUME
 	int y;
 	int z;
 };
-//マスの大きさ
-const int MATHSIZE = 30;
+//マップエディターでのマスの大きさ
+const int EDITERMATHSIZE = 30;
 //Floorのモデルの高さ
 const int MODELHEIGHT = 1;
+//マスの大きさ
+const float MATHSIZE = 1;
 
 class StageOrigin
 {

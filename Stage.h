@@ -3,6 +3,7 @@
 class PlayScene;
 class Togetoge;
 
+
 struct TimeLimitDecElem
 {
 	int x;
@@ -65,5 +66,7 @@ public:
 	bool IsTimeLimitDecCheck(int _x, int _y);
 	//引数で指定された位置の制限時間減らすマスのisStandのセッター
 	void SetIsStand(int _x, int _y, bool _isStand);
+	//引数で渡されたマスの上にとげとげがあるかどうか
+	bool IsMathOnTogetoge(XMFLOAT3 _pos);
 };
 

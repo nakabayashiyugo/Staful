@@ -103,9 +103,9 @@ void EnemyMapEditScene::ChangeSelectMath()
 		Transform tConv = GetTable()->GetMathTransform(XMFLOAT2(GetSelectMath().x, GetSelectMath().y));
 		//コンベアが向く方向
 		const float left = 0;
-		const float back = 90;
+		const float front  = 90;
 		const float right = 180;
-		const float front = 270;
+		const float back = 270;
 
 		//一番近くの「穴」の方向を向かせる
 		const XMFLOAT2 holePos = FindNearMathPos(XMFLOAT2(GetSelectMath().x, GetSelectMath().y), MATH_HOLE);

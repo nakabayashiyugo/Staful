@@ -79,7 +79,7 @@ void Stage::Initialize()
 	for (int i = 0; i < pTgtg_.size(); i++)
 	{
 		tgtgGivePos_ = tTgtgRoute_[i].initPos_;
-		pTgtg_[i]->Instantiate<Togetoge>(this);
+		pTgtg_[i] = (Togetoge*)Instantiate<Togetoge>(this);
 	}
 
 	//制限時間減らすマスが何個あるか
@@ -235,6 +235,29 @@ void Stage::SetIsStand(int _x, int _y, bool _isStand)
 			timeLimitDecs_[i].isStand = _isStand;
 		}
 	}
+}
+
+bool Stage::IsMathOnTogetoge(XMFLOAT3 _pos)
+{
+	//移動先のマスの上にとげとげがあったら
+	for (int i = 0; i < pTgtg_.size(); i++)
+	{
+		//移動先のマスの範囲
+		const float left = _pos.x;
+		const float right = _pos.x + MATHSIZE;
+		const float back = _pos.z;
+		const float front = _pos.z + MATHSIZE;
+
+		//上の範囲の中にとげとげが入っているか
+		if (pTgtg_[i]->GetTransform().position_.x >= left && pTgtg_[i]->GetTransform().position_.x < right &&
+			pTgtg_[i]->GetTransform().position_.z >= back && pTgtg_[i]->GetTransform().position_.z < front)
+		{
+			return true;
+		}
+	}
+
+	return false;
+
 }
 
 XMFLOAT3 Stage::GetTogetogeInitPos()

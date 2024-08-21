@@ -6,6 +6,8 @@
 #include "AI/AIWork.h"
 #include "AI/EnemyAI.h"
 
+
+#include "../Stage.h"
 #include "../StageOrigin.h"
 
 //それぞれのマスの危険度
@@ -140,6 +142,25 @@ void Enemy::SelectMoveDir()
 		break;
 	}
 	SetMoveDir(ret);
+}
+
+bool Enemy::IsJumpWise()
+{
+	destPos_ = GetDestPos();
+	//移動先が穴だったら
+	if (GetMathType(destPos_).mathType_ == MATH_HOLE)
+	{
+		return true;
+	}
+	//移動先のマスにとげとげがあったら
+	else if (((Stage*)FindObject("Stage"))->IsMathOnTogetoge(destPos_))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 int Enemy::GetCost(int x, int y)

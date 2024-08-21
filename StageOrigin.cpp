@@ -170,11 +170,16 @@ void StageOrigin::Read()
 		std::cout << "ファイルが開けません";
 		return;
 	}
+	//元々のtTgtgRouteのサイズ
+	while(!tTgtgRoute_.empty())
+	{
+		tTgtgRoute_.erase(tTgtgRoute_.begin());
+	}
 	for (int i = 0; i < tgtgSize; i++)
 	{
 		TOGETOGEROUTE pTg;
 		read.read((char*)&pTg, sizeof(TOGETOGEROUTE));
-		tTgtgRoute_[i] = pTg;
+		tTgtgRoute_.push_back(pTg);
 
 	}
 

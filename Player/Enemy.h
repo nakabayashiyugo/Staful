@@ -30,6 +30,8 @@ public:
 	void AddNode();
 	//ˆÚ“®•ûŒüŒˆ‚ß‚é
 	void SelectMoveDir();
+	//ƒWƒƒƒ“ƒv‚ð‚µ‚½•û‚ª‚¢‚¢‚©‚Ç‚¤‚©
+	bool IsJumpWise();
 
 	int GetCost(int x, int y);
 	void SetCost(int _cost, int x, int y);
