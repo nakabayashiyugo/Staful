@@ -107,11 +107,12 @@ void MapEditScene::Initialize()
 
 	pText_ = new Text();
 	pText_->Initialize();
+	Audio::Play(hAudio_Music_, soundVolume);
 }
 
 void MapEditScene::Update()
 {
-	Audio::Play(hAudio_Music_, soundVolume);
+	
 
 	//SelectMathSet();
 	ButtonUpdate();
