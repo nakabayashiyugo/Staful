@@ -6,6 +6,8 @@
 
 
 const float PIE = 3.141592;
+//とげとげのコライダーの大きさ
+const float colSize = 0.4f;
 
 Togetoge::Togetoge(GameObject* parent) :
 	GameObject(parent, "Togetoge"), hModel_(-1), initPos_(0, 0, 0), destPos_(0, 0, 0),
@@ -31,7 +33,7 @@ void Togetoge::Initialize()
 
 void Togetoge::Update()
 {
-	SphereCollider* pSC = new SphereCollider(0.4);
+	SphereCollider* pSC = new SphereCollider(colSize);
 	this->AddCollider(pSC);
 
 	moveCount_ += 0.5f;
@@ -47,4 +49,9 @@ void Togetoge::Draw()
 
 void Togetoge::Release()
 {
+}
+
+XMFLOAT3 Togetoge::GetTogetogeCenterPos()
+{
+	return XMFLOAT3(transform_.position_.x + (colSize / 2), transform_.position_.y, transform_.position_.z + (colSize / 2));
 }

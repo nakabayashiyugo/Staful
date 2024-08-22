@@ -249,8 +249,8 @@ bool Stage::IsMathOnTogetoge(XMFLOAT3 _pos)
 		const float front = _pos.z + MATHSIZE;
 
 		//ã‚Ì”ÍˆÍ‚Ì’†‚É‚Æ‚°‚Æ‚°‚ª“ü‚Á‚Ä‚¢‚é‚©
-		if (pTgtg_[i]->GetTransform().position_.x >= left && pTgtg_[i]->GetTransform().position_.x < right &&
-			pTgtg_[i]->GetTransform().position_.z >= back && pTgtg_[i]->GetTransform().position_.z < front)
+		if (pTgtg_[i]->GetTogetogeCenterPos().x >= left && pTgtg_[i]->GetTogetogeCenterPos().x < right &&
+			pTgtg_[i]->GetTogetogeCenterPos().z >= back && pTgtg_[i]->GetTogetogeCenterPos().z < front)
 		{
 			return true;
 		}
