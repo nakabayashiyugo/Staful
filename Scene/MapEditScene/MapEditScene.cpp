@@ -465,7 +465,7 @@ void MapEditScene::MathInit()
 			math_origin_[x][y] = math_[x][y];
 			XMFLOAT2 pos = XMFLOAT2(x, y);
 
-			Transform tMath;
+			Transform tMath = math_[x][y].mathPos_;
 
 			tMath.scale_ = XMFLOAT3(1.0f / imageSize.x * EDITERMATHSIZE, 1.0f / imageSize.y * EDITERMATHSIZE, 1);
 			//1ƒ}ƒX‚Ì‘å‚«‚³
