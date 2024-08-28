@@ -64,6 +64,7 @@ Enemy::Enemy(GameObject* _parent)
 
 Enemy::~Enemy()
 {
+	delete rootNode_;
 }
 
 void Enemy::PlayerOperation()

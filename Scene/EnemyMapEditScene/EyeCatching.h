@@ -15,6 +15,7 @@ class EyeCatching : public GameObject
 	Timer* makingPointTimer_;
 public:
 	EyeCatching(GameObject* _parent);
+	~EyeCatching();
 
 	void Initialize() override;
 	void Update() override;

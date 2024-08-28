@@ -140,6 +140,11 @@ Player::Player(GameObject* parent)
 	pText_->Initialize("Assets\\opeChar.png", 16, 32, 16);
 }
 
+Player::~Player()
+{
+
+}
+
 void Player::Initialize()
 {
 	std::string fileName = "Assets\\Player";

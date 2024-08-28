@@ -21,6 +21,14 @@ Procedural::Procedural(std::vector<std::vector<int>> _mathShades, int _xsize, in
 	}
 }
 
+Procedural::~Procedural()
+{
+	for (int i = 0; i < seedList_.size(); i++)
+	{
+		delete seedList_[i];
+	}
+}
+
 void Procedural::Excute(int _seedNum)
 {
 	SeedScatter(_seedNum);

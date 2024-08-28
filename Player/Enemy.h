@@ -15,7 +15,7 @@ public:
 	//当たり判定
 	void OnCollision(GameObject* pTarget) override;
 
-//AIについて(仮)
+//AIについて
 private:
 	//ルートノード
 	RootNode* rootNode_;
