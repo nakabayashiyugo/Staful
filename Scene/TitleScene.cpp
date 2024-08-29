@@ -59,19 +59,22 @@ void TitleScene::Initialize()
 
 void TitleScene::Update()
 {
+	static int fadeHandle = -1;
 	//ソロプレイボタンを押して離したら
 	if (ButtonManager::GetButton(soloPlayHandle_)->OnClick())
 	{
+		fadeHandle = FADE::FadeStart(this, 1.0f, TYPE_FADEOUT);
 		GameStateWrite(soloHandle);
-		MathInit* mathInit = new MathInit();
-		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
-		pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
-		delete mathInit;
-	}	
+	}
 	//二人プレイボタンを押して離したら
 	else if (ButtonManager::GetButton(twoPlayHandle_)->OnClick())
 	{
+		fadeHandle = FADE::FadeStart(this, 1.0f, TYPE_FADEOUT);
 		GameStateWrite(twoHandle);
+	}
+	//フェードが終わったら
+	if (FADE::FadeEnd(fadeHandle))
+	{
 		MathInit* mathInit = new MathInit();
 		SceneManager* pSceneManager = (SceneManager*)FindObject("SceneManager");
 		pSceneManager->ChangeScene(SCENE_ID_EXPLANATION);
