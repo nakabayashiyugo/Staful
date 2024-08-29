@@ -9,6 +9,7 @@
 #include "../Engine/Image.h"
 #include "../Engine/Input.h"
 #include "../Engine/SceneManager.h"
+#include "../Engine/Fade.h"
 
 //ƒ{ƒ^ƒ“‚Ì”Ô†
 const int exNextButtonNum = 0;
@@ -23,7 +24,7 @@ ExpantionScene::ExpantionScene(GameObject* parent)
 	{
 		hExplan_[i] = -1;
 	}
-
+	
 }
 
 void ExpantionScene::Initialize()

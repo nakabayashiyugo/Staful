@@ -12,11 +12,12 @@ namespace FADE
 int FADE::FadeStart(GameObject* _parent, float _fadeSpeed, FADETYPE _fadeType)
 {
 	//親オブジェクトの子供にすでにフェードが存在したらもう作らない
-	if (_parent->FindChildObject("Fade") != nullptr)
+	Fade* fade = (Fade*)_parent->FindChildObject("Fade");
+	if (fade != nullptr)
 	{
-		return -1;
+		return FadeSerch(fade);
 	}
-	Fade* fade = new Fade(_fadeType, _fadeSpeed);
+	fade = new Fade(_fadeType, _fadeSpeed);
 	fade->Initialize();
 	if(_parent != nullptr)	_parent->PushBackChild(fade);
 	fades_.push_back(fade);
@@ -28,6 +29,8 @@ bool FADE::FadeEnd(int _handle)
 	if (_handle < 0 && _handle >= fades_.size()) return false;
 	if (fades_[_handle]->IsFaded())
 	{
+		fades_[_handle]->KillMe();
+		fades_.erase(fades_.begin() + _handle);
 		return true;
 	}
 	return false;
@@ -105,14 +108,12 @@ bool Fade::IsFaded()
 	case TYPE_FADEIN:
 		if (alpha_ < 0)
 		{
-			KillMe();
 			return true;
 		}
 		break;
 	case TYPE_FADEOUT:
 		if (alpha_ >= alphaMax)
 		{
-			KillMe();
 			return true;
 		}
 		break;
