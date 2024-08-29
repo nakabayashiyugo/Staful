@@ -7,7 +7,7 @@ enum FADETYPE
     TYPE_FADEOUT,       //フェードアウト
 };
 
-class Fade
+class Fade : public GameObject
 {
     //画像番号
     int hFade_;
@@ -22,11 +22,8 @@ class Fade
 
     //暗くなり始めて真っ暗になる時間
     float fadeSpeed_;
-
-    //フェードが終わったか
-    bool isFinished_;
 public:
-    Fade(FADETYPE _fadeType);
+    Fade(FADETYPE _fadeType, float _fadeSpeed);
     ~Fade();
 
     void Initialize();
@@ -34,10 +31,21 @@ public:
     void Draw();
     void Release();
 
+    //フェードが終わったかどうか
+    bool IsFaded();
+
     float GetAlpha() { return alpha_; }
-    bool GetIsFinished() { return isFinished_; }
 
     //フェードのタイプのセッター
     void SetFadeType(FADETYPE _fadeType) { fadeType_ = _fadeType; }
 };
+
+namespace FADE
+{
+    int FadeStart(GameObject* _parent, float _fadeSpeed, FADETYPE _fadeType);
+    bool FadeEnd(int _handle);
+
+    //フェードを探索してハンドルを返す
+    int FadeSerch(Fade* _fade);
+}
 

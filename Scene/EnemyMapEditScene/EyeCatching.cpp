@@ -17,6 +17,11 @@ EyeCatching::EyeCatching(GameObject* _parent)
 {
 }
 
+EyeCatching::~EyeCatching()
+{
+	delete makingPointTimer_;
+}
+
 void EyeCatching::Initialize()
 {
 	EnemyMapEditMakingInit();

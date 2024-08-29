@@ -35,6 +35,7 @@ public:
 	//引数4：マスごとの濃淡情報が入った配列の先頭のアドレス
 	//引数5：引数4の配列のサイズ
 	Procedural(std::vector<std::vector<int>> _mathShades, int _xsize, int _ysize);
+	~Procedural();
 
 	//種の配置実行
 	//引数：ばらまく種の数

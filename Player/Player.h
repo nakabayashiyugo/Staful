@@ -49,6 +49,7 @@ class Player
 	PlayScene* pPlayScene_;
 public:
 	Player(GameObject* parent);
+	~Player();
 
 	//‰Šú‰»
 	void Initialize() override;
