@@ -36,16 +36,20 @@ public:
 
     float GetAlpha() { return alpha_; }
 
-    //フェードのタイプのセッター
-    void SetFadeType(FADETYPE _fadeType) { fadeType_ = _fadeType; }
+    //フェードのタイプのセッター・ゲッター
+    FADETYPE GetFadeType() { return fadeType_; }
+    void SetFadeType(FADETYPE _fadeType);
 };
 
 namespace FADE
 {
-    int FadeStart(GameObject* _parent, float _fadeSpeed, FADETYPE _fadeType);
-    bool FadeEnd(int _handle);
-
-    //フェードを探索してハンドルを返す
-    int FadeSerch(Fade* _fade);
+    //フェード開始
+    void FadeStart(GameObject* _parent, float _fadeSpeed, FADETYPE _fadeType);
+    //フェードインが終わったかどうか
+    bool IsFadeinFinished();
+    //フェードアウトが終わったかどうか
+    bool IsFadeoutFinished();
+    //フェードを消す
+    void FadeRemove();
 }
 

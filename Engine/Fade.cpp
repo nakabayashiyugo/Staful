@@ -6,46 +6,60 @@
 
 namespace FADE
 {
-	std::vector<Fade*> fades_;
+	Fade* fade_;
 }
 
-int FADE::FadeStart(GameObject* _parent, float _fadeSpeed, FADETYPE _fadeType)
+void FADE::FadeStart(GameObject* _parent, float _fadeSpeed, FADETYPE _fadeType)
 {
-	//親オブジェクトの子供にすでにフェードが存在したらもう作らない
-	Fade* fade = (Fade*)_parent->FindChildObject("Fade");
-	if (fade != nullptr)
+	//すでにフェードが存在したらもう作らない
+	if (fade_ == nullptr)
 	{
-		return FadeSerch(fade);
+		fade_ = new Fade(_fadeType, _fadeSpeed);
+		fade_->Initialize();
+		//一番年上の親の下に作る
+		if (_parent != nullptr)	_parent->GetRootJob()->PushBackChild(fade_);
 	}
-	fade = new Fade(_fadeType, _fadeSpeed);
-	fade->Initialize();
-	if(_parent != nullptr)	_parent->PushBackChild(fade);
-	fades_.push_back(fade);
-	return fades_.size() - 1;
+	fade_->SetFadeType(_fadeType);
 }
 
-bool FADE::FadeEnd(int _handle)
+bool FADE::IsFadeinFinished()
 {
-	if (_handle < 0 && _handle >= fades_.size()) return false;
-	if (fades_[_handle]->IsFaded())
+	if (fade_ == nullptr)	return false;
+	if (fade_->GetFadeType() == TYPE_FADEIN)
 	{
-		fades_[_handle]->KillMe();
-		fades_.erase(fades_.begin() + _handle);
-		return true;
+		if (fade_->IsFaded())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	return false;
 }
 
-int FADE::FadeSerch(Fade* _fade)
+bool FADE::IsFadeoutFinished()
 {
-	for (int i = 0; i < fades_.size(); i++)
+	if (fade_ == nullptr)	return false;
+	if (fade_->GetFadeType() == TYPE_FADEOUT)
 	{
-		if (_fade == fades_[i])
+		if (fade_->IsFaded())
 		{
-			return i;
+			return true;
+		}
+		else
+		{
+			return false;
 		}
 	}
-	return -1;
+	return false;
+}
+
+void FADE::FadeRemove()
+{
+	if (fade_ == nullptr) return;
+	fade_->KillMe();
 }
 
 
@@ -119,4 +133,18 @@ bool Fade::IsFaded()
 		break;
 	}
 	return false;
+}
+
+void Fade::SetFadeType(FADETYPE _fadeType)
+{
+	fadeType_ = _fadeType;
+	switch (fadeType_)
+	{
+	case TYPE_FADEIN:
+		alpha_ = alphaMax;
+		break;
+	case TYPE_FADEOUT:
+		alpha_ = 0;
+		break;
+	}
 }
