@@ -6,6 +6,7 @@
 #include "../Engine/Image.h"
 #include "../Engine/SceneManager.h"
 #include "../Engine/Easing.h"
+#include "../Engine/Fade.h"
 
 const float PIE = 3.141592;
 const int moveUpdate = 5;
@@ -69,6 +70,9 @@ void BetweenScene::Initialize()
 	tLogoCourse2_.scale_ = tLogoStandard_.scale_;
 
 	tLogoMapCreate_.position_.y = -0.55f;
+
+	//フェードイン
+	FADE::FadeStart(this, fadeTimeBase, TYPE_FADEIN);
 }
 
 void BetweenScene::Update()
@@ -271,6 +275,11 @@ void BetweenScene::NextCallFunction()
 
 void BetweenScene::Finished()
 {
-	NextCallFunction();
-	KillMe();
+	if (FADE::IsFadeoutFinished())
+	{
+		NextCallFunction();
+		KillMe();
+		return;
+	}
+	FADE::FadeStart(this, fadeTimeBase, TYPE_FADEOUT);
 }

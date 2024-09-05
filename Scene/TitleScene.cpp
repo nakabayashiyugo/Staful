@@ -63,13 +63,13 @@ void TitleScene::Update()
 	//ソロプレイボタンを押して離したら
 	if (ButtonManager::GetButton(soloPlayHandle_)->OnClick())
 	{
-		FADE::FadeStart(this, 1.0f, TYPE_FADEOUT);
+		FADE::FadeStart(this, fadeTimeBase, TYPE_FADEOUT);
 		GameStateWrite(soloHandle);
 	}
 	//二人プレイボタンを押して離したら
 	else if (ButtonManager::GetButton(twoPlayHandle_)->OnClick())
 	{
-		FADE::FadeStart(this, 1.0f, TYPE_FADEOUT);
+		FADE::FadeStart(this, fadeTimeBase, TYPE_FADEOUT);
 		GameStateWrite(twoHandle);
 	}
 	//フェードが終わったら

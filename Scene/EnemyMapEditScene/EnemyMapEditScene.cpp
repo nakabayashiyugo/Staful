@@ -2,6 +2,7 @@
 
 #include "../../Engine/Input.h"
 #include "../../Engine/Image.h"
+#include "../../Engine/Fade.h"
 
 #include "../../Engine/RootNode.h"
 
@@ -67,7 +68,8 @@ void EnemyMapEditScene::Update()
 	makingTimer_->Update();
 	if (makingTimer_->isTimeUpped())
 	{
-		CompButtonPush();
+		FADE::FadeStart(this, fadeTimeBase, TYPE_FADEOUT);
+		if(FADE::IsFadeoutFinished())	MapEditFinish();
 	}
 }
 

@@ -1,6 +1,8 @@
 #pragma once
 #include "GameObject.h"
 
+const float fadeTimeBase = 0.3f;
+
 enum FADETYPE
 {
     TYPE_FADEIN = 0,    //フェードイン

@@ -5,6 +5,7 @@
 #include "../../Engine/Input.h"
 #include "../../Engine/Text.h"
 #include "../../Engine/Audio.h"
+#include "../../Engine/Fade.h"
 
 #include "../../resource.h"
 #include "../../ButtonManager.h"
@@ -108,12 +109,13 @@ void MapEditScene::Initialize()
 	pText_ = new Text();
 	pText_->Initialize();
 	Audio::Play(hAudio_Music_, soundVolume);
+
+	//フェードイン
+	FADE::FadeStart(this, fadeTimeBase, TYPE_FADEIN);
 }
 
 void MapEditScene::Update()
 {
-	
-
 	//SelectMathSet();
 	ButtonUpdate();
 
@@ -164,6 +166,15 @@ void MapEditScene::Draw()
 
 void MapEditScene::Release()
 {
+}
+
+void MapEditScene::MapEditFinish()
+{
+	//音楽停止
+	Audio::Stop(hAudio_Music_);
+	//ファイルに書き込み
+	Write();
+	pGP_->MapEditFinished();
 }
 
 void MapEditScene::CostDraw()
@@ -355,17 +366,15 @@ void MapEditScene::OtherButtonPush()
 	//完了ボタンが押されたら
 	else if (pCompleteButton_->OnClick())
 	{
-		CompButtonPush();
+		FADE::FadeStart(this, fadeTimeBase, TYPE_FADEOUT);
 	}
+	//フェードが終わったら
+	if(FADE::IsFadeoutFinished())	CompButtonPush();
 }
 
 void MapEditScene::CompButtonPush()
 {
-	//音楽停止
-	Audio::Stop(hAudio_Music_);
-	//ファイルに書き込み
-	Write();
-	pGP_->MapEditFinished();
+	MapEditFinish();
 }
 
 void MapEditScene::TestButtonPush()

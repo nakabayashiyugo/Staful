@@ -19,7 +19,7 @@ void FADE::FadeStart(GameObject* _parent, float _fadeSpeed, FADETYPE _fadeType)
 		//ˆê”Ô”Nã‚Ìe‚Ì‰º‚Éì‚é
 		if (_parent != nullptr)	_parent->GetRootJob()->PushBackChild(fade_);
 	}
-	fade_->SetFadeType(_fadeType);
+	if(fade_->IsFaded())	fade_->SetFadeType(_fadeType);
 }
 
 bool FADE::IsFadeinFinished()

@@ -60,26 +60,16 @@ void ExpantionScene::Initialize()
 	ExplanPositioning();
 
 	//フェードイン
-	FADE::FadeStart(this, 1.0f, TYPE_FADEIN);
+	FADE::FadeStart(this, fadeTimeBase, TYPE_FADEIN);
 }
 
 void ExpantionScene::Update()
 {
-	//フェードインをしてる最中は
-	if (!FADE::IsFadeinFinished())
-	{
-		return;
-	}
-	if (FADE::IsFadeoutFinished())
-	{
-		SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
-		pSM->ChangeScene(SCENE_ID_TRANSITION);
-	}
 	//了解ボタンが押されたら
 	if (ButtonManager::GetButton(nextBtnHandle_)->OnClick())
 	{
 		//フェードアウト
-		FADE::FadeStart(this, 1.0f, TYPE_FADEOUT);
+		FADE::FadeStart(this, fadeTimeBase, TYPE_FADEOUT);
 	}
 	//右のボタンが押されたら
 	if (ButtonManager::GetButton(explanNextBtnHandle_)->OnClick())
@@ -114,6 +104,11 @@ void ExpantionScene::Update()
 	if (isMoving_)
 	{
 		ExplanMove();
+	}
+	if (FADE::IsFadeoutFinished())
+	{
+		SceneManager* pSM = (SceneManager*)FindObject("SceneManager");
+		pSM->ChangeScene(SCENE_ID_TRANSITION);
 	}
 }
 

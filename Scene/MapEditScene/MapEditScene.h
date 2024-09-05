@@ -38,6 +38,8 @@ public:
 	//開放
 	void Release() override;
 
+	void MapEditFinish();
+
 //コスト管理について
 private:
 	//それぞれのマスのコスト
