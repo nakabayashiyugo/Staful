@@ -4,6 +4,7 @@
 #include "../Engine/SceneManager.h"
 #include "../Engine/Image.h"
 #include "../Engine/Audio.h"
+#include "../Engine/Fade.h"
 
 #include "SceneTransition.h"
 #include "MapEditScene/MapEditScene.h"
@@ -80,10 +81,13 @@ void PlayScene::Initialize()
 		cancelButton_->SetTransform(ccbTransform);
 		cancelButton_->SetPictNum(cancelNum);
 	}
+	//フェードイン
+	FADE::FadeStart(this, fadeTimeBase, TYPE_FADEIN);
 }
 
 void PlayScene::Update()
 {
+	
 	//テストプレイの場合
 	if (pParent_->GetObjectName() == "MapEditScene")
 	{

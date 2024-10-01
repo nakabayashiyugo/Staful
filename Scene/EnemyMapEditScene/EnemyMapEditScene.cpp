@@ -68,8 +68,7 @@ void EnemyMapEditScene::Update()
 	makingTimer_->Update();
 	if (makingTimer_->isTimeUpped())
 	{
-		FADE::FadeStart(this, fadeTimeBase, TYPE_FADEOUT);
-		if(FADE::IsFadeoutFinished())	MapEditFinish();
+		MapEditFinish();
 	}
 }
 
